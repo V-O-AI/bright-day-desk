@@ -261,22 +261,18 @@ const MyData = () => {
               <Card 
                 key={card.id}
                 className={cn(
-                  "cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group overflow-hidden select-none",
+                  "cursor-pointer select-none bg-background",
                   card.borderColor,
-                  "border-2"
+                  "border"
                 )}
                 style={{ animationDelay: `${index * 100}ms` }}
                 onClick={() => navigate(card.url)}
               >
                 <CardContent className="p-6">
-                  <div className={cn(
-                    "absolute inset-0 bg-gradient-to-br opacity-50 pointer-events-none",
-                    card.gradient
-                  )} />
                   <div className="relative pointer-events-none">
                     <div className={cn(
-                      "w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110",
-                      "bg-background/80 backdrop-blur-sm border",
+                      "w-12 h-12 rounded-xl flex items-center justify-center mb-4",
+                      "bg-background border",
                       card.borderColor
                     )}>
                       <Icon className={cn("h-6 w-6", card.iconColor)} />

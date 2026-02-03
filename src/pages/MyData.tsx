@@ -9,7 +9,6 @@ import {
   BarChart3,
   AlertCircle,
   Lightbulb,
-  ArrowRight,
   ChevronDown
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -262,7 +261,7 @@ const MyData = () => {
               <Card 
                 key={card.id}
                 className={cn(
-                  "cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group overflow-hidden",
+                  "cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group overflow-hidden select-none",
                   card.borderColor,
                   "border-2"
                 )}
@@ -271,10 +270,10 @@ const MyData = () => {
               >
                 <CardContent className="p-6">
                   <div className={cn(
-                    "absolute inset-0 bg-gradient-to-br opacity-50",
+                    "absolute inset-0 bg-gradient-to-br opacity-50 pointer-events-none",
                     card.gradient
                   )} />
-                  <div className="relative">
+                  <div className="relative pointer-events-none">
                     <div className={cn(
                       "w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110",
                       "bg-background/80 backdrop-blur-sm border",
@@ -285,13 +284,9 @@ const MyData = () => {
                     <h3 className="text-lg font-semibold text-foreground mb-1">
                       {card.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground mb-3">
+                    <p className="text-sm text-muted-foreground">
                       {card.description}
                     </p>
-                    <div className="flex items-center text-sm text-primary font-medium group-hover:gap-2 transition-all">
-                      Перейти
-                      <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
-                    </div>
                   </div>
                 </CardContent>
               </Card>

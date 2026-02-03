@@ -13,7 +13,10 @@ const Index = () => {
         <div className="lg:col-span-3 flex flex-col gap-6">
           
           {/* Блок графика Cash Flow Trend - уменьшен */}
-          <div className="bg-card rounded-2xl p-6 border border-border" style={{ minHeight: "200px" }}>
+          <div 
+            className="bg-card rounded-2xl p-6 border border-border opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5" 
+            style={{ minHeight: "200px", animationDelay: "0ms" }}
+          >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold">Cash Flow Trend</h3>
               <div className="flex gap-4 text-sm">
@@ -27,9 +30,9 @@ const Index = () => {
                 </span>
               </div>
               <div className="flex gap-1">
-                <button className="px-3 py-1 bg-primary text-primary-foreground rounded-lg text-sm">1Y</button>
-                <button className="px-3 py-1 bg-muted rounded-lg text-sm">6M</button>
-                <button className="px-3 py-1 bg-muted rounded-lg text-sm">1M</button>
+                <button className="px-3 py-1 bg-primary text-primary-foreground rounded-lg text-sm transition-all duration-150 active:scale-[0.97]">1Y</button>
+                <button className="px-3 py-1 bg-muted rounded-lg text-sm transition-all duration-150 active:scale-[0.97] hover:bg-muted/80">6M</button>
+                <button className="px-3 py-1 bg-muted rounded-lg text-sm transition-all duration-150 active:scale-[0.97] hover:bg-muted/80">1M</button>
               </div>
             </div>
             <div className="h-[140px]">
@@ -38,7 +41,10 @@ const Index = () => {
           </div>
 
           {/* Блок с менеджером - увеличен в 2 раза */}
-          <div className="bg-card rounded-2xl p-6 border border-border flex-1 flex flex-col" style={{ minHeight: "280px" }}>
+          <div 
+            className="bg-card rounded-2xl p-6 border border-border flex-1 flex flex-col opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5" 
+            style={{ minHeight: "280px", animationDelay: "50ms" }}
+          >
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
                 <span className="text-muted-foreground">👤</span>
@@ -81,7 +87,7 @@ const Index = () => {
               <input 
                 type="text" 
                 placeholder="Добавь 5 футболок на склад..." 
-                className="w-full bg-muted rounded-xl px-4 py-3 text-sm placeholder:text-muted-foreground"
+                className="w-full bg-muted rounded-xl px-4 py-3 text-sm placeholder:text-muted-foreground transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:outline-none"
               />
             </div>
           </div>
@@ -91,10 +97,13 @@ const Index = () => {
         <div className="lg:col-span-2 flex flex-col gap-6">
           
           {/* Блок последних чатов */}
-          <div className="bg-card rounded-2xl p-6 border border-border">
+          <div 
+            className="bg-card rounded-2xl p-6 border border-border opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5"
+            style={{ animationDelay: "100ms" }}
+          >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold">Последние 3 чата с клиентами</h3>
-              <button className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm">
+              <button className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm transition-all duration-150 active:scale-[0.97] hover:bg-primary/90">
                 <MessageCircle className="h-4 w-4" />
                 Chat
               </button>
@@ -104,7 +113,7 @@ const Index = () => {
                 <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
                   <span className="font-medium">Никнейм клиента</span>
                   <span className="text-muted-foreground text-sm">Тип пользователя</span>
-                  <button className="bg-foreground text-background px-4 py-1 rounded-lg text-sm">
+                  <button className="bg-foreground text-background px-4 py-1 rounded-lg text-sm transition-all duration-150 active:scale-[0.97] hover:opacity-90">
                     кнопка
                   </button>
                 </div>
@@ -113,7 +122,10 @@ const Index = () => {
           </div>
 
           {/* Блок данных склада с круговой диаграммой */}
-          <div className="bg-card rounded-2xl p-6 border border-border flex-1">
+          <div 
+            className="bg-card rounded-2xl p-6 border border-border flex-1 opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5"
+            style={{ animationDelay: "150ms" }}
+          >
             <div className="flex items-center justify-between mb-4">
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Retention</p>

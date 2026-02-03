@@ -1,11 +1,28 @@
+import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { MessageCircle } from "lucide-react";
 import { CashFlowChart } from "@/components/charts/CashFlowChart";
 import { WarehousePieChart } from "@/components/charts/WarehousePieChart";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const Index = () => {
+  const [showEmptyState, setShowEmptyState] = useState(false);
+
   return (
     <AppLayout>
+      {/* Демо-переключатель для empty state */}
+      <div className="flex items-center gap-3 mb-4 p-3 bg-muted/50 rounded-lg border border-border">
+        <Switch
+          id="empty-state-toggle"
+          checked={showEmptyState}
+          onCheckedChange={setShowEmptyState}
+        />
+        <Label htmlFor="empty-state-toggle" className="text-sm cursor-pointer">
+          Показать empty state (для демо)
+        </Label>
+      </div>
+
       {/* Main Grid - 2 колонки, пропорции примерно 60/40 */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-full">
         
@@ -36,7 +53,7 @@ const Index = () => {
               </div>
             </div>
             <div className="h-[140px]">
-              <CashFlowChart />
+              <CashFlowChart isEmpty={showEmptyState} />
             </div>
           </div>
 
@@ -134,7 +151,7 @@ const Index = () => {
               </div>
             </div>
             <div className="h-[200px]">
-              <WarehousePieChart />
+              <WarehousePieChart isEmpty={showEmptyState} />
             </div>
           </div>
         </div>

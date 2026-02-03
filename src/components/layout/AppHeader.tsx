@@ -1,5 +1,6 @@
 import { Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { UserDropdown } from "./UserDropdown";
 
 export function AppHeader() {
   const today = new Date();
@@ -25,9 +26,7 @@ export function AppHeader() {
           <Bell className="h-5 w-5 text-muted-foreground" />
         </button>
         
-        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center">
-          <span className="text-white text-sm font-medium">U</span>
-        </div>
+        <UserDropdown />
       </div>
     </header>
   );

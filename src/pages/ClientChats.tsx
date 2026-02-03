@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
 import { 
   Search, 
   Plus, 
@@ -24,8 +23,7 @@ import {
   MoreVertical,
   Star,
   Clock,
-  FileText,
-  Image as ImageIcon
+  FileText
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -118,7 +116,8 @@ interface SelectedChat {
   avatar: string;
 }
 
-const ClientChats = () => {
+// Inner component that uses useSidebar - must be rendered inside SidebarProvider
+const ClientChatsContent = () => {
   const [activeTab, setActiveTab] = useState<"flows" | "clients" | "direct">("direct");
   const [showFilters, setShowFilters] = useState(true);
   const [expandedCategory, setExpandedCategory] = useState<FilterCategory | null>("sales");
@@ -186,343 +185,59 @@ const ClientChats = () => {
   // Chat View Mode (when a chat is selected)
   if (selectedChat) {
     return (
-      <AppLayout>
-        <div className="flex h-[calc(100vh-5rem)] gap-0 animate-fade-in">
-          {/* Compact Chat List */}
-          <div className="w-72 bg-card border-r border-border flex flex-col transition-all duration-300 animate-fade-in">
-            {/* Search Header */}
-            <div className="p-3 border-b border-border">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search in your Inbox"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-9 text-sm bg-muted/50"
-                />
-              </div>
-            </div>
-
-            {/* Compact Chat List */}
-            <ScrollArea className="flex-1">
-              <div className="py-1">
-                {mockChats.map((chat, index) => (
-                  <div
-                    key={chat.id}
-                    onClick={() => handleSelectChat(chat)}
-                    className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-all duration-200",
-                      selectedChat.id === chat.id 
-                        ? "bg-primary/10 border-l-2 border-primary" 
-                        : "hover:bg-muted/50"
-                    )}
-                    style={{ animationDelay: `${index * 30}ms` }}
-                  >
-                    <div className="relative flex-shrink-0">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={chat.avatar} />
-                        <AvatarFallback className="bg-muted text-muted-foreground text-xs">
-                          {chat.name.split(" ").map(n => n[0]).join("")}
-                        </AvatarFallback>
-                      </Avatar>
-                      {chat.online && (
-                        <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 border-2 border-card" />
-                      )}
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-0.5">
-                        <span className="font-medium text-foreground text-sm truncate">{chat.name}</span>
-                        <span className="text-[10px] text-muted-foreground whitespace-nowrap ml-2">{chat.time}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground truncate">{chat.message}</p>
-                    </div>
-
-                    {chat.unread > 0 && (
-                      <Badge className="bg-primary text-primary-foreground h-5 min-w-5 flex items-center justify-center rounded-full text-[10px]">
-                        {chat.unread}
-                      </Badge>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
-
-          {/* Chat Dialog Area */}
-          <div className="flex-1 flex flex-col bg-background transition-all duration-300">
-            {/* Chat Header */}
-            <div className="h-14 px-4 border-b border-border flex items-center justify-between bg-card">
-              <div className="flex items-center gap-3">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-8 w-8 mr-1"
-                  onClick={handleBackToList}
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src={selectedChat.avatar} />
-                  <AvatarFallback className="bg-primary/20 text-primary text-sm">
-                    {selectedChat.name.split(" ").map(n => n[0]).join("")}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="font-medium text-foreground text-sm">{selectedChat.name}</h3>
-                  <p className="text-xs text-green-500 flex items-center gap-1">
-                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                    Active Now
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <Paperclip className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            {/* Messages Area */}
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4 max-w-3xl mx-auto">
-                {mockMessages.map((msg, index) => (
-                  <div
-                    key={msg.id}
-                    className={cn(
-                      "flex items-end gap-2 animate-fade-in",
-                      msg.isOwn ? "justify-end" : "justify-start"
-                    )}
-                    style={{ animationDelay: `${index * 50}ms` }}
-                  >
-                    {!msg.isOwn && (
-                      <Avatar className="h-8 w-8 flex-shrink-0">
-                        <AvatarFallback className="bg-primary/20 text-primary text-xs">
-                          {selectedChat.name.split(" ").map(n => n[0]).join("")}
-                        </AvatarFallback>
-                      </Avatar>
-                    )}
-                    <div className={cn("max-w-[70%]", msg.isOwn && "order-1")}>
-                      <div
-                        className={cn(
-                          "px-4 py-2.5 rounded-2xl text-sm",
-                          msg.isOwn
-                            ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-br-md"
-                            : "bg-muted text-foreground rounded-bl-md",
-                          msg.isFile && "flex items-center gap-2"
-                        )}
-                      >
-                        {msg.isFile && <FileText className="h-4 w-4" />}
-                        {msg.text}
-                      </div>
-                      <p className={cn(
-                        "text-[10px] text-muted-foreground mt-1",
-                        msg.isOwn ? "text-right" : "text-left"
-                      )}>
-                        {msg.time}
-                      </p>
-                    </div>
-                    {msg.isOwn && (
-                      <Avatar className="h-8 w-8 flex-shrink-0">
-                        <AvatarFallback className="bg-secondary text-secondary-foreground text-xs">
-                          ME
-                        </AvatarFallback>
-                      </Avatar>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-
-            {/* Message Input */}
-            <div className="p-4 border-t border-border bg-card">
-              <div className="flex items-center gap-3 max-w-3xl mx-auto">
-                <div className="flex-1 relative">
-                  <Input
-                    placeholder="Search in your Inbox"
-                    value={messageInput}
-                    onChange={(e) => setMessageInput(e.target.value)}
-                    className="pr-10 h-11 bg-muted/50"
-                  />
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
-                  >
-                    <Paperclip className="h-4 w-4 text-muted-foreground" />
-                  </Button>
-                </div>
-                <Button size="icon" className="h-11 w-11 bg-primary hover:bg-primary/90">
-                  <Send className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Info Panel - max 20% width */}
-          <div className="w-[20%] min-w-[200px] max-w-[280px] bg-card border-l border-border flex flex-col transition-all duration-300 animate-fade-in">
-            {/* Profile Section */}
-            <div className="p-4 flex flex-col items-center border-b border-border">
-              <Avatar className="h-20 w-20 mb-3">
-                <AvatarImage src={selectedChat.avatar} />
-                <AvatarFallback className="bg-primary/20 text-primary text-xl">
-                  {selectedChat.name.split(" ").map(n => n[0]).join("")}
-                </AvatarFallback>
-              </Avatar>
-              <h3 className="font-semibold text-foreground text-center">{selectedChat.name}</h3>
-              <p className="text-sm text-green-500">Active Now</p>
-              
-              {/* Action Buttons */}
-              <div className="flex items-center gap-2 mt-4">
-                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-muted">
-                  <Star className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-muted">
-                  <Clock className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-muted">
-                  <Phone className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-muted">
-                  <Video className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            {/* Attachments Section */}
-            <div className="p-4 flex-1">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-medium text-foreground">Attachement</h4>
-                <Badge variant="secondary" className="h-5 text-xs">9</Badge>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-2">
-                {mockAttachments.map((att, index) => (
-                  <div 
-                    key={att.id}
-                    className="aspect-square rounded-lg bg-muted flex items-center justify-center text-2xl hover:bg-muted/80 cursor-pointer transition-colors animate-fade-in"
-                    style={{ animationDelay: `${index * 50}ms` }}
-                  >
-                    {att.thumbnail}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </AppLayout>
-    );
-  }
-
-  // Default List View (no chat selected)
-  return (
-    <AppLayout>
-      <div className="flex h-[calc(100vh-5rem)] gap-6 animate-fade-in">
-        {/* Chat List Section */}
-        <div className="flex-1 flex flex-col bg-card rounded-xl border border-border overflow-hidden">
-          {/* Header */}
-          <div className="p-4 border-b border-border">
-            <div className="flex items-center justify-between mb-4">
-              <h1 className="text-2xl font-semibold text-foreground">Chat</h1>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" className="h-9 w-9">
-                  <Search className="h-4 w-4" />
-                </Button>
-                <Button size="icon" className="h-9 w-9 bg-primary hover:bg-primary/90">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-
-            {/* Tabs */}
-            <div className="flex items-center gap-1 bg-muted rounded-full p-1 w-fit">
-              <button
-                onClick={() => setActiveTab("flows")}
-                className={cn(
-                  "px-4 py-2 rounded-full text-sm font-medium transition-all",
-                  activeTab === "flows" 
-                    ? "bg-background text-foreground shadow-sm" 
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Flows
-              </button>
-              <button
-                onClick={() => setActiveTab("clients")}
-                className={cn(
-                  "px-4 py-2 rounded-full text-sm font-medium transition-all",
-                  activeTab === "clients" 
-                    ? "bg-background text-foreground shadow-sm" 
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Clients
-              </button>
-              <button
-                onClick={() => setActiveTab("direct")}
-                className={cn(
-                  "px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2",
-                  activeTab === "direct" 
-                    ? "bg-background text-foreground shadow-sm" 
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Direct
-                <Badge className="bg-primary text-primary-foreground text-xs h-5 min-w-5 flex items-center justify-center">
-                  2
-                </Badge>
-              </button>
-            </div>
-          </div>
-
-          {/* Search */}
-          <div className="p-4 border-b border-border">
+      <div className="flex h-[calc(100vh-5rem)] gap-0 animate-fade-in">
+        {/* Compact Chat List */}
+        <div className="w-72 bg-card border-r border-border flex flex-col transition-all duration-300 animate-fade-in">
+          {/* Search Header */}
+          <div className="p-3 border-b border-border">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Поиск чатов..."
+                placeholder="Search in your Inbox"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 h-9 text-sm bg-muted/50"
               />
             </div>
           </div>
 
-          {/* Chat List */}
+          {/* Compact Chat List */}
           <ScrollArea className="flex-1">
-            <div className="divide-y divide-border">
+            <div className="py-1">
               {mockChats.map((chat, index) => (
                 <div
                   key={chat.id}
                   onClick={() => handleSelectChat(chat)}
-                  className="flex items-center gap-3 p-4 hover:bg-muted/50 cursor-pointer transition-colors animate-fade-in"
-                  style={{ animationDelay: `${index * 50}ms` }}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-all duration-200",
+                    selectedChat.id === chat.id 
+                      ? "bg-primary/10 border-l-2 border-primary" 
+                      : "hover:bg-muted/50"
+                  )}
+                  style={{ animationDelay: `${index * 30}ms` }}
                 >
-                  <div className="relative">
-                    <Avatar className="h-12 w-12">
+                  <div className="relative flex-shrink-0">
+                    <Avatar className="h-10 w-10">
                       <AvatarImage src={chat.avatar} />
-                      <AvatarFallback className="bg-muted text-muted-foreground">
+                      <AvatarFallback className="bg-muted text-muted-foreground text-xs">
                         {chat.name.split(" ").map(n => n[0]).join("")}
                       </AvatarFallback>
                     </Avatar>
                     {chat.online && (
-                      <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-card" />
+                      <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 border-2 border-card" />
                     )}
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-medium text-foreground truncate">{chat.name}</span>
-                      <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">{chat.time}</span>
+                    <div className="flex items-center justify-between mb-0.5">
+                      <span className="font-medium text-foreground text-sm truncate">{chat.name}</span>
+                      <span className="text-[10px] text-muted-foreground whitespace-nowrap ml-2">{chat.time}</span>
                     </div>
-                    <p className="text-sm text-muted-foreground truncate">{chat.message}</p>
+                    <p className="text-xs text-muted-foreground truncate">{chat.message}</p>
                   </div>
 
                   {chat.unread > 0 && (
-                    <Badge className="bg-destructive text-destructive-foreground h-6 min-w-6 flex items-center justify-center rounded-full text-xs">
+                    <Badge className="bg-primary text-primary-foreground h-5 min-w-5 flex items-center justify-center rounded-full text-[10px]">
                       {chat.unread}
                     </Badge>
                   )}
@@ -532,242 +247,531 @@ const ClientChats = () => {
           </ScrollArea>
         </div>
 
-        {/* Filter Panel */}
-        {showFilters && (
-          <div className="w-80 bg-card rounded-xl border border-border overflow-hidden animate-fade-in flex flex-col">
-            {/* Filter Header */}
-            <div className="p-4 border-b border-border flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <SlidersHorizontal className="h-5 w-5 text-foreground" />
-                <span className="font-semibold text-foreground">Filter</span>
-              </div>
+        {/* Chat Dialog Area */}
+        <div className="flex-1 flex flex-col bg-background transition-all duration-300">
+          {/* Chat Header */}
+          <div className="h-14 px-4 border-b border-border flex items-center justify-between bg-card">
+            <div className="flex items-center gap-3">
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="h-8 w-8"
-                onClick={() => setShowFilters(false)}
+                className="h-8 w-8 mr-1"
+                onClick={handleBackToList}
               >
-                <X className="h-4 w-4" />
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <Avatar className="h-9 w-9">
+                <AvatarImage src={selectedChat.avatar} />
+                <AvatarFallback className="bg-primary/20 text-primary text-sm">
+                  {selectedChat.name.split(" ").map(n => n[0]).join("")}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h3 className="font-medium text-foreground text-sm">{selectedChat.name}</h3>
+                <p className="text-xs text-green-500 flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                  Active Now
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Paperclip className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreVertical className="h-4 w-4" />
               </Button>
             </div>
+          </div>
 
-            {/* Filter Categories */}
-            <div className="p-4 border-b border-border">
-              <div className="flex flex-wrap gap-2">
-                {filterCategories.map((cat) => {
-                  const Icon = cat.icon;
-                  const isActive = expandedCategory === cat.id;
-                  const hasFilters = hasActiveFiltersInCategory(cat.id);
-                  
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => toggleCategory(cat.id)}
+          {/* Messages Area */}
+          <ScrollArea className="flex-1 p-4">
+            <div className="space-y-4 max-w-3xl mx-auto">
+              {mockMessages.map((msg, index) => (
+                <div
+                  key={msg.id}
+                  className={cn(
+                    "flex items-end gap-2 animate-fade-in",
+                    msg.isOwn ? "justify-end" : "justify-start"
+                  )}
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  {!msg.isOwn && (
+                    <Avatar className="h-8 w-8 flex-shrink-0">
+                      <AvatarFallback className="bg-primary/20 text-primary text-xs">
+                        {selectedChat.name.split(" ").map(n => n[0]).join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                  <div className={cn("max-w-[70%]", msg.isOwn && "order-1")}>
+                    <div
                       className={cn(
-                        "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                        isActive 
-                          ? "bg-primary text-primary-foreground" 
-                          : hasFilters
-                            ? "bg-primary/20 text-primary border border-primary/30"
-                            : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
+                        "px-4 py-2.5 rounded-2xl text-sm",
+                        msg.isOwn
+                          ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-br-md"
+                          : "bg-muted text-foreground rounded-bl-md",
+                        msg.isFile && "flex items-center gap-2"
                       )}
                     >
-                      <Icon className="h-3.5 w-3.5" />
-                      {cat.label}
-                    </button>
-                  );
-                })}
-              </div>
+                      {msg.isFile && <FileText className="h-4 w-4" />}
+                      {msg.text}
+                    </div>
+                    <p className={cn(
+                      "text-[10px] text-muted-foreground mt-1",
+                      msg.isOwn ? "text-right" : "text-left"
+                    )}>
+                      {msg.time}
+                    </p>
+                  </div>
+                  {msg.isOwn && (
+                    <Avatar className="h-8 w-8 flex-shrink-0">
+                      <AvatarFallback className="bg-secondary text-secondary-foreground text-xs">
+                        ME
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                </div>
+              ))}
             </div>
+          </ScrollArea>
 
-            {/* Filter Options */}
-            <ScrollArea className="flex-1">
-              <div className="p-4 space-y-6">
-                {/* Sales Range Inputs */}
-                {expandedCategory === "sales" && (
-                  <div className="space-y-4 animate-fade-in">
-                    <div>
-                      <label className="text-sm font-medium text-primary mb-3 block">Сумма продаж</label>
-                      <div className="flex items-center gap-2">
-                        <div className="relative flex-1">
-                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            placeholder="Min: $400"
-                            value={salesMin}
-                            onChange={(e) => setSalesMin(e.target.value)}
-                            className="pl-9"
-                          />
-                        </div>
-                        <span className="text-muted-foreground">—</span>
-                        <div className="relative flex-1">
-                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            placeholder="Max: $800"
-                            value={salesMax}
-                            onChange={(e) => setSalesMax(e.target.value)}
-                            className="pl-9"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="text-sm font-medium text-primary mb-3 block">Средняя покупка</label>
-                      <div className="flex items-center gap-2">
-                        <div className="relative flex-1">
-                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            placeholder="Min: $400"
-                            value={avgMin}
-                            onChange={(e) => setAvgMin(e.target.value)}
-                            className="pl-9"
-                          />
-                        </div>
-                        <span className="text-muted-foreground">—</span>
-                        <div className="relative flex-1">
-                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            placeholder="Max: $800"
-                            value={avgMax}
-                            onChange={(e) => setAvgMax(e.target.value)}
-                            className="pl-9"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="pt-2 space-y-2">
-                      {filterOptions.sales.map((option) => (
-                        <button
-                          key={option.id}
-                          onClick={() => toggleFilter(option.id)}
-                          className={cn(
-                            "w-full text-left px-3 py-2 rounded-lg text-sm transition-all",
-                            activeFilters.has(option.id)
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted/50 text-foreground hover:bg-muted"
-                          )}
-                        >
-                          {option.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Status Options */}
-                {expandedCategory === "status" && (
-                  <div className="space-y-2 animate-fade-in">
-                    <label className="text-sm font-medium text-primary mb-3 block">Статус клиента</label>
-                    {filterOptions.status.map((option) => (
-                      <button
-                        key={option.id}
-                        onClick={() => toggleFilter(option.id)}
-                        className={cn(
-                          "w-full text-left px-3 py-2 rounded-lg text-sm transition-all",
-                          activeFilters.has(option.id)
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted/50 text-foreground hover:bg-muted"
-                        )}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Category Options */}
-                {expandedCategory === "category" && (
-                  <div className="space-y-2 animate-fade-in">
-                    <label className="text-sm font-medium text-primary mb-3 block">Категории</label>
-                    {filterOptions.category.map((option) => (
-                      <button
-                        key={option.id}
-                        onClick={() => toggleFilter(option.id)}
-                        className={cn(
-                          "w-full text-left px-3 py-2 rounded-lg text-sm transition-all",
-                          activeFilters.has(option.id)
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted/50 text-foreground hover:bg-muted"
-                        )}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Date Options */}
-                {expandedCategory === "date" && (
-                  <div className="space-y-2 animate-fade-in">
-                    <label className="text-sm font-medium text-primary mb-3 block">Дата последней активности</label>
-                    {filterOptions.date.map((option) => (
-                      <button
-                        key={option.id}
-                        onClick={() => toggleFilter(option.id)}
-                        className={cn(
-                          "w-full text-left px-3 py-2 rounded-lg text-sm transition-all",
-                          activeFilters.has(option.id)
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted/50 text-foreground hover:bg-muted"
-                        )}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Stage Options */}
-                {expandedCategory === "stage" && (
-                  <div className="space-y-2 animate-fade-in">
-                    <label className="text-sm font-medium text-primary mb-3 block">Этап продажи</label>
-                    {filterOptions.stage.map((option) => (
-                      <button
-                        key={option.id}
-                        onClick={() => toggleFilter(option.id)}
-                        className={cn(
-                          "w-full text-left px-3 py-2 rounded-lg text-sm transition-all",
-                          activeFilters.has(option.id)
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted/50 text-foreground hover:bg-muted"
-                        )}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </ScrollArea>
-
-            {/* Clear Filters */}
-            {activeFilters.size > 0 && (
-              <div className="p-4 border-t border-border">
+          {/* Message Input */}
+          <div className="p-4 border-t border-border bg-card">
+            <div className="flex items-center gap-3 max-w-3xl mx-auto">
+              <div className="flex-1 relative">
+                <Input
+                  placeholder="Type your message..."
+                  value={messageInput}
+                  onChange={(e) => setMessageInput(e.target.value)}
+                  className="pr-10 h-11 bg-muted/50"
+                />
                 <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={clearFilters}
+                  variant="ghost" 
+                  size="icon" 
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
                 >
-                  Сбросить фильтры ({activeFilters.size})
+                  <Paperclip className="h-4 w-4 text-muted-foreground" />
                 </Button>
               </div>
-            )}
+              <Button size="icon" className="h-11 w-11 bg-primary hover:bg-primary/90">
+                <Send className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
-        )}
+        </div>
 
-        {/* Toggle Filter Button (when hidden) */}
-        {!showFilters && (
-          <Button
-            variant="outline"
-            size="icon"
-            className="fixed right-6 top-24 h-10 w-10"
-            onClick={() => setShowFilters(true)}
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-          </Button>
-        )}
+        {/* Right Info Panel - max 20% width */}
+        <div className="w-[20%] min-w-[200px] max-w-[280px] bg-card border-l border-border flex flex-col transition-all duration-300 animate-fade-in">
+          {/* Profile Section */}
+          <div className="p-4 flex flex-col items-center border-b border-border">
+            <Avatar className="h-20 w-20 mb-3">
+              <AvatarImage src={selectedChat.avatar} />
+              <AvatarFallback className="bg-primary/20 text-primary text-xl">
+                {selectedChat.name.split(" ").map(n => n[0]).join("")}
+              </AvatarFallback>
+            </Avatar>
+            <h3 className="font-semibold text-foreground text-center">{selectedChat.name}</h3>
+            <p className="text-sm text-green-500">Active Now</p>
+            
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2 mt-4">
+              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-muted">
+                <Star className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-muted">
+                <Clock className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-muted">
+                <Phone className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-muted">
+                <Video className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Attachments Section */}
+          <div className="p-4 flex-1">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-medium text-foreground">Attachement</h4>
+              <Badge variant="secondary" className="h-5 text-xs">9</Badge>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-2">
+              {mockAttachments.map((att, index) => (
+                <div 
+                  key={att.id}
+                  className="aspect-square rounded-lg bg-muted flex items-center justify-center text-2xl hover:bg-muted/80 cursor-pointer transition-colors animate-fade-in"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  {att.thumbnail}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
+    );
+  }
+
+  // Default List View (no chat selected)
+  return (
+    <div className="flex h-[calc(100vh-5rem)] gap-6 animate-fade-in">
+      {/* Chat List Section */}
+      <div className="flex-1 flex flex-col bg-card rounded-xl border border-border overflow-hidden">
+        {/* Header */}
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-2xl font-semibold text-foreground">Chat</h1>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" className="h-9 w-9">
+                <Search className="h-4 w-4" />
+              </Button>
+              <Button size="icon" className="h-9 w-9 bg-primary hover:bg-primary/90">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="flex items-center gap-1 bg-muted rounded-full p-1 w-fit">
+            <button
+              onClick={() => setActiveTab("flows")}
+              className={cn(
+                "px-4 py-2 rounded-full text-sm font-medium transition-all",
+                activeTab === "flows" 
+                  ? "bg-background text-foreground shadow-sm" 
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Flows
+            </button>
+            <button
+              onClick={() => setActiveTab("clients")}
+              className={cn(
+                "px-4 py-2 rounded-full text-sm font-medium transition-all",
+                activeTab === "clients" 
+                  ? "bg-background text-foreground shadow-sm" 
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Clients
+            </button>
+            <button
+              onClick={() => setActiveTab("direct")}
+              className={cn(
+                "px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-2",
+                activeTab === "direct" 
+                  ? "bg-background text-foreground shadow-sm" 
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Direct
+              <Badge className="bg-primary text-primary-foreground text-xs h-5 min-w-5 flex items-center justify-center">
+                2
+              </Badge>
+            </button>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="p-4 border-b border-border">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Поиск чатов..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+        </div>
+
+        {/* Chat List */}
+        <ScrollArea className="flex-1">
+          <div className="divide-y divide-border">
+            {mockChats.map((chat, index) => (
+              <div
+                key={chat.id}
+                onClick={() => handleSelectChat(chat)}
+                className="flex items-center gap-3 p-4 hover:bg-muted/50 cursor-pointer transition-colors animate-fade-in"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <div className="relative">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={chat.avatar} />
+                    <AvatarFallback className="bg-muted text-muted-foreground">
+                      {chat.name.split(" ").map(n => n[0]).join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  {chat.online && (
+                    <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-card" />
+                  )}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-medium text-foreground truncate">{chat.name}</span>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">{chat.time}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground truncate">{chat.message}</p>
+                </div>
+
+                {chat.unread > 0 && (
+                  <Badge className="bg-destructive text-destructive-foreground h-6 min-w-6 flex items-center justify-center rounded-full text-xs">
+                    {chat.unread}
+                  </Badge>
+                )}
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
+
+      {/* Filter Panel */}
+      {showFilters && (
+        <div className="w-80 bg-card rounded-xl border border-border overflow-hidden animate-fade-in flex flex-col">
+          {/* Filter Header */}
+          <div className="p-4 border-b border-border flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="h-5 w-5 text-foreground" />
+              <span className="font-semibold text-foreground">Filter</span>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8"
+              onClick={() => setShowFilters(false)}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+
+          {/* Filter Categories */}
+          <div className="p-4 border-b border-border">
+            <div className="flex flex-wrap gap-2">
+              {filterCategories.map((cat) => {
+                const Icon = cat.icon;
+                const isActive = expandedCategory === cat.id;
+                const hasFilters = hasActiveFiltersInCategory(cat.id);
+                
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => toggleCategory(cat.id)}
+                    className={cn(
+                      "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+                      isActive 
+                        ? "bg-primary text-primary-foreground" 
+                        : hasFilters
+                          ? "bg-primary/20 text-primary border border-primary/30"
+                          : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
+                    )}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {cat.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Filter Options */}
+          <ScrollArea className="flex-1">
+            <div className="p-4 space-y-6">
+              {/* Sales Range Inputs */}
+              {expandedCategory === "sales" && (
+                <div className="space-y-4 animate-fade-in">
+                  <div>
+                    <label className="text-sm font-medium text-primary mb-3 block">Сумма продаж</label>
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Min: $400"
+                          value={salesMin}
+                          onChange={(e) => setSalesMin(e.target.value)}
+                          className="pl-9"
+                        />
+                      </div>
+                      <span className="text-muted-foreground">—</span>
+                      <div className="relative flex-1">
+                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Max: $800"
+                          value={salesMax}
+                          onChange={(e) => setSalesMax(e.target.value)}
+                          className="pl-9"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-primary mb-3 block">Средняя покупка</label>
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Min: $400"
+                          value={avgMin}
+                          onChange={(e) => setAvgMin(e.target.value)}
+                          className="pl-9"
+                        />
+                      </div>
+                      <span className="text-muted-foreground">—</span>
+                      <div className="relative flex-1">
+                        <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Max: $800"
+                          value={avgMax}
+                          onChange={(e) => setAvgMax(e.target.value)}
+                          className="pl-9"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 space-y-2">
+                    {filterOptions.sales.map((option) => (
+                      <button
+                        key={option.id}
+                        onClick={() => toggleFilter(option.id)}
+                        className={cn(
+                          "w-full text-left px-3 py-2 rounded-lg text-sm transition-all",
+                          activeFilters.has(option.id)
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted/50 text-foreground hover:bg-muted"
+                        )}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Status Options */}
+              {expandedCategory === "status" && (
+                <div className="space-y-2 animate-fade-in">
+                  <label className="text-sm font-medium text-primary mb-3 block">Статус клиента</label>
+                  {filterOptions.status.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => toggleFilter(option.id)}
+                      className={cn(
+                        "w-full text-left px-3 py-2 rounded-lg text-sm transition-all",
+                        activeFilters.has(option.id)
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted/50 text-foreground hover:bg-muted"
+                      )}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Category Options */}
+              {expandedCategory === "category" && (
+                <div className="space-y-2 animate-fade-in">
+                  <label className="text-sm font-medium text-primary mb-3 block">Категории</label>
+                  {filterOptions.category.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => toggleFilter(option.id)}
+                      className={cn(
+                        "w-full text-left px-3 py-2 rounded-lg text-sm transition-all",
+                        activeFilters.has(option.id)
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted/50 text-foreground hover:bg-muted"
+                      )}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Date Options */}
+              {expandedCategory === "date" && (
+                <div className="space-y-2 animate-fade-in">
+                  <label className="text-sm font-medium text-primary mb-3 block">Дата последней активности</label>
+                  {filterOptions.date.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => toggleFilter(option.id)}
+                      className={cn(
+                        "w-full text-left px-3 py-2 rounded-lg text-sm transition-all",
+                        activeFilters.has(option.id)
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted/50 text-foreground hover:bg-muted"
+                      )}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Stage Options */}
+              {expandedCategory === "stage" && (
+                <div className="space-y-2 animate-fade-in">
+                  <label className="text-sm font-medium text-primary mb-3 block">Этап продажи</label>
+                  {filterOptions.stage.map((option) => (
+                    <button
+                      key={option.id}
+                      onClick={() => toggleFilter(option.id)}
+                      className={cn(
+                        "w-full text-left px-3 py-2 rounded-lg text-sm transition-all",
+                        activeFilters.has(option.id)
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted/50 text-foreground hover:bg-muted"
+                      )}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+
+          {/* Clear Filters */}
+          {activeFilters.size > 0 && (
+            <div className="p-4 border-t border-border">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={clearFilters}
+              >
+                Сбросить фильтры ({activeFilters.size})
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Toggle Filter Button (when hidden) */}
+      {!showFilters && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="fixed right-6 top-24 h-10 w-10"
+          onClick={() => setShowFilters(true)}
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+        </Button>
+      )}
+    </div>
+  );
+};
+
+// Main component that wraps content in AppLayout (which provides SidebarProvider)
+const ClientChats = () => {
+  return (
+    <AppLayout>
+      <ClientChatsContent />
     </AppLayout>
   );
 };

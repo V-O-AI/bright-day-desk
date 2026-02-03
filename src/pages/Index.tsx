@@ -1,11 +1,179 @@
+import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { MessageCircle } from "lucide-react";
 import { CashFlowChart } from "@/components/charts/CashFlowChart";
 import { WarehousePieChart } from "@/components/charts/WarehousePieChart";
+import { GettingStartedCard } from "@/components/dashboard/GettingStartedCard";
+import { PreviewCard } from "@/components/dashboard/PreviewCard";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const Index = () => {
+  // Temporary toggle for demo - remove when backend logic is added
+  const [isEmptyState, setIsEmptyState] = useState(true);
+
+  const handleConnect = (optionId: string) => {
+    console.log("Connect:", optionId);
+    // Backend integration logic here
+  };
+
+  if (isEmptyState) {
+    return (
+      <AppLayout>
+        {/* Demo toggle - remove in production */}
+        <div className="mb-4 flex items-center gap-2 p-2 bg-muted/50 rounded-lg w-fit">
+          <Switch
+            id="empty-state"
+            checked={isEmptyState}
+            onCheckedChange={setIsEmptyState}
+          />
+          <Label htmlFor="empty-state" className="text-xs text-muted-foreground">
+            Показать пустое состояние (для демо)
+          </Label>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-full">
+          {/* Левая колонка - 3/5 ширины */}
+          <div className="lg:col-span-3 flex flex-col gap-6">
+            {/* Getting Started Card */}
+            <GettingStartedCard onConnect={handleConnect} />
+
+            {/* Preview: Cash Flow Trend */}
+            <PreviewCard 
+              className="opacity-0 animate-fade-in-up"
+              style={{ minHeight: "200px", animationDelay: "50ms" }}
+              message="Финансовые данные появятся после подключения"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold">Cash Flow Trend</h3>
+                  <div className="flex gap-4 text-sm">
+                    <span className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-primary"></span>
+                      Income
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "hsl(330, 80%, 65%)" }}></span>
+                      Expense
+                    </span>
+                  </div>
+                  <div className="flex gap-1">
+                    <button className="px-3 py-1 bg-primary text-primary-foreground rounded-lg text-sm">1Y</button>
+                    <button className="px-3 py-1 bg-muted rounded-lg text-sm">6M</button>
+                    <button className="px-3 py-1 bg-muted rounded-lg text-sm">1M</button>
+                  </div>
+                </div>
+                <div className="h-[140px]">
+                  <CashFlowChart />
+                </div>
+              </div>
+            </PreviewCard>
+
+            {/* Preview: Manager Chat */}
+            <PreviewCard 
+              className="flex-1 opacity-0 animate-fade-in-up"
+              style={{ minHeight: "280px", animationDelay: "100ms" }}
+              message="Подключите Telegram для общения с клиентами"
+            >
+              <div className="p-6 flex flex-col h-full">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
+                    <span className="text-muted-foreground">👤</span>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold">Менеджер Улетс</h4>
+                    <p className="text-sm text-muted-foreground">Здравствуйте, команда агента готова к заботе о любой услуге!</p>
+                  </div>
+                </div>
+                <div className="flex-1 mt-4 space-y-3 min-h-[120px]">
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-muted flex-shrink-0"></div>
+                    <div className="bg-muted rounded-xl px-4 py-2 text-sm max-w-[80%]">
+                      <p className="text-muted-foreground">Добрый день! Чем могу помочь?</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <input 
+                    type="text" 
+                    placeholder="Добавь 5 футболок на склад..." 
+                    className="w-full bg-muted rounded-xl px-4 py-3 text-sm placeholder:text-muted-foreground"
+                    disabled
+                  />
+                </div>
+              </div>
+            </PreviewCard>
+          </div>
+
+          {/* Правая колонка - 2/5 ширины */}
+          <div className="lg:col-span-2 flex flex-col gap-6">
+            {/* Preview: Recent Chats */}
+            <PreviewCard 
+              className="opacity-0 animate-fade-in-up"
+              style={{ animationDelay: "150ms" }}
+              message="История чатов появится после подключения Telegram"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold">Последние 3 чата с клиентами</h3>
+                  <button className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm">
+                    <MessageCircle className="h-4 w-4" />
+                    Chat
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                      <span className="font-medium">Никнейм клиента</span>
+                      <span className="text-muted-foreground text-sm">Тип пользователя</span>
+                      <button className="bg-foreground text-background px-4 py-1 rounded-lg text-sm">
+                        кнопка
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </PreviewCard>
+
+            {/* Preview: Warehouse Data */}
+            <PreviewCard 
+              className="flex-1 opacity-0 animate-fade-in-up"
+              style={{ animationDelay: "200ms" }}
+              message="Данные склада появятся после подключения"
+            >
+              <div className="p-6 h-full">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Retention</p>
+                    <h3 className="font-semibold">Данные склада</h3>
+                    <p className="text-xs text-muted-foreground">Conversion Rate</p>
+                  </div>
+                </div>
+                <div className="h-[200px]">
+                  <WarehousePieChart />
+                </div>
+              </div>
+            </PreviewCard>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
   return (
     <AppLayout>
+      {/* Demo toggle - remove in production */}
+      <div className="mb-4 flex items-center gap-2 p-2 bg-muted/50 rounded-lg w-fit">
+        <Switch
+          id="empty-state"
+          checked={isEmptyState}
+          onCheckedChange={setIsEmptyState}
+        />
+        <Label htmlFor="empty-state" className="text-xs text-muted-foreground">
+          Показать пустое состояние (для демо)
+        </Label>
+      </div>
+
       {/* Main Grid - 2 колонки, пропорции примерно 60/40 */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-full">
         

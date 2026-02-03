@@ -57,6 +57,13 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        chart: {
+          income: "hsl(var(--chart-income))",
+          expense: "hsl(var(--chart-expense))",
+          clothing: "hsl(var(--chart-clothing))",
+          shoes: "hsl(var(--chart-shoes))",
+          kids: "hsl(var(--chart-kids))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

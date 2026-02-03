@@ -1,5 +1,7 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { MessageCircle } from "lucide-react";
+import { CashFlowChart } from "@/components/charts/CashFlowChart";
+import { WarehousePieChart } from "@/components/charts/WarehousePieChart";
 
 const Index = () => {
   return (
@@ -10,35 +12,35 @@ const Index = () => {
         {/* Левая колонка - 3/5 ширины */}
         <div className="lg:col-span-3 flex flex-col gap-6">
           
-          {/* Блок графика Cash Flow Trend */}
-          <div className="bg-card rounded-2xl p-6 flex-1 min-h-[300px] border border-border">
+          {/* Блок графика Cash Flow Trend - уменьшен */}
+          <div className="bg-card rounded-2xl p-6 border border-border" style={{ minHeight: "200px" }}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold">Cash Flow Trend</h3>
               <div className="flex gap-4 text-sm">
                 <span className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-primary"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-primary"></span>
                   Income
                 </span>
                 <span className="flex items-center gap-2">
-                  <span className="w-3 h-3 rounded-full bg-pink-400"></span>
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "hsl(330, 80%, 65%)" }}></span>
                   Expense
                 </span>
               </div>
               <div className="flex gap-1">
                 <button className="px-3 py-1 bg-primary text-primary-foreground rounded-lg text-sm">1Y</button>
                 <button className="px-3 py-1 bg-muted rounded-lg text-sm">6M</button>
-                <button className="px-3 py-1 bg-muted rounded-lg text-sm">1Y</button>
+                <button className="px-3 py-1 bg-muted rounded-lg text-sm">1M</button>
               </div>
             </div>
-            <div className="flex-1 flex items-center justify-center text-muted-foreground">
-              [Блок графика]
+            <div className="h-[140px]">
+              <CashFlowChart />
             </div>
           </div>
 
-          {/* Блок с менеджером */}
-          <div className="bg-card rounded-2xl p-6 border border-border">
+          {/* Блок с менеджером - увеличен в 2 раза */}
+          <div className="bg-card rounded-2xl p-6 border border-border flex-1 flex flex-col" style={{ minHeight: "280px" }}>
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
                 <span className="text-muted-foreground">👤</span>
               </div>
               <div className="flex-1">
@@ -46,6 +48,28 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">Здравствуйте, команда агента готова к заботе о любой услуге!</p>
               </div>
             </div>
+            
+            {/* Расширенная область истории сообщений */}
+            <div className="flex-1 mt-4 overflow-y-auto space-y-3 min-h-[120px]">
+              <div className="flex gap-3">
+                <div className="w-8 h-8 rounded-lg bg-muted flex-shrink-0"></div>
+                <div className="bg-muted rounded-xl px-4 py-2 text-sm max-w-[80%]">
+                  <p className="text-muted-foreground">Добрый день! Чем могу помочь?</p>
+                </div>
+              </div>
+              <div className="flex gap-3 justify-end">
+                <div className="bg-primary/10 rounded-xl px-4 py-2 text-sm max-w-[80%]">
+                  <p>Нужно добавить товары на склад</p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div className="w-8 h-8 rounded-lg bg-muted flex-shrink-0"></div>
+                <div className="bg-muted rounded-xl px-4 py-2 text-sm max-w-[80%]">
+                  <p className="text-muted-foreground">Конечно, напишите какие товары нужно добавить.</p>
+                </div>
+              </div>
+            </div>
+
             <div className="flex items-center gap-2 mt-4">
               <div className="w-8 h-8 rounded bg-muted"></div>
               <div className="w-8 h-8 rounded bg-muted"></div>
@@ -88,7 +112,7 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Блок данных склада */}
+          {/* Блок данных склада с круговой диаграммой */}
           <div className="bg-card rounded-2xl p-6 border border-border flex-1">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -97,13 +121,8 @@ const Index = () => {
                 <p className="text-xs text-muted-foreground">Conversion Rate</p>
               </div>
             </div>
-            <div className="flex-1 flex items-center justify-center">
-              {/* Placeholder для круговой диаграммы */}
-              <div className="w-40 h-40 rounded-full border-8 border-primary relative">
-                <div className="absolute inset-2 rounded-full border-8 border-pink-400"></div>
-                <div className="absolute inset-4 rounded-full border-8 border-yellow-400"></div>
-                <div className="absolute inset-6 rounded-full border-8 border-blue-400"></div>
-              </div>
+            <div className="h-[200px]">
+              <WarehousePieChart />
             </div>
           </div>
         </div>

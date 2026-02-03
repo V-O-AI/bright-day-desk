@@ -44,6 +44,13 @@
     --sidebar-border: 240 10% 18%;
     --sidebar-ring: 258 90% 66%;
     --sidebar-muted: 240 5% 50%;
+
+    /* Chart colors */
+    --chart-income: 258 90% 66%;
+    --chart-expense: 330 80% 65%;
+    --chart-clothing: 258 90% 66%;
+    --chart-shoes: 330 80% 65%;
+    --chart-kids: 45 90% 55%;
   }
 
   .dark {
@@ -84,6 +91,13 @@
     --sidebar-border: 240 10% 16%;
     --sidebar-ring: 258 90% 66%;
     --sidebar-muted: 240 5% 50%;
+
+    /* Chart colors */
+    --chart-income: 258 90% 66%;
+    --chart-expense: 330 80% 65%;
+    --chart-clothing: 258 90% 66%;
+    --chart-shoes: 330 80% 65%;
+    --chart-kids: 45 90% 55%;
   }
 }
 

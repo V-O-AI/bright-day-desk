@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   Search, 
   Plus, 
@@ -14,22 +15,53 @@ import {
   User,
   Tag,
   Calendar,
-  TrendingUp
+  TrendingUp,
+  ArrowLeft,
+  Send,
+  Paperclip,
+  Phone,
+  Video,
+  MoreVertical,
+  Star,
+  Clock,
+  FileText,
+  Image as ImageIcon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "@/components/ui/sidebar";
 
 // Mock data for client chats
 const mockChats = [
   { id: 1, name: "Andreana Viola", message: "Hi, How are you today?", time: "1m ago", unread: 2, online: true, avatar: "" },
   { id: 2, name: "Михаил Петров", message: "Когда будет доставка?", time: "5m ago", unread: 1, online: false, avatar: "" },
   { id: 3, name: "Елена Сидорова", message: "Спасибо за помощь!", time: "12m ago", unread: 0, online: true, avatar: "" },
-  { id: 4, name: "Andreana Viola", message: "Hi, How are you today?", time: "1m ago", unread: 2, online: false, avatar: "" },
+  { id: 4, name: "Pablo Martinez", message: "Moved thing. Second third onto...", time: "Just Now", unread: 5, online: false, avatar: "" },
   { id: 5, name: "Алексей Козлов", message: "Хочу оформить заказ", time: "25m ago", unread: 3, online: true, avatar: "" },
-  { id: 6, name: "Andreana Viola", message: "Hi, How are you today?", time: "1m ago", unread: 2, online: false, avatar: "" },
+  { id: 6, name: "Pink Woman", message: "Yes I'm Really excited", time: "08:50AM", unread: 2, online: true, avatar: "" },
   { id: 7, name: "Ольга Новикова", message: "Есть вопрос по товару", time: "1h ago", unread: 0, online: false, avatar: "" },
-  { id: 8, name: "Andreana Viola", message: "Hi, How are you today?", time: "1m ago", unread: 2, online: true, avatar: "" },
-  { id: 9, name: "Дмитрий Волков", message: "Можно узнать статус?", time: "2h ago", unread: 1, online: false, avatar: "" },
-  { id: 10, name: "Andreana Viola", message: "Hi, How are you today?", time: "1m ago", unread: 2, online: false, avatar: "" },
+  { id: 8, name: "Дмитрий Волков", message: "Можно узнать статус?", time: "2h ago", unread: 1, online: false, avatar: "" },
+];
+
+// Mock messages for selected chat
+const mockMessages = [
+  { id: 1, text: "Said, one let. Morning them, said. So were. Over after image. Given green, after evening won't days set darkness void.", time: "12:45 PM", isOwn: false },
+  { id: 2, text: "Hey AAE, I just saw your message right now. so we are going on the trip right?", time: "12:46 PM", isOwn: true },
+  { id: 3, text: "Yes I'm Really excited", time: "12:49 PM", isOwn: false },
+  { id: 4, text: "Hey AAE, I just saw your message right now.so we are going on the trip right?", time: "12:50 PM", isOwn: true },
+  { id: 5, text: "Moved thing.pdf", time: "12:51 PM", isOwn: false, isFile: true },
+  { id: 6, text: "Thanks I got it. pack your things we will mouve out early in the morning", time: "12:52 PM", isOwn: true },
+];
+
+// Mock attachments
+const mockAttachments = [
+  { id: 1, type: "image", thumbnail: "🌅" },
+  { id: 2, type: "image", thumbnail: "🍕" },
+  { id: 3, type: "image", thumbnail: "✈️" },
+  { id: 4, type: "image", thumbnail: "🔥" },
+  { id: 5, type: "image", thumbnail: "🎵" },
+  { id: 6, type: "image", thumbnail: "🎮" },
+  { id: 7, type: "image", thumbnail: "📷" },
+  { id: 8, type: "image", thumbnail: "🎨" },
 ];
 
 type FilterCategory = "sales" | "status" | "category" | "date" | "stage";
@@ -79,6 +111,13 @@ const filterOptions: Record<FilterCategory, FilterOption[]> = {
   ],
 };
 
+interface SelectedChat {
+  id: number;
+  name: string;
+  online: boolean;
+  avatar: string;
+}
+
 const ClientChats = () => {
   const [activeTab, setActiveTab] = useState<"flows" | "clients" | "direct">("direct");
   const [showFilters, setShowFilters] = useState(true);
@@ -89,6 +128,19 @@ const ClientChats = () => {
   const [salesMax, setSalesMax] = useState("");
   const [avgMin, setAvgMin] = useState("");
   const [avgMax, setAvgMax] = useState("");
+  const [selectedChat, setSelectedChat] = useState<SelectedChat | null>(null);
+  const [messageInput, setMessageInput] = useState("");
+  
+  const { setOpen } = useSidebar();
+
+  // Collapse sidebar when chat is selected
+  useEffect(() => {
+    if (selectedChat) {
+      setOpen(false);
+    } else {
+      setOpen(true);
+    }
+  }, [selectedChat, setOpen]);
 
   const toggleFilter = (filterId: string) => {
     setActiveFilters(prev => {
@@ -118,6 +170,254 @@ const ClientChats = () => {
     return filterOptions[categoryId].some(opt => activeFilters.has(opt.id));
   };
 
+  const handleSelectChat = (chat: typeof mockChats[0]) => {
+    setSelectedChat({
+      id: chat.id,
+      name: chat.name,
+      online: chat.online,
+      avatar: chat.avatar
+    });
+  };
+
+  const handleBackToList = () => {
+    setSelectedChat(null);
+  };
+
+  // Chat View Mode (when a chat is selected)
+  if (selectedChat) {
+    return (
+      <AppLayout>
+        <div className="flex h-[calc(100vh-5rem)] gap-0 animate-fade-in">
+          {/* Compact Chat List */}
+          <div className="w-72 bg-card border-r border-border flex flex-col transition-all duration-300 animate-fade-in">
+            {/* Search Header */}
+            <div className="p-3 border-b border-border">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search in your Inbox"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 h-9 text-sm bg-muted/50"
+                />
+              </div>
+            </div>
+
+            {/* Compact Chat List */}
+            <ScrollArea className="flex-1">
+              <div className="py-1">
+                {mockChats.map((chat, index) => (
+                  <div
+                    key={chat.id}
+                    onClick={() => handleSelectChat(chat)}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2.5 cursor-pointer transition-all duration-200",
+                      selectedChat.id === chat.id 
+                        ? "bg-primary/10 border-l-2 border-primary" 
+                        : "hover:bg-muted/50"
+                    )}
+                    style={{ animationDelay: `${index * 30}ms` }}
+                  >
+                    <div className="relative flex-shrink-0">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={chat.avatar} />
+                        <AvatarFallback className="bg-muted text-muted-foreground text-xs">
+                          {chat.name.split(" ").map(n => n[0]).join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                      {chat.online && (
+                        <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-green-500 border-2 border-card" />
+                      )}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="font-medium text-foreground text-sm truncate">{chat.name}</span>
+                        <span className="text-[10px] text-muted-foreground whitespace-nowrap ml-2">{chat.time}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate">{chat.message}</p>
+                    </div>
+
+                    {chat.unread > 0 && (
+                      <Badge className="bg-primary text-primary-foreground h-5 min-w-5 flex items-center justify-center rounded-full text-[10px]">
+                        {chat.unread}
+                      </Badge>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
+
+          {/* Chat Dialog Area */}
+          <div className="flex-1 flex flex-col bg-background transition-all duration-300">
+            {/* Chat Header */}
+            <div className="h-14 px-4 border-b border-border flex items-center justify-between bg-card">
+              <div className="flex items-center gap-3">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 mr-1"
+                  onClick={handleBackToList}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={selectedChat.avatar} />
+                  <AvatarFallback className="bg-primary/20 text-primary text-sm">
+                    {selectedChat.name.split(" ").map(n => n[0]).join("")}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="font-medium text-foreground text-sm">{selectedChat.name}</h3>
+                  <p className="text-xs text-green-500 flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                    Active Now
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-1">
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Paperclip className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Messages Area */}
+            <ScrollArea className="flex-1 p-4">
+              <div className="space-y-4 max-w-3xl mx-auto">
+                {mockMessages.map((msg, index) => (
+                  <div
+                    key={msg.id}
+                    className={cn(
+                      "flex items-end gap-2 animate-fade-in",
+                      msg.isOwn ? "justify-end" : "justify-start"
+                    )}
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    {!msg.isOwn && (
+                      <Avatar className="h-8 w-8 flex-shrink-0">
+                        <AvatarFallback className="bg-primary/20 text-primary text-xs">
+                          {selectedChat.name.split(" ").map(n => n[0]).join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                    <div className={cn("max-w-[70%]", msg.isOwn && "order-1")}>
+                      <div
+                        className={cn(
+                          "px-4 py-2.5 rounded-2xl text-sm",
+                          msg.isOwn
+                            ? "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-br-md"
+                            : "bg-muted text-foreground rounded-bl-md",
+                          msg.isFile && "flex items-center gap-2"
+                        )}
+                      >
+                        {msg.isFile && <FileText className="h-4 w-4" />}
+                        {msg.text}
+                      </div>
+                      <p className={cn(
+                        "text-[10px] text-muted-foreground mt-1",
+                        msg.isOwn ? "text-right" : "text-left"
+                      )}>
+                        {msg.time}
+                      </p>
+                    </div>
+                    {msg.isOwn && (
+                      <Avatar className="h-8 w-8 flex-shrink-0">
+                        <AvatarFallback className="bg-secondary text-secondary-foreground text-xs">
+                          ME
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+
+            {/* Message Input */}
+            <div className="p-4 border-t border-border bg-card">
+              <div className="flex items-center gap-3 max-w-3xl mx-auto">
+                <div className="flex-1 relative">
+                  <Input
+                    placeholder="Search in your Inbox"
+                    value={messageInput}
+                    onChange={(e) => setMessageInput(e.target.value)}
+                    className="pr-10 h-11 bg-muted/50"
+                  />
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
+                  >
+                    <Paperclip className="h-4 w-4 text-muted-foreground" />
+                  </Button>
+                </div>
+                <Button size="icon" className="h-11 w-11 bg-primary hover:bg-primary/90">
+                  <Send className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Info Panel - max 20% width */}
+          <div className="w-[20%] min-w-[200px] max-w-[280px] bg-card border-l border-border flex flex-col transition-all duration-300 animate-fade-in">
+            {/* Profile Section */}
+            <div className="p-4 flex flex-col items-center border-b border-border">
+              <Avatar className="h-20 w-20 mb-3">
+                <AvatarImage src={selectedChat.avatar} />
+                <AvatarFallback className="bg-primary/20 text-primary text-xl">
+                  {selectedChat.name.split(" ").map(n => n[0]).join("")}
+                </AvatarFallback>
+              </Avatar>
+              <h3 className="font-semibold text-foreground text-center">{selectedChat.name}</h3>
+              <p className="text-sm text-green-500">Active Now</p>
+              
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2 mt-4">
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-muted">
+                  <Star className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-muted">
+                  <Clock className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-muted">
+                  <Phone className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full bg-muted">
+                  <Video className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Attachments Section */}
+            <div className="p-4 flex-1">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="text-sm font-medium text-foreground">Attachement</h4>
+                <Badge variant="secondary" className="h-5 text-xs">9</Badge>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-2">
+                {mockAttachments.map((att, index) => (
+                  <div 
+                    key={att.id}
+                    className="aspect-square rounded-lg bg-muted flex items-center justify-center text-2xl hover:bg-muted/80 cursor-pointer transition-colors animate-fade-in"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    {att.thumbnail}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // Default List View (no chat selected)
   return (
     <AppLayout>
       <div className="flex h-[calc(100vh-5rem)] gap-6 animate-fade-in">
@@ -197,6 +497,7 @@ const ClientChats = () => {
               {mockChats.map((chat, index) => (
                 <div
                   key={chat.id}
+                  onClick={() => handleSelectChat(chat)}
                   className="flex items-center gap-3 p-4 hover:bg-muted/50 cursor-pointer transition-colors animate-fade-in"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >

@@ -1,5 +1,4 @@
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
-import { PieChart as PieChartIcon } from "lucide-react";
 
 const data = [
   { name: "Детские вещи", value: 50, color: "hsl(45, 90%, 55%)" },
@@ -90,24 +89,7 @@ const renderCustomizedLabel = ({
   );
 };
 
-interface WarehousePieChartProps {
-  isEmpty?: boolean;
-}
-
-export function WarehousePieChart({ isEmpty = false }: WarehousePieChartProps) {
-  if (isEmpty) {
-    return (
-      <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground animate-fade-in">
-        <div className="relative">
-          <div className="w-24 h-24 rounded-full border-4 border-muted opacity-40" />
-          <PieChartIcon className="w-8 h-8 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-40" />
-        </div>
-        <span className="text-sm font-medium mt-4">Нет данных</span>
-        <span className="text-xs mt-1 opacity-60">Добавьте товары на склад</span>
-      </div>
-    );
-  }
-
+export function WarehousePieChart() {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <PieChart>

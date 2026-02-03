@@ -7,7 +7,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { BarChart3 } from "lucide-react";
 
 const data = [
   { month: "Jan", income: 3000, expense: 1500 },
@@ -31,21 +30,7 @@ const formatYAxis = (value: number) => {
   return `$${value}`;
 };
 
-interface CashFlowChartProps {
-  isEmpty?: boolean;
-}
-
-export function CashFlowChart({ isEmpty = false }: CashFlowChartProps) {
-  if (isEmpty) {
-    return (
-      <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground animate-fade-in">
-        <BarChart3 className="w-12 h-12 mb-3 opacity-40" />
-        <span className="text-sm font-medium">Нет данных для отображения</span>
-        <span className="text-xs mt-1 opacity-60">Данные появятся после синхронизации</span>
-      </div>
-    );
-  }
-
+export function CashFlowChart() {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <AreaChart

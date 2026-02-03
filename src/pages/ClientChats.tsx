@@ -23,8 +23,16 @@ import {
   MoreVertical,
   Star,
   Clock,
-  FileText
+  FileText,
+  Home,
+  MessageCircle,
+  MessagesSquare,
+  UserCircle,
+  CreditCard,
+  Settings,
+  HelpCircle
 } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/components/ui/sidebar";
 
@@ -116,6 +124,21 @@ interface SelectedChat {
   avatar: string;
 }
 
+// Sidebar navigation items for collapsed view
+const sidebarNavItems = [
+  { icon: Home, url: "/", label: "Главная" },
+  { icon: User, url: "/cabinet", label: "Личный кабинет" },
+  { icon: MessageCircle, url: "/staff-chat", label: "Чат с сотрудниками" },
+  { icon: MessagesSquare, url: "/client-chats", label: "Чаты клиентов" },
+  { icon: UserCircle, url: "/my-data", label: "Мои данные" },
+];
+
+const sidebarBottomItems = [
+  { icon: CreditCard, url: "/billing", label: "Billing" },
+  { icon: Settings, url: "/settings", label: "Settings" },
+  { icon: HelpCircle, url: "/help", label: "Help Center" },
+];
+
 // Inner component that uses useSidebar - must be rendered inside SidebarProvider
 const ClientChatsContent = () => {
   const [activeTab, setActiveTab] = useState<"flows" | "clients" | "direct">("direct");
@@ -131,6 +154,8 @@ const ClientChatsContent = () => {
   const [messageInput, setMessageInput] = useState("");
   
   const { setOpen } = useSidebar();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Collapse sidebar when chat is selected
   useEffect(() => {
@@ -186,8 +211,60 @@ const ClientChatsContent = () => {
   if (selectedChat) {
     return (
       <div className="flex h-[calc(100vh-5rem)] gap-0 animate-fade-in">
+        {/* Mini Sidebar with Icons */}
+        <div className="w-14 bg-sidebar border-r border-sidebar-border flex flex-col items-center py-4 transition-all duration-300 animate-fade-in">
+          {/* Main nav items */}
+          <div className="flex-1 flex flex-col items-center gap-1">
+            {sidebarNavItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.url;
+              return (
+                <button
+                  key={item.url}
+                  onClick={() => navigate(item.url)}
+                  className={cn(
+                    "w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200",
+                    isActive 
+                      ? "bg-sidebar-accent text-primary" 
+                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                  )}
+                  title={item.label}
+                >
+                  <Icon className="h-5 w-5" />
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Divider */}
+          <div className="w-8 h-px bg-sidebar-border my-2" />
+
+          {/* Bottom nav items */}
+          <div className="flex flex-col items-center gap-1">
+            {sidebarBottomItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.url;
+              return (
+                <button
+                  key={item.url}
+                  onClick={() => navigate(item.url)}
+                  className={cn(
+                    "w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200",
+                    isActive 
+                      ? "bg-sidebar-accent text-primary" 
+                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                  )}
+                  title={item.label}
+                >
+                  <Icon className="h-5 w-5" />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Compact Chat List */}
-        <div className="w-72 bg-card border-r border-border flex flex-col transition-all duration-300 animate-fade-in">
+        <div className="w-64 bg-card border-r border-border flex flex-col transition-all duration-300 animate-fade-in">
           {/* Search Header */}
           <div className="p-3 border-b border-border">
             <div className="relative">

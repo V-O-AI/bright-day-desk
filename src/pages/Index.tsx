@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { MessageCircle } from "lucide-react";
-import { CashFlowChart } from "@/components/charts/CashFlowChart";
+import { FinanceMetricCards } from "@/components/charts/FinanceMetricCards";
 import { WarehousePieChart } from "@/components/charts/WarehousePieChart";
 
 const Index = () => {
@@ -12,32 +12,12 @@ const Index = () => {
         {/* Левая колонка - 3/5 ширины */}
         <div className="lg:col-span-3 flex flex-col gap-6">
           
-          {/* Блок графика Cash Flow Trend - уменьшен */}
+          {/* Блок с 4 карточками метрик - 2x2 */}
           <div 
             className="bg-card rounded-2xl p-6 border border-border opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5" 
-            style={{ minHeight: "200px", animationDelay: "0ms" }}
+            style={{ animationDelay: "0ms" }}
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold">Cash Flow Trend</h3>
-              <div className="flex gap-4 text-sm">
-                <span className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-primary"></span>
-                  Income
-                </span>
-                <span className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "hsl(330, 80%, 65%)" }}></span>
-                  Expense
-                </span>
-              </div>
-              <div className="flex gap-1">
-                <button className="px-3 py-1 bg-primary text-primary-foreground rounded-lg text-sm transition-all duration-150 active:scale-[0.97]">1Y</button>
-                <button className="px-3 py-1 bg-muted rounded-lg text-sm transition-all duration-150 active:scale-[0.97] hover:bg-muted/80">6M</button>
-                <button className="px-3 py-1 bg-muted rounded-lg text-sm transition-all duration-150 active:scale-[0.97] hover:bg-muted/80">1M</button>
-              </div>
-            </div>
-            <div className="h-[140px]">
-              <CashFlowChart />
-            </div>
+            <FinanceMetricCards layout="grid" showFilter={true} />
           </div>
 
           {/* Блок с менеджером - увеличен в 2 раза */}

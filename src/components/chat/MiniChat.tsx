@@ -15,17 +15,19 @@ export interface MiniChatHandle {
   setInputText: (text: string) => void;
 }
 
-export const MiniChat = forwardRef<MiniChatHandle, MiniChatProps>(
-  ({ variant = "compact", activeChatId }, ref) => {
-    const { messages, loading, sendMessage } = useChatMessages();
-    const [input, setInput] = useState("");
-    const scrollRef = useRef<HTMLDivElement>(null);
+function MiniChatInner(
+  { variant = "compact", activeChatId }: MiniChatProps,
+  ref: React.ForwardedRef<MiniChatHandle>
+) {
+  const { messages, loading, sendMessage } = useChatMessages();
+  const [input, setInput] = useState("");
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-    useImperativeHandle(ref, () => ({
-      setInputText: (text: string) => {
-        setInput(text);
-      },
-    }));
+  useImperativeHandle(ref, () => ({
+    setInputText: (text: string) => {
+      setInput(text);
+    },
+  }));
 
     // Auto-scroll to bottom when new messages arrive
     useEffect(() => {
@@ -142,8 +144,8 @@ export const MiniChat = forwardRef<MiniChatHandle, MiniChatProps>(
           </Button>
         </div>
       </div>
-    );
-  }
-);
+  );
+}
 
+export const MiniChat = forwardRef<MiniChatHandle, MiniChatProps>(MiniChatInner);
 MiniChat.displayName = "MiniChat";

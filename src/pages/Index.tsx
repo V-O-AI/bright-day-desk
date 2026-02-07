@@ -19,8 +19,11 @@ const Index = () => {
         {/* Левая колонка - 3/5 ширины */}
         <div className="lg:col-span-3 flex flex-col gap-6">
           
-          {/* Блок с финансовыми метриками — hero + 3 cards */}
-          <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: "0ms" }}>
+          {/* Блок с 4 карточками метрик - 2x2 */}
+          <div 
+            className="bg-card rounded-2xl p-6 border border-border opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5" 
+            style={{ animationDelay: "0ms" }}
+          >
             <FinanceMetricCards layout="grid" showFilter={true} />
           </div>
 

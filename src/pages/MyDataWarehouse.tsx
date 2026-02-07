@@ -38,17 +38,17 @@ const MyDataWarehouse = () => {
         </div>
 
         {/* Row 2: Storage Table + Pie Chart */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4" style={{ minHeight: 420 }}>
           <div className="lg:col-span-2">
             <WarehouseStorageTable />
           </div>
           <div className="lg:col-span-1">
-            <div className="bg-card rounded-2xl p-5 border border-border h-full">
+            <div className="bg-card rounded-2xl p-5 border border-border h-full flex flex-col" style={{ maxHeight: 420 }}>
               <div className="mb-2">
                 <h3 className="font-semibold text-foreground">Распределение по категориям</h3>
                 <p className="text-[10px] text-muted-foreground">Нажмите на сектор для детализации</p>
               </div>
-              <div className="h-[250px]">
+              <div className="flex-1 min-h-0">
                 <WarehousePieChart />
               </div>
             </div>

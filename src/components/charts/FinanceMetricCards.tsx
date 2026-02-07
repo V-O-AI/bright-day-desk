@@ -17,6 +17,7 @@ const periodLabels: Record<MetricPeriod, string> = {
   day: "День",
   week: "Неделя",
   month: "Месяц",
+  year: "Год",
 };
 
 function formatValue(key: string, value: number): string {

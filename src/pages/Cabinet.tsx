@@ -4,18 +4,21 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Calendar, Plus, Settings, MessageCircle, CalendarDays, Copy, Check } from "lucide-react";
+import { Calendar, Plus, Settings, MessageCircle, CalendarDays, Copy, Check, Users } from "lucide-react";
 import { CalendarNotes } from "@/components/CalendarNotes";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useLatestClientChats } from "@/hooks/useClientChats";
+import ReferralProgram from "@/components/billing/ReferralProgram";
 
 import cardWarehouse from "@/assets/card-warehouse.jpg";
 import cardConsultant from "@/assets/card-consultant.jpg";
 import cardNotifications from "@/assets/card-notifications.jpg";
 
 const Cabinet = () => {
+  const [activeTab, setActiveTab] = useState<"cabinet" | "referral">("cabinet");
   const navigate = useNavigate();
   const { profile, isLoading, saveProfile } = useUserProfile();
   const { data: chats } = useLatestClientChats(100);
@@ -125,6 +128,44 @@ const Cabinet = () => {
 
   return (
     <AppLayout>
+      {/* Tab Navigation */}
+      <div className="flex items-center gap-1 border-b border-border mb-6">
+        <button
+          onClick={() => setActiveTab("cabinet")}
+          className={cn(
+            "px-5 py-3 text-sm font-medium transition-colors relative",
+            activeTab === "cabinet"
+              ? "text-foreground"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          Личный кабинет
+          {activeTab === "cabinet" && (
+            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t" />
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab("referral")}
+          className={cn(
+            "px-5 py-3 text-sm font-medium transition-colors relative",
+            activeTab === "referral"
+              ? "text-foreground"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <span className="flex items-center gap-1.5">
+            <Users className="h-4 w-4" />
+            Реферальная программа
+          </span>
+          {activeTab === "referral" && (
+            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t" />
+          )}
+        </button>
+      </div>
+
+      {activeTab === "referral" ? (
+        <ReferralProgram />
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full overflow-auto pb-6">
         
         {/* Левая колонка - Данные аккаунта */}
@@ -391,6 +432,7 @@ const Cabinet = () => {
           <CalendarNotes />
         </div>
       </div>
+      )}
 
       {/* Модальное окно настроек карт */}
       <Dialog open={cardSettingsOpen} onOpenChange={setCardSettingsOpen}>

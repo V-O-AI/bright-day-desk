@@ -11,17 +11,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Check, Search, Filter, Download, Eye, Tag, CheckCircle2 } from "lucide-react";
+import { Check, Search, Filter, Eye, Tag, CheckCircle2, Plus } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import ReferralProgram from "@/components/billing/ReferralProgram";
 import PaymentModal from "@/components/billing/PaymentModal";
 import { toast } from "@/hooks/use-toast";
 
-type ActiveTab = "billing" | "referral";
-
 const Billing = () => {
-  const [activeTab, setActiveTab] = useState<ActiveTab>("billing");
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
   const [searchQuery, setSearchQuery] = useState("");
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
@@ -87,40 +83,43 @@ const Billing = () => {
     },
   ];
 
+  const [ticketInputOpen, setTicketInputOpen] = useState(false);
+  const [ticketCode, setTicketCode] = useState("");
+
   const tickets = [
     {
-      name: "Скидка 10% на товары",
-      discount: "-10%",
-      validUntil: "2025-03-01",
-      category: "Одежда",
-      status: "Активен",
-    },
-    {
-      name: "Бесплатная доставка",
-      discount: "-$5.00",
-      validUntil: "2025-02-15",
-      category: "Все товары",
-      status: "Активен",
-    },
-    {
-      name: "Скидка 20% на обувь",
-      discount: "-20%",
-      validUntil: "2025-04-01",
-      category: "Обувь",
-      status: "Активен",
-    },
-    {
-      name: "Кэшбэк 5%",
+      name: "5% кешбэк на все покупки",
       discount: "-5%",
+      validUntil: "2025-03-01",
+      receivedDate: "15.01.2025",
+      status: "Активен",
+    },
+    {
+      name: "Скидка 10% на план PRO",
+      discount: "-10%",
+      validUntil: "2025-02-15",
+      receivedDate: "02.01.2025",
+      status: "Активен",
+    },
+    {
+      name: "7% кешбэк на складские товары",
+      discount: "-7%",
+      validUntil: "2025-04-01",
+      receivedDate: "20.12.2024",
+      status: "Активен",
+    },
+    {
+      name: "Скидка 8% на подписку Enterprise",
+      discount: "-8%",
       validUntil: "2025-01-31",
-      category: "Все товары",
+      receivedDate: "10.12.2024",
       status: "Истёк",
     },
     {
-      name: "Промо на детские товары",
-      discount: "-15%",
+      name: "5% скидка на продление",
+      discount: "-5%",
       validUntil: "2025-05-01",
-      category: "Детские",
+      receivedDate: "25.01.2025",
       status: "Активен",
     },
   ];
@@ -153,41 +152,6 @@ const Billing = () => {
   return (
     <AppLayout>
       <div className="space-y-8">
-        {/* Tab Navigation */}
-        <div className="flex items-center gap-1 border-b border-border">
-          <button
-            onClick={() => setActiveTab("billing")}
-            className={cn(
-              "px-5 py-3 text-sm font-medium transition-colors relative",
-              activeTab === "billing"
-                ? "text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            Billing
-            {activeTab === "billing" && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t" />
-            )}
-          </button>
-          <button
-            onClick={() => setActiveTab("referral")}
-            className={cn(
-              "px-5 py-3 text-sm font-medium transition-colors relative",
-              activeTab === "referral"
-                ? "text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            Реферальная программа
-            {activeTab === "referral" && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t" />
-            )}
-          </button>
-        </div>
-
-        {activeTab === "referral" ? (
-          <ReferralProgram />
-        ) : (
           <div className="space-y-8">
             {/* Header */}
             <div className="flex items-start justify-between">
@@ -330,12 +294,38 @@ const Billing = () => {
                     <Filter className="h-4 w-4" />
                     Фильтр
                   </Button>
-                  <Button variant="outline" className="gap-2">
-                    <Download className="h-4 w-4" />
-                    Экспорт
+                  <Button 
+                    variant="outline" 
+                    className="gap-2"
+                    onClick={() => setTicketInputOpen(!ticketInputOpen)}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Ввести тикет
                   </Button>
                 </div>
               </div>
+
+              {ticketInputOpen && (
+                <div className="flex items-center gap-3">
+                  <Input
+                    placeholder="Введите код тикета..."
+                    value={ticketCode}
+                    onChange={(e) => setTicketCode(e.target.value)}
+                    className="flex-1 bg-background"
+                  />
+                  <Button 
+                    onClick={() => {
+                      if (ticketCode.trim()) {
+                        toast({ title: "Тикет отправлен", description: `Код: ${ticketCode}` });
+                        setTicketCode("");
+                        setTicketInputOpen(false);
+                      }
+                    }}
+                  >
+                    Активировать
+                  </Button>
+                </div>
+              )}
 
               <Card className="border">
                 <Table>
@@ -343,7 +333,7 @@ const Billing = () => {
                     <TableRow className="hover:bg-transparent">
                       <TableHead className="font-medium text-foreground">Тикет</TableHead>
                       <TableHead className="font-medium text-foreground">Скидка</TableHead>
-                      <TableHead className="font-medium text-foreground">Категория</TableHead>
+                      <TableHead className="font-medium text-foreground">Дата получения</TableHead>
                       <TableHead className="font-medium text-foreground">Действует до</TableHead>
                       <TableHead className="font-medium text-foreground">Статус</TableHead>
                       <TableHead className="font-medium text-foreground text-right">Действие</TableHead>
@@ -355,7 +345,7 @@ const Billing = () => {
                         <TableCell className="font-medium">{item.name}</TableCell>
                         <TableCell className="font-semibold text-primary">{item.discount}</TableCell>
                         <TableCell>
-                          <Badge variant="secondary" className="text-xs">{item.category}</Badge>
+                          <span className="text-sm text-muted-foreground">{item.receivedDate}</span>
                         </TableCell>
                         <TableCell>{item.validUntil}</TableCell>
                         <TableCell>
@@ -409,7 +399,6 @@ const Billing = () => {
               </Card>
             </div>
           </div>
-        )}
       </div>
 
       <PaymentModal

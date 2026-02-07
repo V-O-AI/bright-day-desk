@@ -79,7 +79,11 @@ const renderCustomizedLabel = ({
   );
 };
 
-export function WarehousePieChart() {
+interface WarehousePieChartProps {
+  enlarged?: boolean;
+}
+
+export function WarehousePieChart({ enlarged = false }: WarehousePieChartProps) {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [selectedCategoryName, setSelectedCategoryName] = useState<string | null>(null);
 
@@ -140,8 +144,8 @@ export function WarehousePieChart() {
             data={chartData}
             cx="50%"
             cy="50%"
-            innerRadius={40}
-            outerRadius={70}
+           innerRadius={enlarged ? 55 : 40}
+            outerRadius={enlarged ? 95 : 70}
             paddingAngle={2}
             dataKey="value"
             labelLine={false}

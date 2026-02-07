@@ -1,10 +1,8 @@
+import { useState, useRef } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
-
-const data = [
-  { name: "Детские вещи", value: 50, color: "hsl(45, 90%, 55%)" },
-  { name: "Одежда", value: 35, color: "hsl(258, 90%, 66%)" },
-  { name: "Обувь", value: 15, color: "hsl(330, 80%, 65%)" },
-];
+import { ArrowLeft } from "lucide-react";
+import { useWarehouseCategories, useWarehouseProducts } from "@/hooks/useWarehouseData";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const RADIAN = Math.PI / 180;
 
@@ -27,24 +25,19 @@ const renderCustomizedLabel = ({
   outerRadius,
   percent,
   name,
-  index,
 }: LabelProps) => {
-  // Position for percentage inside the slice
   const insideRadius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const insideX = cx + insideRadius * Math.cos(-midAngle * RADIAN);
   const insideY = cy + insideRadius * Math.sin(-midAngle * RADIAN);
 
-  // Position for the label outside
   const labelRadius = outerRadius + 30;
   const labelX = cx + labelRadius * Math.cos(-midAngle * RADIAN);
   const labelY = cy + labelRadius * Math.sin(-midAngle * RADIAN);
 
-  // Line start point (on the slice edge)
   const lineStartRadius = outerRadius + 5;
   const lineStartX = cx + lineStartRadius * Math.cos(-midAngle * RADIAN);
   const lineStartY = cy + lineStartRadius * Math.sin(-midAngle * RADIAN);
 
-  // Line end point (near label)
   const lineEndRadius = outerRadius + 22;
   const lineEndX = cx + lineEndRadius * Math.cos(-midAngle * RADIAN);
   const lineEndY = cy + lineEndRadius * Math.sin(-midAngle * RADIAN);
@@ -54,7 +47,6 @@ const renderCustomizedLabel = ({
 
   return (
     <g>
-      {/* Percentage inside */}
       <text
         x={insideX}
         y={insideY}
@@ -65,7 +57,6 @@ const renderCustomizedLabel = ({
       >
         {`${(percent * 100).toFixed(0)}%`}
       </text>
-      {/* Line pointing to the slice */}
       <line
         x1={lineStartX}
         y1={lineStartY}
@@ -74,7 +65,6 @@ const renderCustomizedLabel = ({
         stroke="hsl(var(--muted-foreground))"
         strokeWidth={1}
       />
-      {/* Label outside */}
       <text
         x={labelX}
         y={labelY}
@@ -90,25 +80,87 @@ const renderCustomizedLabel = ({
 };
 
 export function WarehousePieChart() {
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const [selectedCategoryName, setSelectedCategoryName] = useState<string | null>(null);
+
+  const { data: categories, isLoading: catLoading } = useWarehouseCategories();
+  const { data: products } = useWarehouseProducts(selectedCategoryId);
+
+  const isDrillDown = !!selectedCategoryId;
+
+  const chartData = isDrillDown
+    ? (products || []).map((p) => ({
+        name: p.name,
+        value: p.percentage,
+        color: p.color,
+        id: p.id,
+      }))
+    : (categories || []).map((c) => ({
+        name: c.name,
+        value: c.percentage,
+        color: c.color,
+        id: c.id,
+      }));
+
+  const handleCellClick = (index: number) => {
+    if (!isDrillDown && categories) {
+      const category = categories[index];
+      if (category) {
+        setSelectedCategoryId(category.id);
+        setSelectedCategoryName(category.name);
+      }
+    }
+  };
+
+  const handleBack = () => {
+    setSelectedCategoryId(null);
+    setSelectedCategoryName(null);
+  };
+
+  if (catLoading) {
+    return <Skeleton className="h-full w-full rounded-2xl" />;
+  }
+
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <PieChart>
-        <Pie
-          data={data}
-          cx="50%"
-          cy="50%"
-          innerRadius={40}
-          outerRadius={70}
-          paddingAngle={2}
-          dataKey="value"
-          labelLine={false}
-          label={renderCustomizedLabel}
+    <div className="relative h-full" onClick={(e) => e.stopPropagation()}>
+      {/* Back button when drilled down */}
+      {isDrillDown && (
+        <button
+          onClick={handleBack}
+          className="absolute top-0 left-0 z-10 flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-lg hover:bg-muted"
         >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={entry.color} />
-          ))}
-        </Pie>
-      </PieChart>
-    </ResponsiveContainer>
+          <ArrowLeft className="h-3 w-3" />
+          {selectedCategoryName}
+        </button>
+      )}
+
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={chartData}
+            cx="50%"
+            cy="50%"
+            innerRadius={40}
+            outerRadius={70}
+            paddingAngle={2}
+            dataKey="value"
+            labelLine={false}
+            label={renderCustomizedLabel}
+            style={{ cursor: isDrillDown ? "default" : "pointer" }}
+            animationBegin={0}
+            animationDuration={400}
+          >
+            {chartData.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={entry.color}
+                style={{ cursor: isDrillDown ? "default" : "pointer" }}
+                onClick={() => handleCellClick(index)}
+              />
+            ))}
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

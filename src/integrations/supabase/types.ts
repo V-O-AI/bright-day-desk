@@ -35,6 +35,42 @@ export type Database = {
         }
         Relationships: []
       }
+      client_chats: {
+        Row: {
+          avatar_url: string | null
+          client_name: string
+          client_type: string
+          created_at: string
+          id: string
+          is_online: boolean
+          last_message: string | null
+          unread_count: number
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          client_name: string
+          client_type?: string
+          created_at?: string
+          id?: string
+          is_online?: boolean
+          last_message?: string | null
+          unread_count?: number
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          client_name?: string
+          client_type?: string
+          created_at?: string
+          id?: string
+          is_online?: boolean
+          last_message?: string | null
+          unread_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       financial_metrics: {
         Row: {
           change_percent: number | null
@@ -73,6 +109,65 @@ export type Database = {
           value?: number
         }
         Relationships: []
+      }
+      warehouse_categories: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          name: string
+          percentage: number
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          id?: string
+          name: string
+          percentage?: number
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          name?: string
+          percentage?: number
+        }
+        Relationships: []
+      }
+      warehouse_products: {
+        Row: {
+          category_id: string
+          color: string
+          created_at: string
+          id: string
+          name: string
+          percentage: number
+        }
+        Insert: {
+          category_id: string
+          color?: string
+          created_at?: string
+          id?: string
+          name: string
+          percentage?: number
+        }
+        Update: {
+          category_id?: string
+          color?: string
+          created_at?: string
+          id?: string
+          name?: string
+          percentage?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "warehouse_products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "warehouse_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

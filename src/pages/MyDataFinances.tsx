@@ -55,7 +55,7 @@ const MyDataFinances = () => {
         </div>
 
         {/* 4 cards in a row */}
-        <FinanceMetricCards layout="row" showFilter={false} externalPeriod={period} />
+        <FinanceMetricCards layout="grid" showFilter={false} externalPeriod={period} />
         
         <div className="flex items-center justify-center h-[300px] border border-dashed border-border rounded-lg">
           <p className="text-muted-foreground">Детальная аналитика финансов будет здесь</p>

@@ -5,7 +5,6 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TotalBalanceBlock } from "@/components/charts/TotalBalanceBlock";
 import { BudgetOverview } from "@/components/charts/BudgetOverview";
-import { SpendingByCategory } from "@/components/charts/SpendingByCategory";
 import { CashFlowChart } from "@/components/charts/CashFlowChart";
 import { RecentTransactions } from "@/components/charts/RecentTransactions";
 import { MetricPeriod } from "@/hooks/useFinancialMetrics";
@@ -32,8 +31,8 @@ const MyDataFinances = () => {
           </div>
         </div>
 
-        {/* Top row: Total Balance | Budget Overview | Spending by Category */}
-        <div className="grid grid-cols-1 lg:grid-cols-6 gap-4">
+        {/* Top row: Total Balance | Budget Overview */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
           <div className="lg:col-span-3">
             <TotalBalanceBlock
               period={period}
@@ -43,9 +42,6 @@ const MyDataFinances = () => {
           </div>
           <div className="lg:col-span-2">
             <BudgetOverview />
-          </div>
-          <div className="lg:col-span-1">
-            <SpendingByCategory />
           </div>
         </div>
 

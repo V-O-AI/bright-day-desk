@@ -9,15 +9,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
-import { format, isWithinInterval, isSameDay } from "date-fns";
-import { ru } from "date-fns/locale";
-import { DayPicker, DateRange } from "react-day-picker";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 const data = [
   { month: "Янв", income: 3000, expense: 1500 },
@@ -43,8 +34,6 @@ const formatYAxis = (value: number) => {
 
 export function CashFlowChart() {
   const [activePeriod, setActivePeriod] = useState<string>("1Y");
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
-  const [calendarOpen, setCalendarOpen] = useState(false);
 
   const filteredData =
     activePeriod === "1M"
@@ -52,17 +41,6 @@ export function CashFlowChart() {
       : activePeriod === "6M"
         ? data.slice(-6)
         : data;
-
-  const handleRangeSelect = (range: DateRange | undefined) => {
-    setDateRange(range);
-  };
-
-  const rangeLabel =
-    dateRange?.from && dateRange?.to
-      ? `${format(dateRange.from, "dd.MM.yy")} — ${format(dateRange.to, "dd.MM.yy")}`
-      : dateRange?.from
-        ? `${format(dateRange.from, "dd.MM.yy")} — ...`
-        : null;
 
   return (
     <div className="bg-card rounded-2xl p-6 border border-border h-full flex flex-col">
@@ -84,115 +62,21 @@ export function CashFlowChart() {
             </span>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {/* Calendar picker */}
-          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-            <PopoverTrigger asChild>
-              <button
-                className={cn(
-                  "p-2 rounded-lg border border-border hover:bg-muted transition-colors relative",
-                  dateRange?.from && "border-primary/40"
-                )}
-                title="Выберите период"
-              >
-                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end" sideOffset={8}>
-              <div className="p-3 pb-1">
-                <p className="text-sm font-medium text-foreground mb-1">Выберите период</p>
-                {rangeLabel && (
-                  <p className="text-xs text-muted-foreground mb-1">{rangeLabel}</p>
-                )}
-              </div>
-              <DayPicker
-                mode="range"
-                selected={dateRange}
-                onSelect={handleRangeSelect}
-                locale={ru}
-                showOutsideDays
-                className="p-3 pointer-events-auto"
-                modifiersClassNames={{
-                  range_start: "rdp-range-start",
-                  range_end: "rdp-range-end",
-                  range_middle: "rdp-range-middle",
-                }}
-                classNames={{
-                  months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                  month: "space-y-4",
-                  caption: "flex justify-center pt-1 relative items-center",
-                  caption_label: "text-sm font-medium",
-                  nav: "space-x-1 flex items-center",
-                  nav_button: cn(
-                    "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 inline-flex items-center justify-center rounded-md border border-input",
-                  ),
-                  nav_button_previous: "absolute left-1",
-                  nav_button_next: "absolute right-1",
-                  table: "w-full border-collapse space-y-1",
-                  head_row: "flex",
-                  head_cell:
-                    "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-                  row: "flex w-full mt-2",
-                  cell: "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
-                  day: "h-9 w-9 p-0 font-normal rounded-full flex items-center justify-center transition-colors hover:bg-muted aria-selected:opacity-100",
-                  day_today: "bg-accent text-accent-foreground font-semibold",
-                  day_outside: "text-muted-foreground opacity-50",
-                  day_disabled: "text-muted-foreground opacity-50",
-                  day_hidden: "invisible",
-                }}
-                modifiers={{
-                  rangeStart: dateRange?.from ? [dateRange.from] : [],
-                  rangeEnd: dateRange?.to ? [dateRange.to] : [],
-                  rangeMiddle: (day: Date) => {
-                    if (!dateRange?.from || !dateRange?.to) return false;
-                    return (
-                      isWithinInterval(day, {
-                        start: dateRange.from,
-                        end: dateRange.to,
-                      }) &&
-                      !isSameDay(day, dateRange.from) &&
-                      !isSameDay(day, dateRange.to)
-                    );
-                  },
-                }}
-                modifiersStyles={{
-                  rangeStart: {
-                    backgroundColor: "hsl(217, 91%, 60%)",
-                    color: "white",
-                    borderRadius: "50%",
-                  },
-                  rangeEnd: {
-                    backgroundColor: "hsl(0, 84%, 60%)",
-                    color: "white",
-                    borderRadius: "50%",
-                  },
-                  rangeMiddle: {
-                    backgroundColor: "hsl(217, 91%, 60%, 0.15)",
-                    color: "hsl(217, 91%, 60%)",
-                    borderRadius: "0",
-                  },
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-
-          {/* Period toggles */}
-          <div className="flex gap-1">
-            {periodOptions.map((p) => (
-              <button
-                key={p}
-                onClick={() => setActivePeriod(p)}
-                className={cn(
-                  "px-3 py-1 rounded-full text-xs font-medium transition-all",
-                  activePeriod === p
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:bg-muted/80"
-                )}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
+        <div className="flex gap-1">
+          {periodOptions.map((p) => (
+            <button
+              key={p}
+              onClick={() => setActivePeriod(p)}
+              className={cn(
+                "px-3 py-1 rounded-full text-xs font-medium transition-all",
+                activePeriod === p
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              )}
+            >
+              {p}
+            </button>
+          ))}
         </div>
       </div>
 

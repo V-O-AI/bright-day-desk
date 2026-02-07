@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Calendar, Plus, Settings, MessageCircle, CalendarDays } from "lucide-react";
+import { CalendarNotes } from "@/components/CalendarNotes";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useUserProfile } from "@/hooks/useUserProfile";
@@ -304,7 +305,7 @@ const Cabinet = () => {
           </div>
         </div>
 
-        {/* Правая колонка - Подписка & Транзакции */}
+        {/* Правая колонка - Подписка & Транзакции & Календарь */}
         <div className="lg:col-span-4 space-y-6">
           
           {/* Подписка */}
@@ -354,6 +355,9 @@ const Cabinet = () => {
               ))}
             </div>
           </div>
+
+          {/* Календарь / Заметки */}
+          <CalendarNotes />
         </div>
       </div>
 

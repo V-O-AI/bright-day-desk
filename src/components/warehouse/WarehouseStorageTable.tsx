@@ -3,28 +3,35 @@ import { Filter, ChevronDown, ArrowUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface StorageRow {
-  floor: number;
-  section: string;
+  id: number;
   category: string;
-  storageUsed: number;
-  percentage: number;
-  available: number;
-  total: number;
+  productName: string;
+  remaining: number;
+  quantity: number;
+  lastChange: string;
+  turnoverDays: number;
 }
 
 const mockData: StorageRow[] = [
-  { floor: 1, section: "A1 – A10", category: "Electronics", storageUsed: 80, percentage: 80, available: 20, total: 100 },
-  { floor: 2, section: "B1 – B10", category: "Apparel", storageUsed: 60, percentage: 60, available: 40, total: 100 },
-  { floor: 1, section: "C1 – C10", category: "Home & Kitchen", storageUsed: 90, percentage: 90, available: 10, total: 100 },
-  { floor: 3, section: "D1 – D10", category: "Automotive Parts", storageUsed: 50, percentage: 50, available: 50, total: 100 },
-  { floor: 2, section: "E1 – E10", category: "Beauty & Health", storageUsed: 70, percentage: 70, available: 30, total: 100 },
+  { id: 1, category: "Электроника", productName: "Смартфон X200", remaining: 45, quantity: 200, lastChange: "02.02.2026", turnoverDays: 12 },
+  { id: 2, category: "Одежда", productName: "Куртка зимняя", remaining: 120, quantity: 500, lastChange: "01.02.2026", turnoverDays: 30 },
+  { id: 3, category: "Дом и Кухня", productName: "Набор посуды", remaining: 18, quantity: 150, lastChange: "31.01.2026", turnoverDays: 7 },
+  { id: 4, category: "Автозапчасти", productName: "Масляный фильтр", remaining: 340, quantity: 1000, lastChange: "03.02.2026", turnoverDays: 45 },
+  { id: 5, category: "Красота и Здоровье", productName: "Крем для лица", remaining: 75, quantity: 300, lastChange: "30.01.2026", turnoverDays: 20 },
 ];
 
-const sortOptions = ["Section", "Floor", "Category"];
+const sortOptions = ["Категория", "Товар", "Остаток"];
 
 export function WarehouseStorageTable() {
-  const [sortBy, setSortBy] = useState("Section");
+  const [sortBy, setSortBy] = useState("Категория");
   const [sortOpen, setSortOpen] = useState(false);
+
+  const getRemainingColor = (remaining: number, quantity: number) => {
+    const ratio = remaining / quantity;
+    if (ratio <= 0.15) return "hsl(0, 72%, 51%)";
+    if (ratio <= 0.35) return "hsl(35, 92%, 50%)";
+    return "hsl(142, 71%, 45%)";
+  };
 
   return (
     <div className="bg-card rounded-2xl p-5 border border-border">
@@ -33,14 +40,14 @@ export function WarehouseStorageTable() {
         <div className="flex items-center gap-2">
           <button className="flex items-center gap-1.5 text-xs text-muted-foreground border border-border rounded-lg px-3 py-1.5 hover:bg-muted/50 transition-colors">
             <Filter className="h-3 w-3" />
-            Filter
+            Фильтр
           </button>
           <div className="relative">
             <button
               onClick={() => setSortOpen(!sortOpen)}
               className="flex items-center gap-1.5 text-xs text-muted-foreground border border-border rounded-lg px-3 py-1.5 hover:bg-muted/50 transition-colors"
             >
-              Sort by: <span className="text-foreground font-medium">{sortBy}</span>
+              Сорт: <span className="text-foreground font-medium">{sortBy}</span>
               <ChevronDown className="h-3 w-3" />
             </button>
             {sortOpen && (
@@ -71,50 +78,71 @@ export function WarehouseStorageTable() {
           <thead>
             <tr className="text-muted-foreground text-xs">
               <th className="text-left pb-3 font-medium">
-                <span className="inline-flex items-center gap-1">Floor <ArrowUpDown className="h-3 w-3" /></span>
+                <span className="inline-flex items-center gap-1">№ <ArrowUpDown className="h-3 w-3" /></span>
               </th>
               <th className="text-left pb-3 font-medium">
-                <span className="inline-flex items-center gap-1">Section <ArrowUpDown className="h-3 w-3" /></span>
+                <span className="inline-flex items-center gap-1">Категория <ArrowUpDown className="h-3 w-3" /></span>
               </th>
               <th className="text-left pb-3 font-medium">
-                <span className="inline-flex items-center gap-1">Category <ArrowUpDown className="h-3 w-3" /></span>
+                <span className="inline-flex items-center gap-1">Товар <ArrowUpDown className="h-3 w-3" /></span>
               </th>
               <th className="text-left pb-3 font-medium">
-                <span className="inline-flex items-center gap-1">Storage Used <ArrowUpDown className="h-3 w-3" /></span>
+                <span className="inline-flex items-center gap-1">Остаток <ArrowUpDown className="h-3 w-3" /></span>
               </th>
               <th className="text-left pb-3 font-medium">
-                <span className="inline-flex items-center gap-1">Percentage <ArrowUpDown className="h-3 w-3" /></span>
+                <span className="inline-flex items-center gap-1">Кол-во <ArrowUpDown className="h-3 w-3" /></span>
               </th>
               <th className="text-left pb-3 font-medium">
-                <span className="inline-flex items-center gap-1">Available Space <ArrowUpDown className="h-3 w-3" /></span>
+                <span className="inline-flex items-center gap-1">Посл. изменения <ArrowUpDown className="h-3 w-3" /></span>
+              </th>
+              <th className="text-left pb-3 font-medium">
+                <span className="inline-flex items-center gap-1">Оборот <ArrowUpDown className="h-3 w-3" /></span>
               </th>
             </tr>
           </thead>
           <tbody>
-            {mockData.map((row, idx) => (
-              <tr key={idx} className="border-t border-border">
-                <td className="py-3 text-foreground">{row.floor}</td>
-                <td className="py-3 text-foreground">{row.section}</td>
-                <td className="py-3 text-foreground">{row.category}</td>
-                <td className="py-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${row.percentage}%`,
-                          backgroundColor: row.percentage >= 80 ? "hsl(0, 72%, 51%)" : row.percentage >= 60 ? "hsl(0, 72%, 51%)" : "hsl(0, 72%, 60%)",
-                        }}
-                      />
+            {mockData.map((row) => {
+              const remainingColor = getRemainingColor(row.remaining, row.quantity);
+              const remainingPct = Math.round((row.remaining / row.quantity) * 100);
+
+              return (
+                <tr key={row.id} className="border-t border-border">
+                  <td className="py-3 text-foreground font-medium">{row.id}</td>
+                  <td className="py-3 text-foreground">{row.category}</td>
+                  <td className="py-3 text-foreground">{row.productName}</td>
+                  <td className="py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all"
+                          style={{
+                            width: `${remainingPct}%`,
+                            backgroundColor: remainingColor,
+                          }}
+                        />
+                      </div>
+                      <span className="text-xs text-muted-foreground">{row.remaining} шт</span>
                     </div>
-                  </div>
-                </td>
-                <td className="py-3 text-foreground">{row.percentage}%</td>
-                <td className="py-3 text-muted-foreground">
-                  {row.available}<span className="text-muted-foreground/50">/{row.total}</span>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="py-3 text-foreground">{row.quantity.toLocaleString()} шт</td>
+                  <td className="py-3 text-muted-foreground text-xs">{row.lastChange}</td>
+                  <td className="py-3">
+                    <span
+                      className={cn(
+                        "text-xs font-medium px-2 py-0.5 rounded-full",
+                        row.turnoverDays <= 10
+                          ? "bg-red-500/10 text-red-500"
+                          : row.turnoverDays <= 25
+                          ? "bg-orange-500/10 text-orange-500"
+                          : "bg-green-500/10 text-green-500"
+                      )}
+                    >
+                      {row.turnoverDays} дн.
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

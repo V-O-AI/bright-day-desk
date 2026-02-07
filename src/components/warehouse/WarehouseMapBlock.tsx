@@ -15,7 +15,7 @@ const deadStockData = [
 ];
 
 const metrics = [
-  { label: "Total SKU", value: "285", change: "+2.58%" },
+  { label: "Средний оборот", value: "24", unit: "дн.", change: "+2.58%" },
   { label: "Quantity on Hand", value: "12,450", unit: "units", change: "+4.37%" },
   { label: "Capacity Usage", value: "62.5%", unit: "Full", change: "+1.54%" },
 ];
@@ -101,7 +101,7 @@ export function WarehouseMapHeader() {
 
   return (
     <div className="flex items-center justify-between">
-      <h3 className="font-semibold text-foreground">Warehouse Map</h3>
+      <h3 className="font-semibold text-foreground">Полезные данные</h3>
       <div className="flex gap-1 bg-muted rounded-lg p-0.5">
         {floors.map((floor, idx) => (
           <button

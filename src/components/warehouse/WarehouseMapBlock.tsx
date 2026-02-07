@@ -5,13 +5,13 @@ import { cn } from "@/lib/utils";
 
 const floors = ["Floor 1", "Floor 2", "Floor 3"];
 
-const inventoryData = [
-  { name: "Electronics", value: 2500, pct: 25 },
-  { name: "Apparel", value: 2000, pct: 20 },
-  { name: "Home &\nKitchen", value: 1800, pct: 18 },
-  { name: "Beauty &\nHealth", value: 1500, pct: 15 },
-  { name: "Automotive\nParts", value: 1200, pct: 12 },
-  { name: "Sports\nEquipment", value: 1000, pct: 10 },
+const deadStockData = [
+  { name: "Масляный\nфильтр", value: 2500, days: 120 },
+  { name: "Набор\nпосуды", value: 2000, days: 95 },
+  { name: "Куртка\nзимняя", value: 1800, days: 78 },
+  { name: "Крем\nдля лица", value: 1500, days: 64 },
+  { name: "Смартфон\nX200", value: 1200, days: 45 },
+  { name: "Наушники\nBT", value: 1000, days: 32 },
 ];
 
 const metrics = [
@@ -21,8 +21,6 @@ const metrics = [
 ];
 
 export function WarehouseMapBlock() {
-  const [activeFloor, setActiveFloor] = useState(0);
-
   return (
     <div className="flex gap-4 w-full">
       {/* Left metrics column */}
@@ -47,19 +45,19 @@ export function WarehouseMapBlock() {
         ))}
       </div>
 
-      {/* Inventory chart */}
+      {/* Dead stock chart */}
       <div className="flex-1 bg-card border border-border rounded-2xl p-5">
         <div className="flex items-center justify-between mb-1">
-          <h3 className="font-semibold text-foreground text-sm">Warehouse Inventory</h3>
+          <h3 className="font-semibold text-foreground text-sm">Мертвые товары</h3>
           <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
         </div>
         <p className="text-2xl font-bold text-foreground">
-          10,000 <span className="text-xs font-normal text-muted-foreground">packages</span>
+          {deadStockData.length} <span className="text-xs font-normal text-muted-foreground">товаров</span>
         </p>
 
         <div className="h-[160px] mt-4">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={inventoryData} barSize={32}>
+            <BarChart data={deadStockData} barSize={32}>
               <XAxis
                 dataKey="name"
                 axisLine={false}
@@ -68,11 +66,17 @@ export function WarehouseMapBlock() {
                 interval={0}
               />
               <YAxis hide />
-              <Bar dataKey="value" radius={[6, 6, 0, 0]}>
-                {inventoryData.map((_, index) => (
+              <Bar dataKey="days" radius={[6, 6, 0, 0]}>
+                {deadStockData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={index === 0 ? "hsl(0, 72%, 51%)" : "hsl(var(--muted))"}
+                    fill={
+                      entry.days >= 90
+                        ? "hsl(0, 72%, 51%)"
+                        : entry.days >= 60
+                        ? "hsl(35, 92%, 50%)"
+                        : "hsl(var(--muted))"
+                    }
                   />
                 ))}
               </Bar>
@@ -81,9 +85,9 @@ export function WarehouseMapBlock() {
         </div>
 
         <div className="flex gap-3 mt-2 text-[10px] text-muted-foreground">
-          {inventoryData.map((item, idx) => (
+          {deadStockData.map((item, idx) => (
             <span key={idx} className="flex-1 text-center">
-              {item.pct}% · {item.value.toLocaleString()}
+              {item.days} дн. · {item.value.toLocaleString()} шт
             </span>
           ))}
         </div>

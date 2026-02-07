@@ -2,6 +2,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { MessageCircle } from "lucide-react";
 import { FinanceMetricCards } from "@/components/charts/FinanceMetricCards";
 import { WarehousePieChart } from "@/components/charts/WarehousePieChart";
+import { MiniChat } from "@/components/chat/MiniChat";
 
 const Index = () => {
   return (
@@ -20,56 +21,12 @@ const Index = () => {
             <FinanceMetricCards layout="grid" showFilter={true} />
           </div>
 
-          {/* Блок с менеджером - увеличен в 2 раза */}
+          {/* Блок с менеджером — синхронизированный мини-чат */}
           <div 
             className="bg-card rounded-2xl p-6 border border-border flex-1 flex flex-col opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5" 
             style={{ minHeight: "280px", animationDelay: "50ms" }}
           >
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
-                <span className="text-muted-foreground">👤</span>
-              </div>
-              <div className="flex-1">
-                <h4 className="font-semibold">Менеджер Улетс</h4>
-                <p className="text-sm text-muted-foreground">Здравствуйте, команда агента готова к заботе о любой услуге!</p>
-              </div>
-            </div>
-            
-            {/* Расширенная область истории сообщений */}
-            <div className="flex-1 mt-4 overflow-y-auto space-y-3 min-h-[120px]">
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-lg bg-muted flex-shrink-0"></div>
-                <div className="bg-muted rounded-xl px-4 py-2 text-sm max-w-[80%]">
-                  <p className="text-muted-foreground">Добрый день! Чем могу помочь?</p>
-                </div>
-              </div>
-              <div className="flex gap-3 justify-end">
-                <div className="bg-primary/10 rounded-xl px-4 py-2 text-sm max-w-[80%]">
-                  <p>Нужно добавить товары на склад</p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-lg bg-muted flex-shrink-0"></div>
-                <div className="bg-muted rounded-xl px-4 py-2 text-sm max-w-[80%]">
-                  <p className="text-muted-foreground">Конечно, напишите какие товары нужно добавить.</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 mt-4">
-              <div className="w-8 h-8 rounded bg-muted"></div>
-              <div className="w-8 h-8 rounded bg-muted"></div>
-              <div className="w-8 h-8 rounded bg-muted"></div>
-              <div className="w-8 h-8 rounded bg-muted"></div>
-              <span className="text-muted-foreground">•••</span>
-            </div>
-            <div className="mt-4">
-              <input 
-                type="text" 
-                placeholder="Добавь 5 футболок на склад..." 
-                className="w-full bg-muted rounded-xl px-4 py-3 text-sm placeholder:text-muted-foreground transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:outline-none"
-              />
-            </div>
+            <MiniChat variant="compact" />
           </div>
         </div>
 

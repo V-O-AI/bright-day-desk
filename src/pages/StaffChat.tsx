@@ -1,6 +1,5 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { 
@@ -8,49 +7,8 @@ import {
   Search, 
   FileText, 
   ChevronDown,
-  Send
 } from "lucide-react";
-import { useState } from "react";
-
-// Mock data for chat messages
-const mockMessages = [
-  {
-    id: 1,
-    type: "user",
-    content: "Внеси этот новый товар 10 штук.",
-    avatars: 1,
-  },
-  {
-    id: 2,
-    type: "ai",
-    content: "Вот ваш результат...",
-    avatars: 1,
-  },
-  {
-    id: 3,
-    type: "user",
-    content: "Добавь столько же того же товара, и дай сводку по финансам, и оценкам клиентов по нему.",
-    avatars: 2,
-  },
-  {
-    id: 4,
-    type: "ai",
-    content: "Вот ваш результат...\n...\n...\n...\n...",
-    avatars: 2,
-  },
-  {
-    id: 5,
-    type: "user",
-    content: "Привет, было продано 10 худи, с принтом. По окончанию добавления дай мне сводку по финансам с обновленными данными.",
-    avatars: 1,
-  },
-  {
-    id: 6,
-    type: "ai",
-    content: "Менеджер Учета делегирует задачу Аналитику Клиентов...\nАналитик Клиентов Провожу сентиментальный анализ...",
-    avatars: 3,
-  },
-];
+import { MiniChat } from "@/components/chat/MiniChat";
 
 // Mock data for chat history
 const chatHistory = {
@@ -77,51 +35,11 @@ const quickActions = [
   { id: 3, label: "Кнопка\nСделать то то и то то", color: "bg-primary" },
 ];
 
-// Avatar component with delegation states
-function MessageAvatar({ count }: { count: number }) {
-  if (count === 1) {
-    return (
-      <Avatar className="h-8 w-8 bg-muted">
-        <AvatarFallback className="bg-muted" />
-      </Avatar>
-    );
-  }
-  
-  if (count === 2) {
-    return (
-      <div className="flex items-center">
-        <Avatar className="h-8 w-8 bg-muted">
-          <AvatarFallback className="bg-muted" />
-        </Avatar>
-        <Avatar className="h-6 w-6 bg-muted/60 -ml-2">
-          <AvatarFallback className="bg-muted/60" />
-        </Avatar>
-      </div>
-    );
-  }
-  
-  return (
-    <div className="flex items-center">
-      <Avatar className="h-8 w-8 bg-muted">
-        <AvatarFallback className="bg-muted" />
-      </Avatar>
-      <Avatar className="h-6 w-6 bg-muted/60 -ml-2">
-        <AvatarFallback className="bg-muted/60" />
-      </Avatar>
-      <Avatar className="h-5 w-5 bg-muted/40 -ml-2">
-        <AvatarFallback className="bg-muted/40" />
-      </Avatar>
-    </div>
-  );
-}
-
 const StaffChat = () => {
-  const [message, setMessage] = useState("");
-
   return (
     <AppLayout>
       <div className="flex h-[calc(100vh-5rem)] gap-0 -m-6">
-        {/* Main Chat Area */}
+        {/* Main Chat Area — replaced with synced MiniChat */}
         <div className="flex-1 flex flex-col border-r border-border">
           {/* Quick Actions Bar */}
           <div className="flex items-center gap-3 p-4 border-b border-border overflow-x-auto">
@@ -139,59 +57,9 @@ const StaffChat = () => {
             ))}
           </div>
 
-          {/* Messages Area */}
-          <ScrollArea className="flex-1 p-6">
-            <div className="space-y-6 max-w-3xl mx-auto">
-              {mockMessages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex items-start gap-3 animate-fade-in ${
-                    msg.type === "user" ? "justify-end" : "justify-start"
-                  }`}
-                >
-                  {msg.type === "ai" && <MessageAvatar count={msg.avatars} />}
-                  <div
-                    className={`max-w-md rounded-lg px-4 py-3 ${
-                      msg.type === "user"
-                        ? "bg-muted text-foreground"
-                        : "bg-background border border-border"
-                    }`}
-                  >
-                    <p className="text-sm whitespace-pre-line">{msg.content}</p>
-                  </div>
-                  {msg.type === "user" && <MessageAvatar count={msg.avatars} />}
-                </div>
-              ))}
-
-              {/* Delegation indicator */}
-              <div className="flex items-center justify-center gap-2 py-4">
-                <div className="w-3 h-3 bg-muted-foreground/60 rounded-sm" />
-                <div className="w-3 h-3 bg-muted-foreground/60 rounded-sm" />
-                <div className="w-3 h-3 bg-muted-foreground/60 rounded-sm" />
-                <span className="text-muted-foreground">•••</span>
-              </div>
-            </div>
-          </ScrollArea>
-
-          {/* Message Input */}
-          <div className="p-4 border-t border-border">
-            <div className="flex items-center gap-2 max-w-3xl mx-auto">
-              <div className="flex-1 relative">
-                <Input
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Добавь 5 футболок на склад..."
-                  className="pr-12 rounded-full bg-muted/50 border-border"
-                />
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8"
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+          {/* Chat area — using shared MiniChat component */}
+          <div className="flex-1 flex flex-col p-6 max-w-3xl mx-auto w-full">
+            <MiniChat variant="full" />
           </div>
         </div>
 

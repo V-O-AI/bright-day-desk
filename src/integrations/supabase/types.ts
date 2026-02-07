@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          sender_type: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          sender_type?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          sender_type?: string
+        }
+        Relationships: []
+      }
       financial_metrics: {
         Row: {
           change_percent: number | null

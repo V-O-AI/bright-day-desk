@@ -55,8 +55,8 @@ const Settings = () => {
     {
       id: "account" as SettingsSection,
       icon: User,
-      title: "Настройки аккаунта",
-      description: "Личные данные, Email",
+      title: "Уведомления",
+      description: "Настройки уведомлений",
     },
     {
       id: "security" as SettingsSection,
@@ -156,59 +156,12 @@ const Settings = () => {
   const renderAccountContent = () => (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-semibold text-foreground mb-1">Настройки аккаунта</h2>
-        <p className="text-sm text-muted-foreground">Управление личной информацией</p>
+        <h2 className="text-xl font-semibold text-foreground mb-1">Уведомления</h2>
+        <p className="text-sm text-muted-foreground">Выберите типы уведомлений, которые хотите получать</p>
       </div>
 
       <div className="space-y-6">
         <div>
-          <h3 className="text-base font-medium text-foreground mb-4">Личные данные</h3>
-          <p className="text-sm text-muted-foreground mb-4">Основная информация о вашем аккаунте</p>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">Имя</Label>
-              <Input 
-                id="firstName" 
-                value={firstName} 
-                onChange={(e) => setFirstName(e.target.value)}
-                className="bg-muted/50"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Фамилия</Label>
-              <Input 
-                id="lastName" 
-                value={lastName} 
-                onChange={(e) => setLastName(e.target.value)}
-                className="bg-muted/50"
-              />
-            </div>
-          </div>
-
-          <div className="mt-4 space-y-2">
-            <Label htmlFor="email">Email адрес</Label>
-            <div className="relative">
-              <Input 
-                id="email" 
-                value={email} 
-                disabled
-                className="bg-muted/50 pr-32"
-              />
-              <Badge 
-                variant="outline" 
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-green-600 border-green-600 bg-green-50"
-              >
-                <Check className="h-3 w-3 mr-1" />
-                Подтверждён
-              </Badge>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-base font-medium text-foreground mb-2">Уведомления</h3>
-          <p className="text-sm text-muted-foreground mb-4">Выберите типы уведомлений, которые хотите получать</p>
           
           <div className="grid grid-cols-2 gap-4">
             {[

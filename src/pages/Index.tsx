@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { MessageCircle } from "lucide-react";
 import { TotalBalanceBlock } from "@/components/charts/TotalBalanceBlock";
@@ -6,10 +7,12 @@ import { MiniChat } from "@/components/chat/MiniChat";
 import { useLatestClientChats } from "@/hooks/useClientChats";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MetricPeriod } from "@/hooks/useFinancialMetrics";
 
 const Index = () => {
   const navigate = useNavigate();
   const { data: clientChats, isLoading: chatsLoading } = useLatestClientChats(3);
+  const [period, setPeriod] = useState<MetricPeriod>("month");
 
   return (
     <AppLayout>
@@ -19,12 +22,16 @@ const Index = () => {
         {/* Left column */}
         <div className="lg:col-span-3 flex flex-col gap-6">
           
-          {/* Total Balance Block — replaces old 4 metric cards */}
+          {/* Total Balance Block — full version with period selector */}
           <div 
             className="opacity-0 animate-fade-in-up" 
             style={{ animationDelay: "0ms" }}
           >
-            <TotalBalanceBlock period="month" compact />
+            <TotalBalanceBlock
+              period={period}
+              onPeriodChange={setPeriod}
+              showPeriodSelector
+            />
           </div>
 
           {/* Mini chat */}
@@ -100,8 +107,8 @@ const Index = () => {
                 <p className="text-xs text-muted-foreground">Conversion Rate</p>
               </div>
             </div>
-            <div className="h-[200px]">
-              <WarehousePieChart />
+            <div className="h-[260px]">
+              <WarehousePieChart enlarged />
             </div>
           </div>
         </div>

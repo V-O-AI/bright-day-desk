@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { MessageCircle } from "lucide-react";
-import { FinanceMetricCards } from "@/components/charts/FinanceMetricCards";
+import { TotalBalanceBlock } from "@/components/charts/TotalBalanceBlock";
 import { WarehousePieChart } from "@/components/charts/WarehousePieChart";
 import { MiniChat } from "@/components/chat/MiniChat";
 import { useLatestClientChats } from "@/hooks/useClientChats";
@@ -13,21 +13,21 @@ const Index = () => {
 
   return (
     <AppLayout>
-      {/* Main Grid - 2 колонки, пропорции примерно 60/40 */}
+      {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-full">
         
-        {/* Левая колонка - 3/5 ширины */}
+        {/* Left column */}
         <div className="lg:col-span-3 flex flex-col gap-6">
           
-          {/* Блок с 4 карточками метрик - 2x2 */}
+          {/* Total Balance Block — replaces old 4 metric cards */}
           <div 
-            className="bg-card rounded-2xl p-6 border border-border opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5" 
+            className="opacity-0 animate-fade-in-up" 
             style={{ animationDelay: "0ms" }}
           >
-            <FinanceMetricCards layout="grid" showFilter={true} />
+            <TotalBalanceBlock period="month" compact />
           </div>
 
-          {/* Блок с менеджером — синхронизированный мини-чат */}
+          {/* Mini chat */}
           <div 
             className="bg-card rounded-2xl p-6 border border-border flex-1 flex flex-col opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5" 
             style={{ minHeight: "280px", animationDelay: "50ms" }}
@@ -36,10 +36,10 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Правая колонка - 2/5 ширины */}
+        {/* Right column */}
         <div className="lg:col-span-2 flex flex-col gap-6">
           
-          {/* Блок последних чатов */}
+          {/* Latest chats */}
           <div 
             className="bg-card rounded-2xl p-6 border border-border opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5"
             style={{ animationDelay: "100ms" }}
@@ -87,7 +87,7 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Блок данных склада с круговой диаграммой */}
+          {/* Warehouse chart */}
           <div 
             className="bg-card rounded-2xl p-6 border border-border flex-1 opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 cursor-pointer"
             style={{ animationDelay: "150ms" }}

@@ -1,155 +1,221 @@
+import { useState, useRef } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { 
-  Plus, 
-  Search, 
-  FileText, 
+import {
+  Plus,
   ChevronDown,
+  Paperclip,
+  FileText,
+  ClipboardList,
+  TrendingUp,
+  BarChart3,
 } from "lucide-react";
-import { MiniChat } from "@/components/chat/MiniChat";
+import { MiniChat, MiniChatHandle } from "@/components/chat/MiniChat";
 
-// Mock data for chat history
-const chatHistory = {
-  today: [
-    { id: 1, title: "Lovable Функционал Обновлен..." },
-  ],
+// Professional hint / quick-action suggestions
+const quickActions = [
+  {
+    id: 1,
+    icon: ClipboardList,
+    label: "Подготовить отчёт за неделю",
+  },
+  {
+    id: 2,
+    icon: TrendingUp,
+    label: "Проанализировать продажи",
+  },
+  {
+    id: 3,
+    icon: BarChart3,
+    label: "Сводка по складу",
+  },
+];
+
+// Chat history mock
+const initialHistory = {
+  today: [{ id: "c1", title: "Lovable Функционал Обновлен..." }],
   yesterday: [
-    { id: 2, title: "Данные ДоГода 2026" },
-    { id: 3, title: "Темы курсовых по ООП" },
+    { id: "c2", title: "Данные ДоГода 2026" },
+    { id: "c3", title: "Темы курсовых по ООП" },
   ],
-  january: [
-    { id: 4, title: "Расширение Kilo Code для VS ..." },
-  ],
+  january: [{ id: "c4", title: "Расширение Kilo Code для VS ..." }],
   "2025": [
-    { id: 5, title: "Урок информатики 6 класса по..." },
-    { id: 6, title: "Электрическая Цепь Постоянн..." },
+    { id: "c5", title: "Урок информатики 6 класса по..." },
+    { id: "c6", title: "Электрическая Цепь Постоянн..." },
   ],
 };
 
-// Quick action buttons
-const quickActions = [
-  { id: 1, label: "Кнопка:\nПодготовить отчет за неделю", color: "bg-primary" },
-  { id: 2, label: "Подсказка кнопкой, сделай то то и то", color: "bg-muted" },
-  { id: 3, label: "Кнопка\nСделать то то и то то", color: "bg-primary" },
-];
-
 const StaffChat = () => {
+  const chatRef = useRef<MiniChatHandle>(null);
+  const [activeChatId, setActiveChatId] = useState<string | null>(null);
+
+  const handleQuickAction = (text: string) => {
+    chatRef.current?.setInputText(text);
+  };
+
+  const handleNewChat = () => {
+    setActiveChatId(`new-${Date.now()}`);
+  };
+
+  const handleSelectChat = (chatId: string) => {
+    setActiveChatId(chatId);
+  };
+
   return (
     <AppLayout>
       <div className="flex h-[calc(100vh-5rem)] gap-0 -m-6">
-        {/* Main Chat Area — replaced with synced MiniChat */}
+        {/* ── Main Chat Area ── */}
         <div className="flex-1 flex flex-col border-r border-border">
-          {/* Quick Actions Bar */}
+          {/* Quick-action hint bar */}
           <div className="flex items-center gap-3 p-4 border-b border-border overflow-x-auto">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap">
-              <span className="truncate max-w-[100px]">...от ваш результат...</span>
-            </div>
             {quickActions.map((action) => (
-              <Button
+              <button
                 key={action.id}
-                variant={action.color === "bg-primary" ? "default" : "secondary"}
-                className="h-auto py-2 px-4 text-xs whitespace-pre-line text-left min-w-[140px]"
+                onClick={() => handleQuickAction(action.label)}
+                className="flex items-center gap-2.5 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium transition-all duration-150 hover:border-primary/40 hover:bg-primary/5 hover:shadow-sm active:scale-[0.97] whitespace-nowrap"
               >
-                {action.label}
-              </Button>
+                <action.icon className="h-4 w-4 text-primary flex-shrink-0" />
+                <span>{action.label}</span>
+              </button>
             ))}
           </div>
 
-          {/* Chat area — using shared MiniChat component */}
+          {/* Chat area */}
           <div className="flex-1 flex flex-col p-6 max-w-3xl mx-auto w-full">
-            <MiniChat variant="full" />
+            <MiniChat ref={chatRef} variant="full" activeChatId={activeChatId} />
           </div>
         </div>
 
-        {/* Right Sidebar - Chat History */}
+        {/* ── Right Sidebar ── */}
         <div className="w-72 flex flex-col bg-background">
-          <div className="p-4 space-y-3">
-            {/* New Chat Button */}
-            <Button variant="outline" className="w-full justify-start gap-2">
-              <Plus className="h-4 w-4" />
-              Новый чат
-            </Button>
+          <ScrollArea className="flex-1">
+            <div className="p-4 space-y-5">
+              {/* ─── Data tables section ─── */}
+              <div className="space-y-3">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Привязать таблицы
+                </span>
+                <div className="space-y-1">
+                  <button className="flex items-center gap-2.5 w-full rounded-lg px-3 py-2 text-sm hover:bg-muted/60 transition-colors text-left">
+                    <Paperclip className="h-4 w-4 text-primary flex-shrink-0" />
+                    <span>Данные о складе</span>
+                  </button>
+                  <button className="flex items-center gap-2.5 w-full rounded-lg px-3 py-2 text-sm hover:bg-muted/60 transition-colors text-left">
+                    <Paperclip className="h-4 w-4 text-primary flex-shrink-0" />
+                    <span>Данные о финансах</span>
+                  </button>
+                </div>
+              </div>
 
-            {/* Search */}
-            <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
-              <Search className="h-4 w-4" />
-              Поиск в чатах
-            </Button>
-          </div>
+              <div className="space-y-3">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Актуальные таблицы
+                </span>
+                <div className="space-y-1">
+                  <button className="flex items-center gap-2.5 w-full rounded-lg px-3 py-2 text-sm hover:bg-muted/60 transition-colors text-left">
+                    <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <span>Обновлённые данные о складе</span>
+                  </button>
+                  <button className="flex items-center gap-2.5 w-full rounded-lg px-3 py-2 text-sm hover:bg-muted/60 transition-colors text-left">
+                    <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <span>Финансовые операции за день</span>
+                  </button>
+                </div>
+              </div>
 
-          {/* Projects Section */}
-          <div className="px-4 py-2">
-            <button className="flex items-center justify-between w-full text-sm text-muted-foreground hover:text-foreground transition-colors">
-              <span>Проекты</span>
-              <ChevronDown className="h-4 w-4" />
-            </button>
-            <Button variant="ghost" className="w-full justify-start gap-2 mt-2 text-sm">
-              <FileText className="h-4 w-4" />
-              Новый проект
-            </Button>
-          </div>
+              {/* Divider */}
+              <div className="border-t border-border" />
 
-          {/* All Chats */}
-          <div className="px-4 py-2">
-            <button className="flex items-center justify-between w-full text-sm text-muted-foreground hover:text-foreground transition-colors">
-              <span>Все чаты</span>
-              <ChevronDown className="h-4 w-4" />
-            </button>
-          </div>
+              {/* New Chat Button */}
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2"
+                onClick={handleNewChat}
+              >
+                <Plus className="h-4 w-4" />
+                Новый чат
+              </Button>
 
-          <ScrollArea className="flex-1 px-4">
-            {/* Today */}
-            <div className="py-2">
-              <span className="text-xs text-muted-foreground">Сегодня</span>
-              {chatHistory.today.map((chat) => (
-                <button
-                  key={chat.id}
-                  className="w-full text-left py-2 text-sm hover:text-primary transition-colors truncate"
-                >
-                  {chat.title}
+              {/* ─── Chat history ─── */}
+              <div>
+                <button className="flex items-center justify-between w-full text-sm text-muted-foreground hover:text-foreground transition-colors mb-2">
+                  <span>Все чаты</span>
+                  <ChevronDown className="h-4 w-4" />
                 </button>
-              ))}
-            </div>
 
-            {/* Yesterday */}
-            <div className="py-2">
-              <span className="text-xs text-muted-foreground">Вчера</span>
-              {chatHistory.yesterday.map((chat) => (
-                <button
-                  key={chat.id}
-                  className="w-full text-left py-2 text-sm hover:text-primary transition-colors truncate"
-                >
-                  {chat.title}
-                </button>
-              ))}
-            </div>
+                {/* Today */}
+                <div className="py-1.5">
+                  <span className="text-xs text-muted-foreground">Сегодня</span>
+                  {initialHistory.today.map((chat) => (
+                    <button
+                      key={chat.id}
+                      onClick={() => handleSelectChat(chat.id)}
+                      className={`w-full text-left py-2 px-2 -mx-2 text-sm rounded-lg transition-colors truncate ${
+                        activeChatId === chat.id
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "hover:bg-muted/50 hover:text-primary"
+                      }`}
+                    >
+                      {chat.title}
+                    </button>
+                  ))}
+                </div>
 
-            {/* January */}
-            <div className="py-2">
-              <span className="text-xs text-muted-foreground">январь</span>
-              {chatHistory.january.map((chat) => (
-                <button
-                  key={chat.id}
-                  className="w-full text-left py-2 text-sm hover:text-primary transition-colors truncate"
-                >
-                  {chat.title}
-                </button>
-              ))}
-            </div>
+                {/* Yesterday */}
+                <div className="py-1.5">
+                  <span className="text-xs text-muted-foreground">Вчера</span>
+                  {initialHistory.yesterday.map((chat) => (
+                    <button
+                      key={chat.id}
+                      onClick={() => handleSelectChat(chat.id)}
+                      className={`w-full text-left py-2 px-2 -mx-2 text-sm rounded-lg transition-colors truncate ${
+                        activeChatId === chat.id
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "hover:bg-muted/50 hover:text-primary"
+                      }`}
+                    >
+                      {chat.title}
+                    </button>
+                  ))}
+                </div>
 
-            {/* 2025 */}
-            <div className="py-2">
-              <span className="text-xs text-muted-foreground">2025</span>
-              {chatHistory["2025"].map((chat) => (
-                <button
-                  key={chat.id}
-                  className="w-full text-left py-2 text-sm hover:text-primary transition-colors truncate"
-                >
-                  {chat.title}
-                </button>
-              ))}
+                {/* January */}
+                <div className="py-1.5">
+                  <span className="text-xs text-muted-foreground">Январь</span>
+                  {initialHistory.january.map((chat) => (
+                    <button
+                      key={chat.id}
+                      onClick={() => handleSelectChat(chat.id)}
+                      className={`w-full text-left py-2 px-2 -mx-2 text-sm rounded-lg transition-colors truncate ${
+                        activeChatId === chat.id
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "hover:bg-muted/50 hover:text-primary"
+                      }`}
+                    >
+                      {chat.title}
+                    </button>
+                  ))}
+                </div>
+
+                {/* 2025 */}
+                <div className="py-1.5">
+                  <span className="text-xs text-muted-foreground">2025</span>
+                  {initialHistory["2025"].map((chat) => (
+                    <button
+                      key={chat.id}
+                      onClick={() => handleSelectChat(chat.id)}
+                      className={`w-full text-left py-2 px-2 -mx-2 text-sm rounded-lg transition-colors truncate ${
+                        activeChatId === chat.id
+                          ? "bg-primary/10 text-primary font-medium"
+                          : "hover:bg-muted/50 hover:text-primary"
+                      }`}
+                    >
+                      {chat.title}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </ScrollArea>
         </div>

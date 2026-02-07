@@ -1,106 +1,201 @@
-import { TrendingUp, TrendingDown, Wallet, ArrowUpRight } from "lucide-react";
+import { useState } from "react";
+import { TrendingUp, TrendingDown, Wallet, ChevronDown } from "lucide-react";
 import { useFinancialMetrics, MetricPeriod } from "@/hooks/useFinancialMetrics";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { IncomeDetailModal } from "./IncomeDetailModal";
+import { ExpenseDetailModal } from "./ExpenseDetailModal";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface TotalBalanceBlockProps {
   period?: MetricPeriod;
   compact?: boolean;
+  onPeriodChange?: (period: MetricPeriod) => void;
+  showPeriodSelector?: boolean;
 }
+
+const periodLabels: Record<MetricPeriod, string> = {
+  day: "День",
+  week: "Неделя",
+  month: "Месяц",
+  year: "Год",
+};
 
 function formatCurrency(value: number): string {
-  return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `${value.toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₽`;
 }
 
-const subCardConfig = [
-  { key: "total_revenue", label: "Monthly Income", icon: TrendingUp },
-  { key: "subscriptions", label: "Monthly Expenses", icon: TrendingDown },
-  { key: "sales", label: "Net Profit", icon: ArrowUpRight },
-];
+function formatPercent(value: number): string {
+  return `${Math.abs(value).toFixed(1)}%`;
+}
 
-export function TotalBalanceBlock({ period = "month", compact = false }: TotalBalanceBlockProps) {
+export function TotalBalanceBlock({
+  period = "month",
+  compact = false,
+  onPeriodChange,
+  showPeriodSelector = false,
+}: TotalBalanceBlockProps) {
   const { data: metrics, isLoading } = useFinancialMetrics(period);
+  const [incomeModalOpen, setIncomeModalOpen] = useState(false);
+  const [expenseModalOpen, setExpenseModalOpen] = useState(false);
 
-  const activeNow = metrics?.find((m) => m.metric_key === "active_now");
-  const totalBalance = metrics?.find((m) => m.metric_key === "total_revenue");
+  const totalRevenue = metrics?.find((m) => m.metric_key === "total_revenue");
+  const subscriptions = metrics?.find((m) => m.metric_key === "subscriptions");
+  const sales = metrics?.find((m) => m.metric_key === "sales");
 
-  // Use active_now value as total balance representation (large number)
-  const balanceValue = totalBalance ? totalBalance.value * 4.8 : 0;
-  const balanceChange = totalBalance?.change_percent ?? 0;
+  // Total balance = revenue * multiplier
+  const balanceValue = totalRevenue ? totalRevenue.value * 4.8 : 0;
+  const balanceChange = totalRevenue?.change_percent ?? 0;
 
-  const subCards = subCardConfig.map((cfg) => {
-    const metric = metrics?.find((m) => m.metric_key === cfg.key);
-    return {
-      ...cfg,
-      value: metric?.value ?? 0,
-      change: metric?.change_percent ?? 0,
-      changeText: metric?.change_text ?? "",
-    };
-  });
+  // Income
+  const incomeValue = totalRevenue?.value ?? 0;
+  const incomeChange = totalRevenue?.change_percent ?? 0;
+
+  // Expenses
+  const expenseValue = subscriptions?.value ?? 0;
+  const expenseChange = subscriptions?.change_percent ?? 0;
+
+  // Margin = (income - expense) / income * 100
+  const marginPercent = incomeValue > 0 ? ((incomeValue - expenseValue) / incomeValue) * 100 : 0;
+  // Compare with previous period — use sales change as proxy
+  const marginChange = sales?.change_percent ?? 0;
 
   if (isLoading) {
     return <Skeleton className={cn("rounded-2xl", compact ? "h-[180px]" : "h-[260px]")} />;
   }
 
+  const periodText = period === "day" ? "день" : period === "week" ? "неделю" : period === "year" ? "год" : "месяц";
+
   return (
-    <div className="bg-card rounded-2xl p-6 border border-border h-full flex flex-col justify-between">
-      {/* Top section */}
-      <div>
-        <div className="flex items-center justify-between mb-1">
-          <span className="text-sm text-muted-foreground font-medium">Total Balance</span>
-          <div className="p-2 rounded-xl bg-muted">
-            <Wallet className="h-4 w-4 text-muted-foreground" />
+    <>
+      <div className="bg-card rounded-2xl p-6 border border-border h-full flex flex-col justify-between">
+        {/* Top section */}
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-sm text-muted-foreground font-medium">Общая прибыль</span>
+            <div className="flex items-center gap-2">
+              {showPeriodSelector && onPeriodChange && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-muted text-sm text-foreground hover:bg-muted/80 transition-colors">
+                    {periodLabels[period]}
+                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="bg-popover border border-border z-50">
+                    {(Object.keys(periodLabels) as MetricPeriod[]).map((p) => (
+                      <DropdownMenuItem
+                        key={p}
+                        onClick={() => onPeriodChange(p)}
+                        className={cn(
+                          "cursor-pointer",
+                          period === p && "bg-primary/10 text-primary font-medium"
+                        )}
+                      >
+                        {periodLabels[p]}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+              <div className="p-2 rounded-xl bg-muted">
+                <Wallet className="h-4 w-4 text-muted-foreground" />
+              </div>
+            </div>
+          </div>
+          <p className={cn("font-bold text-foreground", compact ? "text-3xl" : "text-4xl")}>
+            {formatCurrency(balanceValue)}
+          </p>
+          <div className="flex items-center justify-between mt-2">
+            <span className={cn(
+              "text-sm flex items-center gap-1",
+              balanceChange >= 0 ? "text-green-500" : "text-destructive"
+            )}>
+              {balanceChange >= 0 ? (
+                <TrendingUp className="h-3.5 w-3.5" />
+              ) : (
+                <TrendingDown className="h-3.5 w-3.5" />
+              )}
+              {balanceChange >= 0 ? "+" : ""}{balanceChange}% за {periodText}
+            </span>
+            <span className="text-xs text-muted-foreground">Все связанные счета</span>
           </div>
         </div>
-        <p className={cn("font-bold text-foreground", compact ? "text-3xl" : "text-4xl")}>
-          {formatCurrency(balanceValue)}
-        </p>
-        <div className="flex items-center justify-between mt-2">
-          <span className={cn(
-            "text-sm flex items-center gap-1",
-            balanceChange >= 0 ? "text-green-500" : "text-destructive"
-          )}>
-            {balanceChange >= 0 ? (
-              <TrendingUp className="h-3.5 w-3.5" />
-            ) : (
-              <TrendingDown className="h-3.5 w-3.5" />
-            )}
-            {balanceChange >= 0 ? "+" : ""}{balanceChange}% this month
-          </span>
-          <span className="text-xs text-muted-foreground">Across all linked accounts</span>
+
+        {/* Sub cards row */}
+        <div className={cn("grid grid-cols-3 gap-3", compact ? "mt-4" : "mt-6")}>
+          {/* Доход */}
+          <div
+            onClick={() => setIncomeModalOpen(true)}
+            className="bg-muted/50 rounded-xl p-3 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors"
+          >
+            <p className="text-xs text-muted-foreground mb-1">Доход</p>
+            <p className="text-sm font-bold text-foreground">
+              {formatCurrency(incomeValue)}
+            </p>
+            <p className={cn(
+              "text-xs mt-1 flex items-center gap-0.5",
+              incomeChange >= 0 ? "text-green-500" : "text-destructive"
+            )}>
+              {incomeChange >= 0 ? (
+                <TrendingUp className="h-3 w-3" />
+              ) : (
+                <TrendingDown className="h-3 w-3" />
+              )}
+              {formatPercent(incomeChange)} за {periodText}
+            </p>
+          </div>
+
+          {/* Расходы */}
+          <div
+            onClick={() => setExpenseModalOpen(true)}
+            className="bg-muted/50 rounded-xl p-3 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors"
+          >
+            <p className="text-xs text-muted-foreground mb-1">Расходы</p>
+            <p className="text-sm font-bold text-foreground">
+              {formatCurrency(expenseValue)}
+            </p>
+            <p className={cn(
+              "text-xs mt-1 flex items-center gap-0.5",
+              expenseChange >= 0 ? "text-destructive" : "text-green-500"
+            )}>
+              {expenseChange >= 0 ? (
+                <TrendingUp className="h-3 w-3" />
+              ) : (
+                <TrendingDown className="h-3 w-3" />
+              )}
+              {formatPercent(expenseChange)} за {periodText}
+            </p>
+          </div>
+
+          {/* Маржа */}
+          <div className="bg-muted/50 rounded-xl p-3 border border-border/50">
+            <p className="text-xs text-muted-foreground mb-1">Маржа</p>
+            <div className="flex items-center gap-1.5">
+              <p className="text-sm font-bold text-foreground">
+                {marginPercent.toFixed(1)}%
+              </p>
+              {marginChange >= 0 ? (
+                <TrendingUp className="h-4 w-4 text-green-500" />
+              ) : (
+                <TrendingDown className="h-4 w-4 text-destructive" />
+              )}
+            </div>
+            <p className={cn(
+              "text-xs mt-1 flex items-center gap-0.5",
+              marginChange >= 0 ? "text-green-500" : "text-destructive"
+            )}>
+              {marginChange >= 0 ? "+" : ""}{marginChange.toFixed(1)}% за {periodText}
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Sub cards row */}
-      <div className={cn("grid grid-cols-3 gap-3", compact ? "mt-4" : "mt-6")}>
-        {subCards.map((card) => {
-          const Icon = card.icon;
-          const isPositive = card.change >= 0;
-          return (
-            <div
-              key={card.key}
-              className="bg-muted/50 rounded-xl p-3 border border-border/50"
-            >
-              <p className="text-xs text-muted-foreground mb-1">{card.label}</p>
-              <p className="text-sm font-bold text-foreground">
-                {formatCurrency(card.value)}
-              </p>
-              <p className={cn(
-                "text-xs mt-1 flex items-center gap-0.5",
-                isPositive ? "text-green-500" : "text-destructive"
-              )}>
-                <Icon className="h-3 w-3" />
-                {Math.abs(card.change)}% vs last month
-              </p>
-              <p className="text-[10px] text-muted-foreground mt-0.5">
-                {card.key === "total_revenue" ? "Updated in real time" 
-                  : card.key === "subscriptions" ? "Categorized automatically" 
-                  : "Income minus expenses"}
-              </p>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+      <IncomeDetailModal open={incomeModalOpen} onOpenChange={setIncomeModalOpen} />
+      <ExpenseDetailModal open={expenseModalOpen} onOpenChange={setExpenseModalOpen} />
+    </>
   );
 }

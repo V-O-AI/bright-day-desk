@@ -12,7 +12,7 @@ export interface FinancialMetric {
   trend_data: number[];
 }
 
-export type MetricPeriod = "day" | "week" | "month";
+export type MetricPeriod = "day" | "week" | "month" | "year";
 
 export function useFinancialMetrics(period: MetricPeriod) {
   return useQuery({

@@ -157,6 +157,32 @@ const ClientChatsContent = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Open specific chat from URL query params (e.g. from dashboard)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const chatId = params.get("chatId");
+    const chatName = params.get("chatName");
+    if (chatId && chatName) {
+      // Find the chat in mockChats or create a temporary entry
+      const existingChat = mockChats.find(c => c.id.toString() === chatId || c.name === chatName);
+      if (existingChat) {
+        setSelectedChat({
+          id: existingChat.id,
+          name: existingChat.name,
+          online: existingChat.online,
+          avatar: existingChat.avatar,
+        });
+      } else {
+        setSelectedChat({
+          id: parseInt(chatId) || 999,
+          name: chatName,
+          online: true,
+          avatar: "",
+        });
+      }
+    }
+  }, [location.search]);
+
   // Collapse sidebar when chat is selected
   useEffect(() => {
     if (selectedChat) {

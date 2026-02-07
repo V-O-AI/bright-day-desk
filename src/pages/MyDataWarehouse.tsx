@@ -2,6 +2,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { WarehousePieChart } from "@/components/charts/WarehousePieChart";
 
 const MyDataWarehouse = () => {
   const navigate = useNavigate();
@@ -23,8 +24,21 @@ const MyDataWarehouse = () => {
           </div>
         </div>
         
-        <div className="flex items-center justify-center h-[400px] border border-dashed border-border rounded-lg">
-          <p className="text-muted-foreground">Контент раздела "Мой склад" будет здесь</p>
+        {/* Interactive Warehouse Pie Chart */}
+        <div className="bg-card rounded-2xl p-6 border border-border">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="font-semibold">Распределение по категориям</h3>
+              <p className="text-xs text-muted-foreground">Нажмите на сектор для детализации</p>
+            </div>
+          </div>
+          <div className="h-[350px]">
+            <WarehousePieChart />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-center h-[300px] border border-dashed border-border rounded-lg">
+          <p className="text-muted-foreground">Дополнительный контент склада будет здесь</p>
         </div>
       </div>
     </AppLayout>

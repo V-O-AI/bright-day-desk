@@ -1,175 +1,279 @@
+import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Calendar, Phone, Mail, MapPin, Plus, CreditCard, Settings, BookOpen, PlayCircle } from "lucide-react";
+import { Calendar, Plus, Settings, MessageCircle, CalendarDays } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useLatestClientChats } from "@/hooks/useClientChats";
+
+import cardWarehouse from "@/assets/card-warehouse.jpg";
+import cardConsultant from "@/assets/card-consultant.jpg";
+import cardNotifications from "@/assets/card-notifications.jpg";
 
 const Cabinet = () => {
+  const { profile, isLoading, saveProfile } = useUserProfile();
+  const { data: chats } = useLatestClientChats(100);
+
+  // Form state
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [city, setCity] = useState("");
+
+  const [cardSettingsOpen, setCardSettingsOpen] = useState(false);
+
+  // Sync form with profile
+  useEffect(() => {
+    if (profile) {
+      setFirstName(profile.first_name || "");
+      setLastName(profile.last_name || "");
+      setDateOfBirth(profile.date_of_birth || "");
+      setPhone(profile.phone || "");
+      setEmail(profile.email || "");
+      setCity(profile.city || "");
+    }
+  }, [profile]);
+
+  const handleSave = async () => {
+    await saveProfile({
+      first_name: firstName,
+      last_name: lastName,
+      date_of_birth: dateOfBirth,
+      phone: phone,
+      email: email,
+      city: city,
+    });
+  };
+
+  const handleCancel = () => {
+    if (profile) {
+      setFirstName(profile.first_name || "");
+      setLastName(profile.last_name || "");
+      setDateOfBirth(profile.date_of_birth || "");
+      setPhone(profile.phone || "");
+      setEmail(profile.email || "");
+      setCity(profile.city || "");
+    }
+  };
+
+  // Calculate days since registration
+  const daysSinceRegistration = profile?.created_at
+    ? Math.floor((Date.now() - new Date(profile.created_at).getTime()) / (1000 * 60 * 60 * 24))
+    : 0;
+
+  // Count new chats (unread_count > 0 as "processed by AI")
+  const newChatsCount = chats?.filter(c => c.unread_count > 0).length || 0;
+
+  const integrationCards = [
+    {
+      image: cardWarehouse,
+      title: "Подключить склад к TG",
+      advantages: [
+        "Все в одном месте",
+        "Быстрый учет фин операций",
+        "Мгновенное действие без ПК",
+        "Экономия времени",
+        "Передача данных для аналитики",
+      ],
+    },
+    {
+      image: cardConsultant,
+      title: "Подключить ИИ-консультанта",
+      advantages: [
+        "Экономия времени на ответ",
+        "Сокращение ожидания пользователей",
+        "Моментальный мониторинг склада",
+        "Ответы исходя из аналитики клиентов",
+      ],
+    },
+    {
+      image: cardNotifications,
+      title: "Подключить уведомления о своем бизнесе",
+      advantages: [
+        "Ежедневный мониторинг дел бизнеса",
+        "Получение отчетов прямо в TG",
+        "Моментальные уведомления об аномалиях бизнеса",
+        "Уведомления о готовности клиента купить",
+      ],
+    },
+  ];
+
   return (
     <AppLayout>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full overflow-auto pb-6">
         
-        {/* Левая колонка - Account details */}
+        {/* Левая колонка - Данные аккаунта */}
         <div className="lg:col-span-3 space-y-6">
           <div className="bg-card rounded-2xl p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "0ms", animationFillMode: "forwards" }}>
-            <h2 className="text-lg font-semibold mb-6">Account details</h2>
+            <h2 className="text-lg font-semibold mb-6">Данные аккаунта</h2>
             
-            {/* Profile photo */}
+            {/* Фото профиля */}
             <div className="mb-6">
-              <Label className="text-sm text-muted-foreground mb-2 block">Profile photo</Label>
+              <Label className="text-sm text-muted-foreground mb-2 block">Фото профиля</Label>
               <div className="flex items-center gap-4">
                 <Avatar className="w-14 h-14">
                   <AvatarImage src="" />
-                  <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-lg">AK</AvatarFallback>
+                  <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-lg">
+                    {firstName?.[0]?.toUpperCase() || ""}{lastName?.[0]?.toUpperCase() || ""}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium">Upload new photo</span>
-                  <span className="text-xs text-muted-foreground">PNG,JPG max size of 5MB</span>
-                  <button className="text-xs text-destructive hover:underline text-left mt-1">Remove</button>
+                  <span className="text-sm font-medium">Загрузить фото</span>
+                  <span className="text-xs text-muted-foreground">PNG, JPG макс. 5МБ</span>
+                  <button className="text-xs text-destructive hover:underline text-left mt-1">Удалить</button>
                 </div>
               </div>
             </div>
 
-            {/* Name */}
+            {/* Имя */}
             <div className="mb-4">
-              <Label className="text-sm text-muted-foreground mb-2 block">Name</Label>
+              <Label className="text-sm text-muted-foreground mb-2 block">Имя</Label>
               <Input 
-                placeholder="Arina" 
-                defaultValue="Arina"
+                placeholder="Введите имя"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
                 className="bg-muted/50 border-border"
               />
             </div>
 
-            {/* Surname */}
+            {/* Фамилия */}
             <div className="mb-4">
-              <Label className="text-sm text-muted-foreground mb-2 block">Surname</Label>
+              <Label className="text-sm text-muted-foreground mb-2 block">Фамилия</Label>
               <Input 
-                placeholder="Karnet" 
-                defaultValue="Karnet"
+                placeholder="Введите фамилию"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
                 className="bg-muted/50 border-border"
               />
             </div>
 
-            {/* Date of Birth */}
+            {/* Дата рождения */}
             <div className="mb-4">
-              <Label className="text-sm text-muted-foreground mb-2 block">Date of Birth:</Label>
+              <Label className="text-sm text-muted-foreground mb-2 block">Дата рождения</Label>
               <div className="relative">
                 <Input 
-                  placeholder="07/10/1989" 
-                  defaultValue="07/10/1989"
+                  placeholder="ДД/ММ/ГГГГ"
+                  value={dateOfBirth}
+                  onChange={(e) => setDateOfBirth(e.target.value)}
                   className="bg-muted/50 border-border pr-10"
                 />
                 <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               </div>
             </div>
 
-            {/* Phone */}
+            {/* Телефон */}
             <div className="mb-4">
-              <Label className="text-sm text-muted-foreground mb-2 block">Phone</Label>
-              <div className="relative">
-                <Input 
-                  placeholder="+1 (555) 123-4567" 
-                  defaultValue="+1 (555) 123-4567"
-                  className="bg-muted/50 border-border"
-                />
-              </div>
+              <Label className="text-sm text-muted-foreground mb-2 block">Телефон</Label>
+              <Input 
+                placeholder="+7 (999) 123-45-67"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="bg-muted/50 border-border"
+              />
             </div>
 
             {/* Email */}
             <div className="mb-4">
-              <Label className="text-sm text-muted-foreground mb-2 block">Email</Label>
+              <Label className="text-sm text-muted-foreground mb-2 block">Электронная почта</Label>
               <Input 
                 type="email"
-                placeholder="arina.karnet@example.com" 
-                defaultValue="arina.karnet@example.com"
+                placeholder="email@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="bg-muted/50 border-border"
               />
             </div>
 
-            {/* Place of Residence */}
+            {/* Город проживания */}
             <div className="mb-6">
-              <Label className="text-sm text-muted-foreground mb-2 block">Place of Residence:</Label>
+              <Label className="text-sm text-muted-foreground mb-2 block">Город проживания</Label>
               <Input 
-                placeholder="Stenford st., New York, USA" 
-                defaultValue="Stenford st., New York, USA"
+                placeholder="Введите город"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
                 className="bg-muted/50 border-border"
               />
             </div>
 
-            {/* Buttons */}
-            <Button className="w-full mb-3 bg-primary hover:bg-primary/90">
-              Save changes
+            {/* Кнопки */}
+            <Button className="w-full mb-3 bg-primary hover:bg-primary/90" onClick={handleSave}>
+              Сохранить
             </Button>
-            <Button variant="outline" className="w-full">
-              Cancel changes
+            <Button variant="outline" className="w-full" onClick={handleCancel}>
+              Отменить
             </Button>
           </div>
         </div>
 
-        {/* Центральная колонка - Courses & Cards */}
+        {/* Центральная колонка - Привязка аккаунтов & Карты */}
         <div className="lg:col-span-5 space-y-6">
           
-          {/* Available courses */}
+          {/* Привязать аккаунты */}
           <div className="bg-card rounded-2xl p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "50ms", animationFillMode: "forwards" }}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold">Available courses</h3>
-              <button className="text-sm text-primary hover:underline">View all</button>
+              <h3 className="font-semibold">Привязать аккаунты</h3>
             </div>
             
             <div className="grid grid-cols-3 gap-3">
-              {[
-                { title: "Speaking Deutch course for begginer", level: "Begginer A2", progress: 25, color: "bg-primary" },
-                { title: "Industrial English for medium level", level: "Intermediate B2", progress: 53, color: "bg-primary" },
-                { title: "Speaking French course for begginer", level: "Begginer A1", progress: 36, color: "bg-primary" },
-              ].map((course, index) => (
-                <div key={index} className="bg-muted/30 rounded-xl p-3 hover:shadow-md transition-shadow">
-                  <div className="h-20 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-lg mb-3 flex items-center justify-center">
-                    <BookOpen className="h-8 w-8 text-primary/60" />
-                  </div>
-                  <h4 className="text-xs font-medium mb-1 line-clamp-2">{course.title}</h4>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
-                    <span>{course.level}</span>
-                    <span>{course.progress}%</span>
-                  </div>
-                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full ${course.color} rounded-full transition-all`}
-                      style={{ width: `${course.progress}%` }}
+              {integrationCards.map((card, index) => (
+                <div key={index} className="bg-muted/30 rounded-xl p-3 hover:shadow-md transition-shadow flex flex-col">
+                  <div className="h-24 rounded-lg mb-3 overflow-hidden">
+                    <img 
+                      src={card.image} 
+                      alt={card.title} 
+                      className="w-full h-full object-cover"
                     />
                   </div>
+                  <h3 className="text-xs font-semibold mb-2 line-clamp-2">{card.title}</h3>
+                  <h4 className="text-[10px] font-medium text-muted-foreground mb-1">Преимущества:</h4>
+                  <ul className="space-y-0.5 flex-1">
+                    {card.advantages.map((adv, i) => (
+                      <li key={i} className="text-[10px] text-muted-foreground flex items-start gap-1">
+                        <span className="text-primary mt-0.5">•</span>
+                        <span>{adv}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Stats row */}
+          {/* Статистика */}
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-card rounded-2xl p-6 border border-border flex items-center gap-4 opacity-0 animate-fade-in-up" style={{ animationDelay: "100ms", animationFillMode: "forwards" }}>
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <BookOpen className="h-6 w-6 text-primary" />
+                <MessageCircle className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Courses started</p>
-                <p className="text-2xl font-bold">12</p>
+                <p className="text-xs text-muted-foreground">Чатов с клиентами</p>
+                <p className="text-2xl font-bold">{newChatsCount}</p>
               </div>
             </div>
             <div className="bg-card rounded-2xl p-6 border border-border flex items-center gap-4 opacity-0 animate-fade-in-up" style={{ animationDelay: "150ms", animationFillMode: "forwards" }}>
               <div className="w-12 h-12 rounded-xl bg-destructive/10 flex items-center justify-center">
-                <PlayCircle className="h-6 w-6 text-destructive" />
+                <CalendarDays className="h-6 w-6 text-destructive" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground">Lessons completed</p>
-                <p className="text-2xl font-bold">435</p>
+                <p className="text-xs text-muted-foreground">Дней с нами</p>
+                <p className="text-2xl font-bold">{daysSinceRegistration}</p>
               </div>
             </div>
           </div>
 
-          {/* Cards section */}
+          {/* Блок с картами */}
           <div className="bg-card rounded-2xl p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "200ms", animationFillMode: "forwards" }}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold">Cards</h3>
-              <button className="p-2 hover:bg-muted rounded-lg transition-colors">
+              <h3 className="font-semibold">Карты</h3>
+              <button 
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                onClick={() => setCardSettingsOpen(true)}
+              >
                 <Settings className="h-4 w-4 text-muted-foreground" />
               </button>
             </div>
@@ -183,7 +287,7 @@ const Cabinet = () => {
                 5632 5432 6733 6844
               </div>
               <div className="absolute bottom-5 left-5 text-white text-sm">
-                Arina Karnet
+                {firstName || "Имя"} {lastName || "Фамилия"}
               </div>
               <div className="absolute bottom-5 right-5">
                 <div className="flex -space-x-3">
@@ -195,48 +299,48 @@ const Cabinet = () => {
 
             <Button variant="outline" className="w-full flex items-center gap-2">
               <Plus className="h-4 w-4" />
-              Add new card
+              Добавить карту
             </Button>
           </div>
         </div>
 
-        {/* Правая колонка - Plan & Transactions */}
+        {/* Правая колонка - Подписка & Транзакции */}
         <div className="lg:col-span-4 space-y-6">
           
-          {/* Plan */}
+          {/* Подписка */}
           <div className="bg-card rounded-2xl p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "250ms", animationFillMode: "forwards" }}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold">Plan</h3>
-              <button className="text-sm text-primary hover:underline">See all plans</button>
+              <h3 className="font-semibold">Подписка</h3>
+              <button className="text-sm text-primary hover:underline">Все планы</button>
             </div>
             
             <div className="mb-4">
               <h4 className="font-semibold text-lg mb-2">Professional</h4>
               <p className="text-sm text-muted-foreground mb-4">
-                Full feature set including a personal tutor and unlimited access to materials
+                Полный набор функций включая персонального ИИ-консультанта и неограниченный доступ к материалам
               </p>
               <div className="flex items-baseline gap-1 mb-4">
                 <span className="text-3xl font-bold">$89.99</span>
-                <span className="text-muted-foreground">/ year</span>
+                <span className="text-muted-foreground">/ год</span>
               </div>
             </div>
 
             <Button className="w-full bg-primary hover:bg-primary/90">
-              Extend the subscription
+              Продлить подписку
             </Button>
           </div>
 
-          {/* Last transaction */}
+          {/* История транзакций */}
           <div className="bg-card rounded-2xl p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "300ms", animationFillMode: "forwards" }}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold">Last transaction</h3>
-              <button className="text-sm text-primary hover:underline">View all</button>
+              <h3 className="font-semibold">Последние транзакции</h3>
+              <button className="text-sm text-primary hover:underline">Все</button>
             </div>
             
             <div className="space-y-4">
               {[
-                { initials: "PT", title: 'Trial 14 days "Professional"', amount: "- $0,00", color: "text-destructive", bgColor: "bg-purple-100 dark:bg-purple-900/30" },
-                { initials: "PTC", title: 'Cancel trial "Professional"', amount: "+ $0,00", color: "text-primary", bgColor: "bg-purple-100 dark:bg-purple-900/30" },
+                { initials: "PT", title: 'Пробный период 14 дней "Professional"', amount: "- $0,00", color: "text-destructive", bgColor: "bg-purple-100 dark:bg-purple-900/30" },
+                { initials: "PTC", title: 'Отмена пробного периода "Professional"', amount: "+ $0,00", color: "text-primary", bgColor: "bg-purple-100 dark:bg-purple-900/30" },
               ].map((transaction, index) => (
                 <div key={index} className="flex items-center gap-4">
                   <div className={`w-12 h-12 rounded-xl ${transaction.bgColor} flex items-center justify-center`}>
@@ -252,6 +356,32 @@ const Cabinet = () => {
           </div>
         </div>
       </div>
+
+      {/* Модальное окно настроек карт */}
+      <Dialog open={cardSettingsOpen} onOpenChange={setCardSettingsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Настройки карт</DialogTitle>
+            <DialogDescription>Управление привязанными банковскими картами</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl border border-border">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-7 bg-gradient-to-r from-purple-500 to-pink-500 rounded-md" />
+                <div>
+                  <p className="text-sm font-medium">•••• •••• •••• 6844</p>
+                  <p className="text-xs text-muted-foreground">Основная карта</p>
+                </div>
+              </div>
+              <Button variant="outline" size="sm">Удалить</Button>
+            </div>
+            <Button variant="outline" className="w-full flex items-center gap-2">
+              <Plus className="h-4 w-4" />
+              Добавить новую карту
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 };

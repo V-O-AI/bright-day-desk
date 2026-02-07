@@ -236,9 +236,9 @@ const ClientChatsContent = () => {
   // Chat View Mode (when a chat is selected)
   if (selectedChat) {
     return (
-      <div className="flex h-[calc(100vh-5rem)] gap-0 animate-fade-in">
+      <div className="flex h-[calc(100vh-5rem)] gap-0">
         {/* Mini Sidebar with Icons */}
-        <div className="w-14 bg-sidebar border-r border-sidebar-border flex flex-col items-center py-4 transition-all duration-300 animate-fade-in">
+        <div className="w-14 bg-sidebar border-r border-sidebar-border flex flex-col items-center py-4 transition-all duration-300">
           {/* Main nav items */}
           <div className="flex-1 flex flex-col items-center gap-1">
             {sidebarNavItems.map((item) => {
@@ -290,7 +290,7 @@ const ClientChatsContent = () => {
         </div>
 
         {/* Compact Chat List */}
-        <div className="w-64 bg-card border-r border-border flex flex-col transition-all duration-300 animate-fade-in">
+        <div className="w-64 bg-card border-r border-border flex flex-col transition-all duration-300">
           {/* Search Header */}
           <div className="p-3 border-b border-border">
             <div className="relative">

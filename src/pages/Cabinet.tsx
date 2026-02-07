@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Calendar, Plus, Settings, MessageCircle, CalendarDays } from "lucide-react";
+import { Calendar, Plus, Settings, MessageCircle, CalendarDays, Copy, Check } from "lucide-react";
 import { CalendarNotes } from "@/components/CalendarNotes";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -15,6 +16,7 @@ import cardConsultant from "@/assets/card-consultant.jpg";
 import cardNotifications from "@/assets/card-notifications.jpg";
 
 const Cabinet = () => {
+  const navigate = useNavigate();
   const { profile, isLoading, saveProfile } = useUserProfile();
   const { data: chats } = useLatestClientChats(100);
 
@@ -27,6 +29,8 @@ const Cabinet = () => {
   const [city, setCity] = useState("");
 
   const [cardSettingsOpen, setCardSettingsOpen] = useState(false);
+  const [integrationModalIndex, setIntegrationModalIndex] = useState<number | null>(null);
+  const [copiedLink, setCopiedLink] = useState<number | null>(null);
 
   // Sync form with profile
   useEffect(() => {
@@ -81,6 +85,9 @@ const Cabinet = () => {
         "Экономия времени",
         "Передача данных для аналитики",
       ],
+      modalTitle: "Подключение склада к Telegram",
+      modalDescription: "Интеграция позволяет управлять складом прямо из Telegram-бота. Вы сможете добавлять, редактировать и отслеживать товары, получать уведомления о поступлениях и списаниях, а также формировать отчёты — всё без необходимости открывать компьютер.",
+      link: "https://t.me/your_warehouse_bot",
     },
     {
       image: cardConsultant,
@@ -91,6 +98,9 @@ const Cabinet = () => {
         "Моментальный мониторинг склада",
         "Ответы исходя из аналитики клиентов",
       ],
+      modalTitle: "Подключение ИИ-консультанта",
+      modalDescription: "ИИ-консультант автоматически отвечает клиентам на основе данных вашего склада и аналитики. Он обрабатывает запросы 24/7, снижает нагрузку на менеджеров и повышает скорость обслуживания, используя актуальную информацию о наличии и ценах.",
+      link: "https://t.me/your_ai_consultant_bot",
     },
     {
       image: cardNotifications,
@@ -101,8 +111,17 @@ const Cabinet = () => {
         "Моментальные уведомления об аномалиях бизнеса",
         "Уведомления о готовности клиента купить",
       ],
+      modalTitle: "Подключение бизнес-уведомлений",
+      modalDescription: "Получайте ежедневные отчёты, оповещения об аномалиях (резкий рост или падение продаж, критический остаток товара) и уведомления о «горячих» клиентах прямо в Telegram. Настраивайте фильтры и расписание под свои потребности.",
+      link: "https://t.me/your_notifications_bot",
     },
   ];
+
+  const handleCopyLink = (index: number, link: string) => {
+    navigator.clipboard.writeText(link);
+    setCopiedLink(index);
+    setTimeout(() => setCopiedLink(null), 2000);
+  };
 
   return (
     <AppLayout>
@@ -222,7 +241,11 @@ const Cabinet = () => {
             
             <div className="grid grid-cols-3 gap-3">
               {integrationCards.map((card, index) => (
-                <div key={index} className="bg-muted/30 rounded-xl p-3 hover:shadow-md transition-shadow flex flex-col">
+                <div 
+                  key={index} 
+                  className="bg-muted/30 rounded-xl p-3 hover:shadow-md transition-shadow flex flex-col cursor-pointer"
+                  onClick={() => setIntegrationModalIndex(index)}
+                >
                   <div className="h-24 rounded-lg mb-3 overflow-hidden">
                     <img 
                       src={card.image} 
@@ -312,7 +335,12 @@ const Cabinet = () => {
           <div className="bg-card rounded-2xl p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "250ms", animationFillMode: "forwards" }}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold">Подписка</h3>
-              <button className="text-sm text-primary hover:underline">Все планы</button>
+              <button 
+                className="text-sm text-primary hover:underline"
+                onClick={() => navigate("/billing")}
+              >
+                Все планы
+              </button>
             </div>
             
             <div className="mb-4">
@@ -326,7 +354,10 @@ const Cabinet = () => {
               </div>
             </div>
 
-            <Button className="w-full bg-primary hover:bg-primary/90">
+            <Button 
+              className="w-full bg-primary hover:bg-primary/90"
+              onClick={() => navigate("/billing")}
+            >
               Продлить подписку
             </Button>
           </div>
@@ -384,6 +415,55 @@ const Cabinet = () => {
               Добавить новую карту
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Модальное окно интеграции */}
+      <Dialog open={integrationModalIndex !== null} onOpenChange={(open) => !open && setIntegrationModalIndex(null)}>
+        <DialogContent>
+          {integrationModalIndex !== null && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{integrationCards[integrationModalIndex].modalTitle}</DialogTitle>
+                <DialogDescription>{integrationCards[integrationModalIndex].modalDescription}</DialogDescription>
+              </DialogHeader>
+              <div className="py-4 space-y-4">
+                <div>
+                  <Label className="text-sm text-muted-foreground mb-2 block">Ссылка для подключения</Label>
+                  <div className="flex items-center gap-2">
+                    <Input 
+                      readOnly 
+                      value={integrationCards[integrationModalIndex].link} 
+                      className="bg-muted/50 border-border text-sm flex-1"
+                    />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="flex-shrink-0"
+                      onClick={() => handleCopyLink(integrationModalIndex, integrationCards[integrationModalIndex].link)}
+                    >
+                      {copiedLink === integrationModalIndex ? (
+                        <Check className="h-4 w-4 text-primary" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium mb-2">Преимущества:</h4>
+                  <ul className="space-y-1.5">
+                    {integrationCards[integrationModalIndex].advantages.map((adv, i) => (
+                      <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                        <span className="text-primary mt-0.5">•</span>
+                        <span>{adv}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </AppLayout>

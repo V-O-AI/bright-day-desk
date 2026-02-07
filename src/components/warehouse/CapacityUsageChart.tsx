@@ -16,7 +16,7 @@ export function CapacityUsageChart() {
   return (
     <div className="bg-foreground rounded-2xl p-5 flex flex-col h-full text-background">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-semibold text-sm">Capacity Usage</h3>
+        <h3 className="font-semibold text-sm">Заполненность склада</h3>
         <MoreHorizontal className="h-4 w-4 opacity-60" />
       </div>
 
@@ -42,19 +42,19 @@ export function CapacityUsageChart() {
           </PieChart>
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-          <span className="text-[10px] opacity-60">Total Usage</span>
+          <span className="text-[10px] opacity-60">Загрузка</span>
           <span className="text-2xl font-bold">{usagePercent}%</span>
         </div>
       </div>
 
       <div className="flex justify-between mt-2 text-xs">
         <div className="text-center">
-          <p className="opacity-60">Loaded</p>
-          <p className="font-semibold">{loaded} shelves</p>
+          <p className="opacity-60">Загружено</p>
+          <p className="font-semibold">{loaded} полок</p>
         </div>
         <div className="text-center">
-          <p className="opacity-60">Empty</p>
-          <p className="font-semibold">{empty} shelves</p>
+          <p className="opacity-60">Свободно</p>
+          <p className="font-semibold">{empty} полок</p>
         </div>
       </div>
     </div>

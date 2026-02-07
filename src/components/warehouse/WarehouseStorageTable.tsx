@@ -6,18 +6,28 @@ interface StorageRow {
   id: number;
   category: string;
   productName: string;
+  purchased: number;
   remaining: number;
-  quantity: number;
   lastChange: string;
   turnoverDays: number;
 }
 
 const mockData: StorageRow[] = [
-  { id: 1, category: "Электроника", productName: "Смартфон X200", remaining: 45, quantity: 200, lastChange: "02.02.2026", turnoverDays: 12 },
-  { id: 2, category: "Одежда", productName: "Куртка зимняя", remaining: 120, quantity: 500, lastChange: "01.02.2026", turnoverDays: 30 },
-  { id: 3, category: "Дом и Кухня", productName: "Набор посуды", remaining: 18, quantity: 150, lastChange: "31.01.2026", turnoverDays: 7 },
-  { id: 4, category: "Автозапчасти", productName: "Масляный фильтр", remaining: 340, quantity: 1000, lastChange: "03.02.2026", turnoverDays: 45 },
-  { id: 5, category: "Красота и Здоровье", productName: "Крем для лица", remaining: 75, quantity: 300, lastChange: "30.01.2026", turnoverDays: 20 },
+  { id: 1, category: "Электроника", productName: "Смартфон X200", purchased: 200, remaining: 45, lastChange: "02.02.2026", turnoverDays: 12 },
+  { id: 2, category: "Одежда", productName: "Куртка зимняя", purchased: 500, remaining: 120, lastChange: "01.02.2026", turnoverDays: 30 },
+  { id: 3, category: "Дом и Кухня", productName: "Набор посуды", purchased: 150, remaining: 18, lastChange: "31.01.2026", turnoverDays: 7 },
+  { id: 4, category: "Автозапчасти", productName: "Масляный фильтр", purchased: 1000, remaining: 340, lastChange: "03.02.2026", turnoverDays: 45 },
+  { id: 5, category: "Красота и Здоровье", productName: "Крем для лица", purchased: 300, remaining: 75, lastChange: "30.01.2026", turnoverDays: 20 },
+  { id: 6, category: "Электроника", productName: "Наушники BT-500", purchased: 400, remaining: 310, lastChange: "04.02.2026", turnoverDays: 60 },
+  { id: 7, category: "Одежда", productName: "Футболка базовая", purchased: 800, remaining: 95, lastChange: "28.01.2026", turnoverDays: 8 },
+  { id: 8, category: "Дом и Кухня", productName: "Чайник электрический", purchased: 250, remaining: 200, lastChange: "05.02.2026", turnoverDays: 55 },
+  { id: 9, category: "Автозапчасти", productName: "Тормозные колодки", purchased: 600, remaining: 30, lastChange: "29.01.2026", turnoverDays: 5 },
+  { id: 10, category: "Красота и Здоровье", productName: "Шампунь органик", purchased: 350, remaining: 280, lastChange: "03.02.2026", turnoverDays: 40 },
+  { id: 11, category: "Электроника", productName: "Роутер Wi-Fi 6", purchased: 180, remaining: 12, lastChange: "27.01.2026", turnoverDays: 3 },
+  { id: 12, category: "Одежда", productName: "Джинсы классика", purchased: 450, remaining: 370, lastChange: "04.02.2026", turnoverDays: 50 },
+  { id: 13, category: "Дом и Кухня", productName: "Сковорода антипригар", purchased: 300, remaining: 55, lastChange: "01.02.2026", turnoverDays: 14 },
+  { id: 14, category: "Автозапчасти", productName: "Свечи зажигания", purchased: 700, remaining: 580, lastChange: "05.02.2026", turnoverDays: 70 },
+  { id: 15, category: "Красота и Здоровье", productName: "Маска для волос", purchased: 200, remaining: 25, lastChange: "26.01.2026", turnoverDays: 6 },
 ];
 
 const sortOptions = ["Категория", "Товар", "Остаток"];
@@ -26,17 +36,16 @@ export function WarehouseStorageTable() {
   const [sortBy, setSortBy] = useState("Категория");
   const [sortOpen, setSortOpen] = useState(false);
 
-  const getRemainingColor = (remaining: number, quantity: number) => {
-    const ratio = remaining / quantity;
+  const getRemainingColor = (ratio: number) => {
     if (ratio <= 0.15) return "hsl(0, 72%, 51%)";
     if (ratio <= 0.35) return "hsl(35, 92%, 50%)";
     return "hsl(142, 71%, 45%)";
   };
 
   return (
-    <div className="bg-card rounded-2xl p-5 border border-border">
+    <div className="bg-card rounded-2xl p-5 border border-border flex flex-col" style={{ maxHeight: 420 }}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-foreground">Warehouse Storage</h3>
+        <h3 className="font-semibold text-foreground">Таблица данных</h3>
         <div className="flex items-center gap-2">
           <button className="flex items-center gap-1.5 text-xs text-muted-foreground border border-border rounded-lg px-3 py-1.5 hover:bg-muted/50 transition-colors">
             <Filter className="h-3 w-3" />
@@ -73,9 +82,9 @@ export function WarehouseStorageTable() {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto overflow-y-auto flex-1">
         <table className="w-full text-sm">
-          <thead>
+          <thead className="sticky top-0 bg-card z-[1]">
             <tr className="text-muted-foreground text-xs">
               <th className="text-left pb-3 font-medium">
                 <span className="inline-flex items-center gap-1">№ <ArrowUpDown className="h-3 w-3" /></span>
@@ -102,8 +111,8 @@ export function WarehouseStorageTable() {
           </thead>
           <tbody>
             {mockData.map((row) => {
-              const remainingColor = getRemainingColor(row.remaining, row.quantity);
-              const remainingPct = Math.round((row.remaining / row.quantity) * 100);
+              const remainingPct = Math.round((row.remaining / row.purchased) * 100);
+              const remainingColor = getRemainingColor(remainingPct / 100);
 
               return (
                 <tr key={row.id} className="border-t border-border">
@@ -112,7 +121,7 @@ export function WarehouseStorageTable() {
                   <td className="py-3 text-foreground">{row.productName}</td>
                   <td className="py-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
+                      <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all"
                           style={{
@@ -121,10 +130,10 @@ export function WarehouseStorageTable() {
                           }}
                         />
                       </div>
-                      <span className="text-xs text-muted-foreground">{row.remaining} шт</span>
+                      <span className="text-xs text-muted-foreground">{remainingPct}%</span>
                     </div>
                   </td>
-                  <td className="py-3 text-foreground">{row.quantity.toLocaleString()} шт</td>
+                  <td className="py-3 text-foreground">{row.remaining.toLocaleString()} шт</td>
                   <td className="py-3 text-muted-foreground text-xs">{row.lastChange}</td>
                   <td className="py-3">
                     <span

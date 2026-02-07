@@ -38,7 +38,7 @@ export function WarehouseActivityLog() {
   return (
     <div className="bg-card rounded-2xl p-5 border border-border h-full flex flex-col">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-foreground">Warehouse Activity Log</h3>
+        <h3 className="font-semibold text-foreground">История закупок</h3>
         <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
       </div>
 

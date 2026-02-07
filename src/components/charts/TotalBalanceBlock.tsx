@@ -1,10 +1,18 @@
 import { useState } from "react";
-import { TrendingUp, TrendingDown, Wallet, ChevronDown } from "lucide-react";
+import { TrendingUp, TrendingDown, CalendarIcon, ChevronDown } from "lucide-react";
 import { useFinancialMetrics, MetricPeriod } from "@/hooks/useFinancialMetrics";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { IncomeDetailModal } from "./IncomeDetailModal";
 import { ExpenseDetailModal } from "./ExpenseDetailModal";
+import { format, isWithinInterval, isSameDay } from "date-fns";
+import { ru } from "date-fns/locale";
+import { DayPicker, DateRange } from "react-day-picker";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,6 +51,15 @@ export function TotalBalanceBlock({
   const { data: metrics, isLoading } = useFinancialMetrics(period);
   const [incomeModalOpen, setIncomeModalOpen] = useState(false);
   const [expenseModalOpen, setExpenseModalOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [calendarOpen, setCalendarOpen] = useState(false);
+
+  const rangeLabel =
+    dateRange?.from && dateRange?.to
+      ? `${format(dateRange.from, "dd.MM.yy")} — ${format(dateRange.to, "dd.MM.yy")}`
+      : dateRange?.from
+        ? `${format(dateRange.from, "dd.MM.yy")} — ...`
+        : null;
 
   const totalRevenue = metrics?.find((m) => m.metric_key === "total_revenue");
   const subscriptions = metrics?.find((m) => m.metric_key === "subscriptions");
@@ -101,9 +118,84 @@ export function TotalBalanceBlock({
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
-              <div className="p-2 rounded-xl bg-muted">
-                <Wallet className="h-4 w-4 text-muted-foreground" />
-              </div>
+              <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    className={cn(
+                      "p-2 rounded-xl bg-muted hover:bg-muted/80 transition-colors",
+                      dateRange?.from && "ring-1 ring-primary/30"
+                    )}
+                    title="Выберите период"
+                  >
+                    <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 z-50" align="end" sideOffset={8}>
+                  <div className="p-3 pb-1">
+                    <p className="text-sm font-medium text-foreground mb-1">Выберите период</p>
+                    {rangeLabel && (
+                      <p className="text-xs text-muted-foreground mb-1">{rangeLabel}</p>
+                    )}
+                  </div>
+                  <DayPicker
+                    mode="range"
+                    selected={dateRange}
+                    onSelect={setDateRange}
+                    locale={ru}
+                    showOutsideDays
+                    className="p-3 pointer-events-auto"
+                    classNames={{
+                      months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+                      month: "space-y-4",
+                      caption: "flex justify-center pt-1 relative items-center",
+                      caption_label: "text-sm font-medium",
+                      nav: "space-x-1 flex items-center",
+                      nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 inline-flex items-center justify-center rounded-md border border-input",
+                      nav_button_previous: "absolute left-1",
+                      nav_button_next: "absolute right-1",
+                      table: "w-full border-collapse space-y-1",
+                      head_row: "flex",
+                      head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+                      row: "flex w-full mt-2",
+                      cell: "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
+                      day: "h-9 w-9 p-0 font-normal rounded-full flex items-center justify-center transition-colors hover:bg-muted aria-selected:opacity-100",
+                      day_today: "bg-accent text-accent-foreground font-semibold",
+                      day_outside: "text-muted-foreground opacity-50",
+                      day_disabled: "text-muted-foreground opacity-50",
+                      day_hidden: "invisible",
+                    }}
+                    modifiers={{
+                      rangeStart: dateRange?.from ? [dateRange.from] : [],
+                      rangeEnd: dateRange?.to ? [dateRange.to] : [],
+                      rangeMiddle: (day: Date) => {
+                        if (!dateRange?.from || !dateRange?.to) return false;
+                        return (
+                          isWithinInterval(day, { start: dateRange.from, end: dateRange.to }) &&
+                          !isSameDay(day, dateRange.from) &&
+                          !isSameDay(day, dateRange.to)
+                        );
+                      },
+                    }}
+                    modifiersStyles={{
+                      rangeStart: {
+                        backgroundColor: "hsl(217, 91%, 60%)",
+                        color: "white",
+                        borderRadius: "50%",
+                      },
+                      rangeEnd: {
+                        backgroundColor: "hsl(0, 84%, 60%)",
+                        color: "white",
+                        borderRadius: "50%",
+                      },
+                      rangeMiddle: {
+                        backgroundColor: "hsl(217, 91%, 60%, 0.15)",
+                        color: "hsl(217, 91%, 60%)",
+                        borderRadius: "0",
+                      },
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
           <p className={cn("font-bold text-foreground", compact ? "text-3xl" : "text-4xl")}>

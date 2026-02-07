@@ -61,10 +61,10 @@ const Index = () => {
                 ))
               ) : (
                 (clientChats || []).map((chat) => (
-                  <button
+                   <button
                     key={chat.id}
-                    onClick={() => navigate(`/client-chats?chatId=${chat.id}&chatName=${encodeURIComponent(chat.client_name)}`)}
-                    className="flex items-center justify-between py-2 border-b border-border last:border-0 w-full text-left transition-all duration-150 hover:bg-muted/50 rounded-lg px-2 -mx-2"
+                    onClick={() => navigate(`/client-chats?chatId=${chat.id}&chatName=${encodeURIComponent(chat.client_name)}`, { replace: false })}
+                    className="flex items-center justify-between py-2 border-b border-border last:border-0 w-full text-left hover:bg-muted/50 rounded-lg px-2 -mx-2"
                   >
                     <div className="flex items-center gap-2">
                       <div className="relative">
@@ -78,7 +78,7 @@ const Index = () => {
                       <span className="font-medium text-sm">{chat.client_name}</span>
                     </div>
                     <span className="text-muted-foreground text-xs">{chat.client_type}</span>
-                    <div className="bg-foreground text-background px-3 py-1 rounded-lg text-xs transition-all duration-150 active:scale-[0.97] hover:opacity-90">
+                    <div className="bg-foreground text-background px-3 py-1 rounded-lg text-xs hover:opacity-90">
                       Открыть
                     </div>
                   </button>

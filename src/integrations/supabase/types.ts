@@ -14,7 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      financial_metrics: {
+        Row: {
+          change_percent: number | null
+          change_text: string | null
+          created_at: string
+          id: string
+          label: string
+          metric_key: string
+          period: string
+          trend_data: Json | null
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          change_percent?: number | null
+          change_text?: string | null
+          created_at?: string
+          id?: string
+          label: string
+          metric_key: string
+          period?: string
+          trend_data?: Json | null
+          updated_at?: string
+          value?: number
+        }
+        Update: {
+          change_percent?: number | null
+          change_text?: string | null
+          created_at?: string
+          id?: string
+          label?: string
+          metric_key?: string
+          period?: string
+          trend_data?: Json | null
+          updated_at?: string
+          value?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

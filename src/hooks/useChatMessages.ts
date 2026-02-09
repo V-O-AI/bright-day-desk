@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export interface ChatMessage {
   id: string;
@@ -8,9 +9,13 @@ export interface ChatMessage {
   created_at: string;
 }
 
+const MAX_MESSAGE_LENGTH = 2000;
+const RATE_LIMIT_MS = 1000;
+
 export function useChatMessages() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
+  const lastSentRef = useRef<number>(0);
 
   // Fetch initial messages
   useEffect(() => {
@@ -21,7 +26,7 @@ export function useChatMessages() {
         .order("created_at", { ascending: true });
 
       if (error) {
-        console.error("Error fetching messages:", error);
+        console.error("Failed to fetch messages");
       } else {
         setMessages((data as ChatMessage[]) || []);
       }
@@ -45,7 +50,6 @@ export function useChatMessages() {
         (payload) => {
           const newMsg = payload.new as ChatMessage;
           setMessages((prev) => {
-            // Avoid duplicates
             if (prev.some((m) => m.id === newMsg.id)) return prev;
             return [...prev, newMsg];
           });
@@ -61,12 +65,27 @@ export function useChatMessages() {
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim()) return;
 
+    // Rate limiting
+    const now = Date.now();
+    if (now - lastSentRef.current < RATE_LIMIT_MS) {
+      toast.error("Подождите перед отправкой следующего сообщения");
+      return;
+    }
+
+    // Length validation
+    if (content.length > MAX_MESSAGE_LENGTH) {
+      toast.error(`Сообщение не должно превышать ${MAX_MESSAGE_LENGTH} символов`);
+      return;
+    }
+
+    lastSentRef.current = now;
+
     const { error } = await supabase
       .from("chat_messages")
       .insert({ content: content.trim(), sender_type: "user" });
 
     if (error) {
-      console.error("Error sending message:", error);
+      console.error("Failed to send message");
     }
   }, []);
 

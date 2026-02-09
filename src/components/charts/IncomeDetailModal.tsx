@@ -8,6 +8,7 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface CategoryRow {
   name: string;
@@ -71,15 +72,17 @@ const mockCategories: CategoryRow[] = [
 ];
 
 function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ru-RU")} ₽`;
+  return `${value.toLocaleString("ru-RU", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} ₽`;
 }
 
 interface IncomeDetailModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  totalIncome?: number;
+  periodLabel?: string;
 }
 
-export function IncomeDetailModal({ open, onOpenChange }: IncomeDetailModalProps) {
+export function IncomeDetailModal({ open, onOpenChange, totalIncome = 0, periodLabel }: IncomeDetailModalProps) {
   const [selectedCategory, setSelectedCategory] = useState<CategoryRow | null>(null);
 
   const handleClose = (val: boolean) => {
@@ -89,10 +92,12 @@ export function IncomeDetailModal({ open, onOpenChange }: IncomeDetailModalProps
     onOpenChange(val);
   };
 
+  const computeAmount = (percent: number) => (percent / 100) * totalIncome;
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-card">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0 bg-card">
+        <DialogHeader className="px-6 pt-6 pb-4">
           <DialogTitle className="flex items-center gap-2">
             {selectedCategory && (
               <Button
@@ -106,53 +111,67 @@ export function IncomeDetailModal({ open, onOpenChange }: IncomeDetailModalProps
             )}
             {selectedCategory ? `Доходы — ${selectedCategory.name}` : "История доходов"}
           </DialogTitle>
+          {periodLabel && (
+            <p className="text-sm text-muted-foreground">
+              Период: {periodLabel} · Общий доход: {formatCurrency(totalIncome)}
+            </p>
+          )}
         </DialogHeader>
 
-        <div className="mt-2">
-          {/* Table header */}
-          <div className="grid grid-cols-4 gap-2 px-3 py-2 text-xs font-medium text-muted-foreground border-b border-border">
-            <span>{selectedCategory ? "Вид товара" : "Категория"}</span>
-            <span className="text-right">Кол-во продаж</span>
-            <span className="text-right">Средний чек</span>
-            <span className="text-right">% от дохода</span>
-          </div>
+        <ScrollArea className="flex-1 min-h-0 px-6 pb-6">
+          <div>
+            {/* Table header */}
+            <div className="grid grid-cols-5 gap-2 px-3 py-2 text-xs font-medium text-muted-foreground border-b border-border">
+              <span>{selectedCategory ? "Вид товара" : "Категория"}</span>
+              <span className="text-right">Кол-во продаж</span>
+              <span className="text-right">Средний чек</span>
+              <span className="text-right">% от дохода</span>
+              <span className="text-right">Сумма</span>
+            </div>
 
-          {/* Rows */}
-          {selectedCategory
-            ? selectedCategory.products.map((product) => (
-                <div
-                  key={product.name}
-                  className="grid grid-cols-4 gap-2 px-3 py-3 text-sm border-b border-border/50 hover:bg-muted/30 transition-colors"
-                >
-                  <span className="font-medium text-foreground">{product.name}</span>
-                  <span className="text-right text-muted-foreground">{product.salesCount}</span>
-                  <span className="text-right text-muted-foreground">{formatCurrency(product.avgCheck)}</span>
-                  <span className="text-right">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                      {product.percentOfTotal}%
+            {/* Rows */}
+            {selectedCategory
+              ? selectedCategory.products.map((product) => (
+                  <div
+                    key={product.name}
+                    className="grid grid-cols-5 gap-2 px-3 py-3 text-sm border-b border-border/50 hover:bg-muted/30 transition-colors"
+                  >
+                    <span className="font-medium text-foreground">{product.name}</span>
+                    <span className="text-right text-muted-foreground">{product.salesCount}</span>
+                    <span className="text-right text-muted-foreground">{formatCurrency(product.avgCheck)}</span>
+                    <span className="text-right">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                        {product.percentOfTotal}%
+                      </span>
                     </span>
-                  </span>
-                </div>
-              ))
-            : mockCategories.map((cat) => (
-                <div
-                  key={cat.name}
-                  onClick={() => setSelectedCategory(cat)}
-                  className="grid grid-cols-4 gap-2 px-3 py-3 text-sm border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors"
-                >
-                  <span className="font-medium text-foreground underline decoration-dotted underline-offset-2">
-                    {cat.name}
-                  </span>
-                  <span className="text-right text-muted-foreground">{cat.salesCount}</span>
-                  <span className="text-right text-muted-foreground">{formatCurrency(cat.avgCheck)}</span>
-                  <span className="text-right">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                      {cat.percentOfTotal}%
+                    <span className="text-right font-medium text-foreground">
+                      {formatCurrency(computeAmount(product.percentOfTotal))}
                     </span>
-                  </span>
-                </div>
-              ))}
-        </div>
+                  </div>
+                ))
+              : mockCategories.map((cat) => (
+                  <div
+                    key={cat.name}
+                    onClick={() => setSelectedCategory(cat)}
+                    className="grid grid-cols-5 gap-2 px-3 py-3 text-sm border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors"
+                  >
+                    <span className="font-medium text-foreground underline decoration-dotted underline-offset-2">
+                      {cat.name}
+                    </span>
+                    <span className="text-right text-muted-foreground">{cat.salesCount}</span>
+                    <span className="text-right text-muted-foreground">{formatCurrency(cat.avgCheck)}</span>
+                    <span className="text-right">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                        {cat.percentOfTotal}%
+                      </span>
+                    </span>
+                    <span className="text-right font-medium text-foreground">
+                      {formatCurrency(computeAmount(cat.percentOfTotal))}
+                    </span>
+                  </div>
+                ))}
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

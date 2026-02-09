@@ -56,64 +56,72 @@ const categoryCards = [
   },
 ];
 
-// Metrics data
-const metrics = [
-  {
-    categoryId: "finances",
-    label: "Рост/падение прибыли",
-    value: "+12.5%",
-    trend: "up" as const,
-    shape: "circle",
-  },
-  {
-    categoryId: "warehouse",
-    label: "Доля товаров которые дольше всего лежат без изменений",
-    value: "23%",
-    trend: "neutral" as const,
-    shape: "triangle",
-  },
-  {
-    categoryId: "clients",
-    label: "Кол-во клиентов",
-    value: "1,247",
-    trend: "up" as const,
-    shape: "square",
-  },
-];
+type PeriodValue = "day" | "week" | "month";
 
-// Insights data
-const insights = [
-  {
-    category: "Финансы",
-    type: "warning",
-    text: "Некоторые товары имеют себестоимость выше продажи. Исправив этот компонент, ваш доход может вырасти на 8%",
-  },
-  {
-    category: "Финансы",
-    type: "success",
-    text: 'Товар "Кроссовки Nike Air Max" имеет самое высокое количество продаж, стоит вкладываться в его рекламу, может принести увеличение дохода',
-  },
-  {
-    category: "Мой склад",
-    type: "warning",
-    text: 'Товар "Футболка Adidas" стоит пополнить его количество, иначе в противном случае он закончится на складе через 3 дня',
-  },
-  {
-    category: "Мой склад",
-    type: "info",
-    text: "У всех товаров количество находится в полном объеме, закупка товаров ближайшие 7 дней не планируется",
-  },
-  {
-    category: "Аналитика клиентов",
-    type: "success",
-    text: 'Товары из категории "обувь" интересуются чаще всего, стоит обратить на это внимание',
-  },
-];
+interface MetricItem {
+  categoryId: string;
+  label: string;
+  value: string;
+  trend: "up" | "down" | "neutral";
+  shape: string;
+}
+
+interface InsightItem {
+  category: string;
+  type: string;
+  text: string;
+}
+
+// Metrics data per period
+const metricsData: Record<PeriodValue, MetricItem[]> = {
+  day: [
+    { categoryId: "finances", label: "Рост/падение прибыли", value: "+2.1%", trend: "up" as const, shape: "circle" },
+    { categoryId: "warehouse", label: "Доля товаров которые дольше всего лежат без изменений", value: "18%", trend: "neutral" as const, shape: "triangle" },
+    { categoryId: "clients", label: "Кол-во клиентов", value: "48", trend: "up" as const, shape: "square" },
+  ],
+  week: [
+    { categoryId: "finances", label: "Рост/падение прибыли", value: "+12.5%", trend: "up" as const, shape: "circle" },
+    { categoryId: "warehouse", label: "Доля товаров которые дольше всего лежат без изменений", value: "23%", trend: "neutral" as const, shape: "triangle" },
+    { categoryId: "clients", label: "Кол-во клиентов", value: "1,247", trend: "up" as const, shape: "square" },
+  ],
+  month: [
+    { categoryId: "finances", label: "Рост/падение прибыли", value: "+34.8%", trend: "up" as const, shape: "circle" },
+    { categoryId: "warehouse", label: "Доля товаров которые дольше всего лежат без изменений", value: "31%", trend: "neutral" as const, shape: "triangle" },
+    { categoryId: "clients", label: "Кол-во клиентов", value: "5,120", trend: "up" as const, shape: "square" },
+  ],
+};
+
+
+
+// Insights data per period
+const insightsData: Record<PeriodValue, InsightItem[]> = {
+  day: [
+    { category: "Финансы", type: "success", text: "Сегодня продажи идут стабильно, прибыль в пределах нормы." },
+    { category: "Мой склад", type: "info", text: "Все товары в наличии, пополнение не требуется в ближайшие 24 часа." },
+    { category: "Аналитика клиентов", type: "success", text: "За сегодня 48 новых посетителей, конверсия выше среднего." },
+  ],
+  week: [
+    { category: "Финансы", type: "warning", text: "Некоторые товары имеют себестоимость выше продажи. Исправив этот компонент, ваш доход может вырасти на 8%" },
+    { category: "Финансы", type: "success", text: 'Товар "Кроссовки Nike Air Max" имеет самое высокое количество продаж, стоит вкладываться в его рекламу, может принести увеличение дохода' },
+    { category: "Мой склад", type: "warning", text: 'Товар "Футболка Adidas" стоит пополнить его количество, иначе в противном случае он закончится на складе через 3 дня' },
+    { category: "Мой склад", type: "info", text: "У всех товаров количество находится в полном объеме, закупка товаров ближайшие 7 дней не планируется" },
+    { category: "Аналитика клиентов", type: "success", text: 'Товары из категории "обувь" интересуются чаще всего, стоит обратить на это внимание' },
+  ],
+  month: [
+    { category: "Финансы", type: "warning", text: "За месяц расходы на логистику выросли на 15%. Рекомендуется пересмотреть условия доставки для снижения затрат." },
+    { category: "Финансы", type: "success", text: "Маржинальность увеличилась до 34.8% — лучший показатель за квартал. Основной вклад от категории «Обувь»." },
+    { category: "Мой склад", type: "warning", text: "12 позиций на складе не продавались более 30 дней. Рассмотрите проведение распродажи или пересмотр ассортимента." },
+    { category: "Мой склад", type: "info", text: "Средняя оборачиваемость склада — 18 дней. Это на 3 дня быстрее, чем в прошлом месяце." },
+    { category: "Аналитика клиентов", type: "success", text: "Повторные покупки выросли на 22%. VIP-клиенты приносят 45% всего дохода — стоит запустить программу лояльности." },
+  ],
+};
+
+
 
 const periodOptions = [
-  { value: "day", label: "День" },
-  { value: "week", label: "Неделя" },
-  { value: "month", label: "Месяц" },
+  { value: "day" as PeriodValue, label: "День" },
+  { value: "week" as PeriodValue, label: "Неделя" },
+  { value: "month" as PeriodValue, label: "Месяц" },
 ];
 
 const MetricShape = ({ shape, trend }: { shape: string; trend: "up" | "down" | "neutral" }) => {
@@ -167,7 +175,7 @@ const MetricShape = ({ shape, trend }: { shape: string; trend: "up" | "down" | "
   return null;
 };
 
-const InsightCard = ({ insight, index }: { insight: typeof insights[0]; index: number }) => {
+const InsightCard = ({ insight, index }: { insight: { category: string; type: string; text: string }; index: number }) => {
   const typeStyles = {
     warning: {
       border: "border-yellow-500/30",
@@ -218,39 +226,20 @@ const InsightCard = ({ insight, index }: { insight: typeof insights[0]; index: n
 
 const MyData = () => {
   const navigate = useNavigate();
-  const [selectedPeriod, setSelectedPeriod] = useState("week");
+  const [selectedPeriod, setSelectedPeriod] = useState<PeriodValue>("week");
+
+  const metrics = metricsData[selectedPeriod];
+  const insights = insightsData[selectedPeriod];
 
   return (
     <AppLayout>
       <div className="space-y-8 animate-fade-in">
-        {/* Header with Period Selector */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Мои данные</h1>
-            <p className="text-muted-foreground text-sm mt-1">
-              Обзор ключевых показателей и инсайтов
-            </p>
-          </div>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                {periodOptions.find(p => p.value === selectedPeriod)?.label}
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {periodOptions.map((option) => (
-                <DropdownMenuItem 
-                  key={option.value}
-                  onClick={() => setSelectedPeriod(option.value)}
-                  className={cn(selectedPeriod === option.value && "bg-accent")}
-                >
-                  {option.label}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+        {/* Header */}
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Мои данные</h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            Обзор ключевых показателей и инсайтов
+          </p>
         </div>
 
         {/* Category Cards */}
@@ -290,25 +279,49 @@ const MyData = () => {
           })}
         </div>
 
-        {/* Metrics Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {metrics.map((metric, index) => (
-            <div 
-              key={metric.categoryId}
-              className="flex flex-col items-center text-center p-6 animate-fade-in"
-              style={{ animationDelay: `${(index + 3) * 100}ms` }}
-            >
-              <MetricShape shape={metric.shape} trend={metric.trend} />
-              <div className="mt-4">
-                <div className="text-2xl font-bold text-foreground mb-1">
-                  {metric.value}
+        {/* Metrics Section with Period Selector */}
+        <div>
+          <div className="flex items-center justify-end mb-4">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  {periodOptions.find(p => p.value === selectedPeriod)?.label}
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-popover border border-border z-50">
+                {periodOptions.map((option) => (
+                  <DropdownMenuItem 
+                    key={option.value}
+                    onClick={() => setSelectedPeriod(option.value)}
+                    className={cn(selectedPeriod === option.value && "bg-accent")}
+                  >
+                    {option.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {metrics.map((metric, index) => (
+              <div 
+                key={metric.categoryId}
+                className="flex flex-col items-center text-center p-6 animate-fade-in"
+                style={{ animationDelay: `${(index + 3) * 100}ms` }}
+              >
+                <MetricShape shape={metric.shape} trend={metric.trend} />
+                <div className="mt-4">
+                  <div className="text-2xl font-bold text-foreground mb-1">
+                    {metric.value}
+                  </div>
+                  <p className="text-xs text-muted-foreground max-w-[180px] leading-relaxed">
+                    {metric.label}
+                  </p>
                 </div>
-                <p className="text-xs text-muted-foreground max-w-[180px] leading-relaxed">
-                  {metric.label}
-                </p>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* Insights Section */}
@@ -319,7 +332,7 @@ const MyData = () => {
           </h2>
           <div className="grid gap-3">
             {insights.map((insight, index) => (
-              <InsightCard key={index} insight={insight} index={index} />
+              <InsightCard key={`${selectedPeriod}-${index}`} insight={insight} index={index} />
             ))}
           </div>
         </div>

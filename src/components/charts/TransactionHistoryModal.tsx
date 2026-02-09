@@ -26,29 +26,45 @@ interface Transaction {
   amount: number;
 }
 
-// Mock data with real dates for grouping
+// Expanded mock data for scrolling demonstration
 const allTransactions: Transaction[] = [
   // Today
   { id: 1, description: "Оплата Stripe", category: "Продажи", categoryColor: "bg-green-500/10 text-green-600", date: new Date(), amount: 1250 },
   { id: 2, description: "Доставка Яндекс", category: "Логистика", categoryColor: "bg-orange-500/10 text-orange-600", date: new Date(), amount: -450 },
+  { id: 17, description: "Продажа через сайт", category: "Продажи", categoryColor: "bg-green-500/10 text-green-600", date: new Date(), amount: 3800 },
+  { id: 18, description: "Оплата курьера", category: "Логистика", categoryColor: "bg-orange-500/10 text-orange-600", date: new Date(), amount: -280 },
   // Yesterday
   { id: 3, description: "Аренда офиса", category: "Аренда", categoryColor: "bg-amber-500/10 text-amber-600", date: new Date(Date.now() - 86400000), amount: -2000 },
   { id: 4, description: "Счёт клиента", category: "Продажи", categoryColor: "bg-green-500/10 text-green-600", date: new Date(Date.now() - 86400000), amount: 4500 },
   { id: 5, description: "Подписка CRM", category: "SaaS", categoryColor: "bg-blue-500/10 text-blue-600", date: new Date(Date.now() - 86400000), amount: -320 },
+  { id: 19, description: "Возврат от поставщика", category: "Закупки", categoryColor: "bg-purple-500/10 text-purple-600", date: new Date(Date.now() - 86400000), amount: 1200 },
+  { id: 20, description: "Оплата электричества", category: "Прочее", categoryColor: "bg-gray-500/10 text-gray-600", date: new Date(Date.now() - 86400000), amount: -650 },
   // This week
   { id: 6, description: "Закупка товара", category: "Закупки", categoryColor: "bg-purple-500/10 text-purple-600", date: new Date(Date.now() - 3 * 86400000), amount: -1800 },
   { id: 7, description: "Оплата за услуги", category: "Продажи", categoryColor: "bg-green-500/10 text-green-600", date: new Date(Date.now() - 4 * 86400000), amount: 3200 },
   { id: 8, description: "Маркетинг VK", category: "Маркетинг", categoryColor: "bg-pink-500/10 text-pink-600", date: new Date(Date.now() - 5 * 86400000), amount: -750 },
+  { id: 21, description: "Продажа B2B партнёру", category: "Продажи", categoryColor: "bg-green-500/10 text-green-600", date: new Date(Date.now() - 3 * 86400000), amount: 8500 },
+  { id: 22, description: "Реклама Instagram", category: "Маркетинг", categoryColor: "bg-pink-500/10 text-pink-600", date: new Date(Date.now() - 4 * 86400000), amount: -1200 },
+  { id: 23, description: "Техобслуживание склада", category: "Прочее", categoryColor: "bg-gray-500/10 text-gray-600", date: new Date(Date.now() - 5 * 86400000), amount: -3400 },
+  { id: 24, description: "Оптовый заказ одежды", category: "Продажи", categoryColor: "bg-green-500/10 text-green-600", date: new Date(Date.now() - 6 * 86400000), amount: 15000 },
   // Last month
   { id: 9, description: "Зарплаты", category: "ФОТ", categoryColor: "bg-red-500/10 text-red-600", date: new Date(Date.now() - 20 * 86400000), amount: -15000 },
   { id: 10, description: "Крупный заказ", category: "Продажи", categoryColor: "bg-green-500/10 text-green-600", date: new Date(Date.now() - 25 * 86400000), amount: 12500 },
   { id: 11, description: "Хостинг серверов", category: "SaaS", categoryColor: "bg-blue-500/10 text-blue-600", date: new Date(Date.now() - 30 * 86400000), amount: -890 },
   { id: 12, description: "Оборудование", category: "Закупки", categoryColor: "bg-purple-500/10 text-purple-600", date: new Date(Date.now() - 35 * 86400000), amount: -5400 },
+  { id: 25, description: "Консалтинг услуги", category: "Продажи", categoryColor: "bg-green-500/10 text-green-600", date: new Date(Date.now() - 22 * 86400000), amount: 7200 },
+  { id: 26, description: "Обновление ПО", category: "SaaS", categoryColor: "bg-blue-500/10 text-blue-600", date: new Date(Date.now() - 28 * 86400000), amount: -1500 },
+  { id: 27, description: "Бонусы сотрудникам", category: "ФОТ", categoryColor: "bg-red-500/10 text-red-600", date: new Date(Date.now() - 32 * 86400000), amount: -4800 },
+  { id: 28, description: "Партнёрская выплата", category: "Продажи", categoryColor: "bg-green-500/10 text-green-600", date: new Date(Date.now() - 34 * 86400000), amount: 5600 },
   // This year
   { id: 13, description: "Контракт B2B", category: "Продажи", categoryColor: "bg-green-500/10 text-green-600", date: new Date(Date.now() - 60 * 86400000), amount: 28000 },
   { id: 14, description: "Страховка", category: "Прочее", categoryColor: "bg-gray-500/10 text-gray-600", date: new Date(Date.now() - 90 * 86400000), amount: -3200 },
   { id: 15, description: "Налоги Q1", category: "Налоги", categoryColor: "bg-red-500/10 text-red-600", date: new Date(Date.now() - 120 * 86400000), amount: -8500 },
   { id: 16, description: "Партнёрская программа", category: "Продажи", categoryColor: "bg-green-500/10 text-green-600", date: new Date(Date.now() - 150 * 86400000), amount: 6700 },
+  { id: 29, description: "Годовой контракт поддержки", category: "Продажи", categoryColor: "bg-green-500/10 text-green-600", date: new Date(Date.now() - 75 * 86400000), amount: 45000 },
+  { id: 30, description: "Ремонт помещения", category: "Прочее", categoryColor: "bg-gray-500/10 text-gray-600", date: new Date(Date.now() - 100 * 86400000), amount: -12000 },
+  { id: 31, description: "Лицензия на ПО", category: "SaaS", categoryColor: "bg-blue-500/10 text-blue-600", date: new Date(Date.now() - 130 * 86400000), amount: -2400 },
+  { id: 32, description: "Крупная поставка обуви", category: "Закупки", categoryColor: "bg-purple-500/10 text-purple-600", date: new Date(Date.now() - 160 * 86400000), amount: -18000 },
 ];
 
 const categories = ["Все", "Продажи", "Аренда", "SaaS", "Закупки", "Логистика", "Маркетинг", "ФОТ", "Налоги", "Прочее"];
@@ -171,8 +187,8 @@ export function TransactionHistoryModal({ open, onOpenChange }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0">
-        <DialogHeader className="px-6 pt-6 pb-4">
+      <DialogContent className="max-w-2xl h-[85vh] flex flex-col p-0 gap-0">
+        <DialogHeader className="px-6 pt-6 pb-4 flex-shrink-0">
           <DialogTitle className="text-lg font-bold text-foreground">
             История операций
           </DialogTitle>
@@ -180,7 +196,7 @@ export function TransactionHistoryModal({ open, onOpenChange }: Props) {
         </DialogHeader>
 
         {/* Filters */}
-        <div className="px-6 pb-4 flex flex-col sm:flex-row gap-3">
+        <div className="px-6 pb-4 flex flex-col sm:flex-row gap-3 flex-shrink-0">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -203,7 +219,7 @@ export function TransactionHistoryModal({ open, onOpenChange }: Props) {
         </div>
 
         {/* Scrollable history */}
-        <ScrollArea className="flex-1 min-h-0 px-6 pb-6">
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 pb-6">
           <div className="space-y-4">
             {grouped.length === 0 && (
               <div className="text-center py-8 text-muted-foreground text-sm">
@@ -274,7 +290,7 @@ export function TransactionHistoryModal({ open, onOpenChange }: Props) {
               </div>
             ))}
           </div>
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );

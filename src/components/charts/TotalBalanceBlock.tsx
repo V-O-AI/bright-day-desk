@@ -87,6 +87,7 @@ export function TotalBalanceBlock({
   }
 
   const periodText = period === "day" ? "день" : period === "week" ? "неделю" : period === "year" ? "год" : "месяц";
+  const currentPeriodLabel = periodLabels[period];
 
   return (
     <>
@@ -286,8 +287,18 @@ export function TotalBalanceBlock({
         </div>
       </div>
 
-      <IncomeDetailModal open={incomeModalOpen} onOpenChange={setIncomeModalOpen} />
-      <ExpenseDetailModal open={expenseModalOpen} onOpenChange={setExpenseModalOpen} />
+      <IncomeDetailModal
+        open={incomeModalOpen}
+        onOpenChange={setIncomeModalOpen}
+        totalIncome={incomeValue}
+        periodLabel={currentPeriodLabel}
+      />
+      <ExpenseDetailModal
+        open={expenseModalOpen}
+        onOpenChange={setExpenseModalOpen}
+        totalExpense={expenseValue}
+        periodLabel={currentPeriodLabel}
+      />
     </>
   );
 }

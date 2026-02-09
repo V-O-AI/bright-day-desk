@@ -176,8 +176,8 @@ export function CalendarNotes() {
         >
           <ChevronLeft className="h-3.5 w-3.5" />
         </button>
-        <span className="text-sm font-medium min-w-[100px] text-center">
-          {MONTHS_RU[currentMonth]}
+        <span className="text-sm font-medium min-w-[130px] text-center">
+          {MONTHS_RU[currentMonth]} {currentYear}
         </span>
         <button
           onClick={goToNextMonth}

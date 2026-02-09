@@ -1,21 +1,49 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Calendar, Plus, Settings, MessageCircle, CalendarDays, Copy, Check, Users } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Calendar as CalendarIcon, Plus, Settings, MessageCircle, CalendarDays, Copy, Check, Users, CreditCard, ChevronDown } from "lucide-react";
 import { CalendarNotes } from "@/components/CalendarNotes";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useLatestClientChats } from "@/hooks/useClientChats";
 import ReferralProgram from "@/components/billing/ReferralProgram";
+import PaymentModal from "@/components/billing/PaymentModal";
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
 
 import cardWarehouse from "@/assets/card-warehouse.jpg";
 import cardConsultant from "@/assets/card-consultant.jpg";
 import cardNotifications from "@/assets/card-notifications.jpg";
+
+const RUSSIAN_CITIES = [
+  "Москва", "Санкт-Петербург", "Новосибирск", "Екатеринбург", "Казань",
+  "Нижний Новгород", "Челябинск", "Самара", "Омск", "Ростов-на-Дону",
+  "Уфа", "Красноярск", "Воронеж", "Пермь", "Волгоград",
+  "Краснодар", "Саратов", "Тюмень", "Тольятти", "Ижевск",
+  "Барнаул", "Ульяновск", "Иркутск", "Хабаровск", "Ярославль",
+  "Владивосток", "Махачкала", "Томск", "Оренбург", "Кемерово",
+];
+
+const CABINET_TRANSACTIONS = [
+  { initials: "PT", title: 'Пробный период 14 дней "Professional"', amount: "- $0,00", color: "text-destructive", bgColor: "bg-purple-100 dark:bg-purple-900/30" },
+  { initials: "PTC", title: 'Отмена пробного периода "Professional"', amount: "+ $0,00", color: "text-primary", bgColor: "bg-purple-100 dark:bg-purple-900/30" },
+  { initials: "UP", title: 'Оплата плана "Growth" (месяц)', amount: "- $79,00", color: "text-destructive", bgColor: "bg-blue-100 dark:bg-blue-900/30" },
+  { initials: "RF", title: 'Возврат за неиспользованный период', amount: "+ $23,50", color: "text-primary", bgColor: "bg-green-100 dark:bg-green-900/30" },
+  { initials: "UP", title: 'Оплата плана "Growth" (месяц)', amount: "- $79,00", color: "text-destructive", bgColor: "bg-blue-100 dark:bg-blue-900/30" },
+  { initials: "BN", title: 'Бонус за реферальную программу', amount: "+ $15,00", color: "text-primary", bgColor: "bg-amber-100 dark:bg-amber-900/30" },
+  { initials: "UP", title: 'Оплата плана "Growth" (месяц)', amount: "- $79,00", color: "text-destructive", bgColor: "bg-blue-100 dark:bg-blue-900/30" },
+  { initials: "TK", title: 'Применён тикет "5% кешбэк"', amount: "+ $3,95", color: "text-primary", bgColor: "bg-orange-100 dark:bg-orange-900/30" },
+];
+
+const MAX_VISIBLE_TRANSACTIONS = 8;
 
 const Cabinet = () => {
   const [activeTab, setActiveTab] = useState<"cabinet" | "referral">("cabinet");
@@ -30,10 +58,15 @@ const Cabinet = () => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [city, setCity] = useState("");
+  const [emailNotifications, setEmailNotifications] = useState(false);
 
   const [cardSettingsOpen, setCardSettingsOpen] = useState(false);
   const [integrationModalIndex, setIntegrationModalIndex] = useState<number | null>(null);
   const [copiedLink, setCopiedLink] = useState<number | null>(null);
+  const [cityDropdownOpen, setCityDropdownOpen] = useState(false);
+  const [citySearch, setCitySearch] = useState("");
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
 
   // Sync form with profile
   useEffect(() => {
@@ -68,6 +101,38 @@ const Cabinet = () => {
       setCity(profile.city || "");
     }
   };
+
+  // Phone input handler - digits only
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Allow only digits, +, spaces, hyphens, parentheses
+    const cleaned = value.replace(/[^0-9+\s\-()]/g, "");
+    setPhone(cleaned);
+  };
+
+  // Parse date string to Date object
+  const parseDateString = (dateStr: string): Date | undefined => {
+    if (!dateStr) return undefined;
+    const parts = dateStr.split("/");
+    if (parts.length === 3) {
+      const [day, month, year] = parts;
+      const d = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+      if (!isNaN(d.getTime())) return d;
+    }
+    return undefined;
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      const formatted = format(date, "dd/MM/yyyy");
+      setDateOfBirth(formatted);
+      setDatePickerOpen(false);
+    }
+  };
+
+  const filteredCities = RUSSIAN_CITIES.filter((c) =>
+    c.toLowerCase().includes((citySearch || city).toLowerCase())
+  );
 
   // Calculate days since registration
   const daysSinceRegistration = profile?.created_at
@@ -107,14 +172,14 @@ const Cabinet = () => {
     },
     {
       image: cardNotifications,
-      title: "Подключить уведомления о своем бизнесе",
+      title: "Уведомления о бизнесе через Telegram",
       advantages: [
         "Ежедневный мониторинг дел бизнеса",
         "Получение отчетов прямо в TG",
         "Моментальные уведомления об аномалиях бизнеса",
         "Уведомления о готовности клиента купить",
       ],
-      modalTitle: "Подключение бизнес-уведомлений",
+      modalTitle: "Подключение бизнес-уведомлений через Telegram",
       modalDescription: "Получайте ежедневные отчёты, оповещения об аномалиях (резкий рост или падение продаж, критический остаток товара) и уведомления о «горячих» клиентах прямо в Telegram. Настраивайте фильтры и расписание под свои потребности.",
       link: "https://t.me/your_notifications_bot",
     },
@@ -213,32 +278,50 @@ const Cabinet = () => {
               />
             </div>
 
-            {/* Дата рождения */}
+            {/* Дата рождения - с date picker */}
             <div className="mb-4">
               <Label className="text-sm text-muted-foreground mb-2 block">Дата рождения</Label>
-              <div className="relative">
-                <Input 
-                  placeholder="ДД/ММ/ГГГГ"
-                  value={dateOfBirth}
-                  onChange={(e) => setDateOfBirth(e.target.value)}
-                  className="bg-muted/50 border-border pr-10"
-                />
-                <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              </div>
+              <Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    className={cn(
+                      "flex h-10 w-full rounded-md border border-input bg-muted/50 px-3 py-2 text-sm ring-offset-background items-center justify-between",
+                      !dateOfBirth && "text-muted-foreground"
+                    )}
+                  >
+                    <span>{dateOfBirth || "ДД/ММ/ГГГГ"}</span>
+                    <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0 bg-popover z-50" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={parseDateString(dateOfBirth)}
+                    onSelect={handleDateSelect}
+                    disabled={(date) =>
+                      date > new Date() || date < new Date("1900-01-01")
+                    }
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Телефон */}
             <div className="mb-4">
               <Label className="text-sm text-muted-foreground mb-2 block">Телефон</Label>
               <Input 
+                type="tel"
+                inputMode="numeric"
                 placeholder="+7 (999) 123-45-67"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={handlePhoneChange}
                 className="bg-muted/50 border-border"
               />
             </div>
 
-            {/* Email */}
+            {/* Email + toggle уведомлений */}
             <div className="mb-4">
               <Label className="text-sm text-muted-foreground mb-2 block">Электронная почта</Label>
               <Input 
@@ -248,17 +331,68 @@ const Cabinet = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 className="bg-muted/50 border-border"
               />
+              <div className="flex items-center justify-between mt-2.5 px-1">
+                <Label htmlFor="email-notifications" className="text-xs text-muted-foreground cursor-pointer">
+                  Получать уведомления на эл. почту
+                </Label>
+                <Switch
+                  id="email-notifications"
+                  checked={emailNotifications}
+                  onCheckedChange={setEmailNotifications}
+                  className="scale-90"
+                />
+              </div>
             </div>
 
-            {/* Город проживания */}
+            {/* Город проживания - с dropdown */}
             <div className="mb-6">
               <Label className="text-sm text-muted-foreground mb-2 block">Город проживания</Label>
-              <Input 
-                placeholder="Введите город"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="bg-muted/50 border-border"
-              />
+              <Popover open={cityDropdownOpen} onOpenChange={setCityDropdownOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    className={cn(
+                      "flex h-10 w-full rounded-md border border-input bg-muted/50 px-3 py-2 text-sm ring-offset-background items-center justify-between",
+                      !city && "text-muted-foreground"
+                    )}
+                  >
+                    <span>{city || "Выберите город"}</span>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 bg-popover z-50" align="start">
+                  <div className="p-2 border-b border-border">
+                    <Input
+                      placeholder="Поиск города..."
+                      value={citySearch}
+                      onChange={(e) => setCitySearch(e.target.value)}
+                      className="h-8 text-sm"
+                      autoFocus
+                    />
+                  </div>
+                  <div className="max-h-48 overflow-y-auto py-1">
+                    {filteredCities.length > 0 ? (
+                      filteredCities.map((c) => (
+                        <button
+                          key={c}
+                          className={cn(
+                            "w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors",
+                            city === c && "bg-primary/10 text-primary font-medium"
+                          )}
+                          onClick={() => {
+                            setCity(c);
+                            setCitySearch("");
+                            setCityDropdownOpen(false);
+                          }}
+                        >
+                          {c}
+                        </button>
+                      ))
+                    ) : (
+                      <p className="px-3 py-2 text-sm text-muted-foreground">Не найдено</p>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Кнопки */}
@@ -343,16 +477,16 @@ const Cabinet = () => {
               </button>
             </div>
             
-            {/* Credit card visual */}
+            {/* Credit card visual — independent from account, masked */}
             <div className="relative w-full max-w-[280px] h-[160px] bg-gradient-to-br from-purple-500 via-purple-600 to-pink-500 rounded-2xl p-5 mb-4 shadow-lg">
               <div className="absolute top-5 left-5">
                 <div className="w-10 h-7 bg-yellow-300/80 rounded-md" />
               </div>
               <div className="absolute bottom-16 left-5 text-white/90 text-sm tracking-[0.2em] font-mono">
-                5632 5432 6733 6844
+                •••• •••• •••• 6844
               </div>
-              <div className="absolute bottom-5 left-5 text-white text-sm">
-                {firstName || "Имя"} {lastName || "Фамилия"}
+              <div className="absolute bottom-5 left-5 text-white/70 text-sm font-mono">
+                •••• ••••
               </div>
               <div className="absolute bottom-5 right-5">
                 <div className="flex -space-x-3">
@@ -362,10 +496,19 @@ const Cabinet = () => {
               </div>
             </div>
 
-            <Button variant="outline" className="w-full flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Добавить карту
-            </Button>
+            {/* Добавить карту — интерактивная пустая карточка */}
+            <div 
+              className="relative w-full max-w-[280px] h-[160px] rounded-2xl border-2 border-dashed border-border hover:border-primary/50 transition-colors cursor-pointer flex flex-col items-center justify-center gap-3 group"
+              onClick={() => setCardSettingsOpen(true)}
+            >
+              <div className="w-12 h-12 rounded-full bg-muted/80 group-hover:bg-primary/10 flex items-center justify-center transition-colors">
+                <CreditCard className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+              </div>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground group-hover:text-primary transition-colors font-medium">
+                <Plus className="h-4 w-4" />
+                Добавить карту
+              </div>
+            </div>
           </div>
         </div>
 
@@ -397,30 +540,27 @@ const Cabinet = () => {
 
             <Button 
               className="w-full bg-primary hover:bg-primary/90"
-              onClick={() => navigate("/billing")}
+              onClick={() => setPaymentModalOpen(true)}
             >
               Продлить подписку
             </Button>
           </div>
 
-          {/* История транзакций */}
+          {/* История транзакций — больше элементов + скролл */}
           <div className="bg-card rounded-2xl p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "300ms", animationFillMode: "forwards" }}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold">Последние транзакции</h3>
               <button className="text-sm text-primary hover:underline">Все</button>
             </div>
             
-            <div className="space-y-4">
-              {[
-                { initials: "PT", title: 'Пробный период 14 дней "Professional"', amount: "- $0,00", color: "text-destructive", bgColor: "bg-purple-100 dark:bg-purple-900/30" },
-                { initials: "PTC", title: 'Отмена пробного периода "Professional"', amount: "+ $0,00", color: "text-primary", bgColor: "bg-purple-100 dark:bg-purple-900/30" },
-              ].map((transaction, index) => (
+            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1 scrollbar-thin">
+              {CABINET_TRANSACTIONS.slice(0, MAX_VISIBLE_TRANSACTIONS).map((transaction, index) => (
                 <div key={index} className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-xl ${transaction.bgColor} flex items-center justify-center`}>
+                  <div className={`w-12 h-12 rounded-xl ${transaction.bgColor} flex items-center justify-center flex-shrink-0`}>
                     <span className="text-sm font-bold text-primary">{transaction.initials}</span>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{transaction.title}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{transaction.title}</p>
                     <p className={`text-sm ${transaction.color}`}>{transaction.amount}</p>
                   </div>
                 </div>
@@ -508,6 +648,18 @@ const Cabinet = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Payment Modal for subscription renewal */}
+      <PaymentModal
+        open={paymentModalOpen}
+        onOpenChange={setPaymentModalOpen}
+        plan={{
+          name: "Professional",
+          price: "$89.99",
+          period: "/ год",
+          badge: "PRO",
+        }}
+      />
     </AppLayout>
   );
 };

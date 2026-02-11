@@ -28,7 +28,7 @@ export function useChatMessages() {
         .order("created_at", { ascending: true });
 
       if (error) {
-        console.error("Failed to fetch messages");
+        if (import.meta.env.DEV) console.error("Failed to fetch messages", error);
       } else {
         setMessages((data as ChatMessage[]) || []);
       }
@@ -38,16 +38,19 @@ export function useChatMessages() {
     fetchMessages();
   }, []);
 
-  // Subscribe to realtime changes
+  // Subscribe to realtime changes filtered by user
   useEffect(() => {
+    if (!user?.id) return;
+
     const channel = supabase
-      .channel("chat_messages_realtime")
+      .channel(`chat_messages_${user.id}`)
       .on(
         "postgres_changes",
         {
           event: "INSERT",
           schema: "public",
           table: "chat_messages",
+          filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
           const newMsg = payload.new as ChatMessage;
@@ -62,7 +65,7 @@ export function useChatMessages() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [user?.id]);
 
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim()) return;
@@ -87,7 +90,8 @@ export function useChatMessages() {
       .insert({ content: content.trim(), sender_type: "user", user_id: user?.id });
 
     if (error) {
-      console.error("Failed to send message");
+      if (import.meta.env.DEV) console.error("Failed to send message", error);
+      toast.error("Не удалось отправить сообщение");
     }
   }, []);
 

@@ -18,6 +18,8 @@ import {
   Monitor
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 type SettingsSection = "appearances" | "account" | "security";
 
@@ -44,6 +46,34 @@ const Settings = () => {
 
   // Security settings state
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+
+  const handlePasswordChange = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      toast.error("Новый пароль должен содержать минимум 6 символов");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("Пароли не совпадают");
+      return;
+    }
+    setIsUpdatingPassword(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      toast.success("Пароль успешно изменён");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: any) {
+      toast.error(err.message || "Не удалось изменить пароль");
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
 
   const menuItems = [
     {
@@ -216,6 +246,8 @@ const Settings = () => {
                 type="password"
                 placeholder="••••••••"
                 className="bg-muted/50"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -225,6 +257,8 @@ const Settings = () => {
                 type="password"
                 placeholder="••••••••"
                 className="bg-muted/50"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -234,8 +268,17 @@ const Settings = () => {
                 type="password"
                 placeholder="••••••••"
                 className="bg-muted/50"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
+            <Button 
+              onClick={handlePasswordChange} 
+              disabled={isUpdatingPassword || !newPassword || !confirmPassword}
+              className="mt-2"
+            >
+              {isUpdatingPassword ? "Сохранение..." : "Изменить пароль"}
+            </Button>
           </div>
         </div>
 

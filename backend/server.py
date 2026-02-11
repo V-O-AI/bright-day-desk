@@ -115,9 +115,19 @@ async def create_status_check(input: StatusCheckCreate, current_user: dict = Dep
     return status_obj
 
 @api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks(current_user: dict = Depends(get_current_user)):
-    status_checks = await db.status_checks.find({"user_id": current_user["user_id"]}).to_list(1000)
-    return [StatusCheck(**status_check) for status_check in status_checks]
+async def get_status_checks(
+    current_user: dict = Depends(get_current_user),
+    skip: int = 0,
+    limit: int = 50,
+):
+    if limit > 100:
+        limit = 100
+    if skip < 0:
+        skip = 0
+    status_checks = await db.status_checks.find(
+        {"user_id": current_user["user_id"]}
+    ).skip(skip).limit(limit).to_list(limit)
+    return [StatusCheck(**sc) for sc in status_checks]
 
 # Include the router in the main app
 app.include_router(api_router)

@@ -20,18 +20,21 @@ export type Database = {
           created_at: string
           id: string
           sender_type: string
+          user_id: string
         }
         Insert: {
           content: string
           created_at?: string
           id?: string
           sender_type?: string
+          user_id: string
         }
         Update: {
           content?: string
           created_at?: string
           id?: string
           sender_type?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -122,6 +125,7 @@ export type Database = {
           last_name: string | null
           phone: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -134,6 +138,7 @@ export type Database = {
           last_name?: string | null
           phone?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -146,6 +151,7 @@ export type Database = {
           last_name?: string | null
           phone?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }

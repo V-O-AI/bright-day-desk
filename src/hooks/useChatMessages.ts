@@ -82,7 +82,7 @@ export function useChatMessages() {
 
     const { error } = await supabase
       .from("chat_messages")
-      .insert({ content: content.trim(), sender_type: "user" });
+      .insert({ content: content.trim(), sender_type: "user", user_id: "anonymous" });
 
     if (error) {
       console.error("Failed to send message");

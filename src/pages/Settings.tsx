@@ -15,11 +15,15 @@ import {
   Check,
   Sun,
   Moon,
-  Monitor
+  Monitor,
+  Users,
+  Plus,
+  Trash2,
+  Mail,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type SettingsSection = "appearances" | "account" | "security";
+type SettingsSection = "appearances" | "account" | "security" | "community";
 
 const Settings = () => {
   const [activeSection, setActiveSection] = useState<SettingsSection>("account");
@@ -45,6 +49,14 @@ const Settings = () => {
   // Security settings state
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
 
+  // Community / user management state
+  const [teamMembers, setTeamMembers] = useState([
+    { id: 1, name: "Мария Козлова", email: "maria@email.com", role: "Менеджер" },
+    { id: 2, name: "Дмитрий Волков", email: "dmitry@email.com", role: "Аналитик" },
+  ]);
+  const [newMemberEmail, setNewMemberEmail] = useState("");
+  const [newMemberRole, setNewMemberRole] = useState("Сотрудник");
+
   const menuItems = [
     {
       id: "appearances" as SettingsSection,
@@ -64,10 +76,30 @@ const Settings = () => {
       title: "Безопасность",
       description: "Смена пароля, 2FA",
     },
+    {
+      id: "community" as SettingsSection,
+      icon: Users,
+      title: "Сообщество",
+      description: "Управление пользователями",
+    },
   ];
 
   const handleNotificationChange = (key: keyof typeof notifications) => {
     setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleAddMember = () => {
+    if (!newMemberEmail.trim()) return;
+    setTeamMembers(prev => [
+      ...prev,
+      { id: Date.now(), name: newMemberEmail.split("@")[0], email: newMemberEmail, role: newMemberRole },
+    ]);
+    setNewMemberEmail("");
+    setNewMemberRole("Сотрудник");
+  };
+
+  const handleRemoveMember = (id: number) => {
+    setTeamMembers(prev => prev.filter(m => m.id !== id));
   };
 
   const renderAppearancesContent = () => (
@@ -162,7 +194,6 @@ const Settings = () => {
 
       <div className="space-y-6">
         <div>
-          
           <div className="grid grid-cols-2 gap-4">
             {[
               { key: "withdrawActivity", label: "Активность вывода" },
@@ -207,60 +238,37 @@ const Settings = () => {
       <div className="space-y-6">
         <div>
           <h3 className="text-base font-medium text-foreground mb-4">Смена пароля</h3>
-          
           <div className="space-y-4 max-w-md">
             <div className="space-y-2">
               <Label htmlFor="currentPassword">Текущий пароль</Label>
-              <Input 
-                id="currentPassword" 
-                type="password"
-                placeholder="••••••••"
-                className="bg-muted/50"
-              />
+              <Input id="currentPassword" type="password" placeholder="••••••••" className="bg-muted/50" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="newPassword">Новый пароль</Label>
-              <Input 
-                id="newPassword" 
-                type="password"
-                placeholder="••••••••"
-                className="bg-muted/50"
-              />
+              <Input id="newPassword" type="password" placeholder="••••••••" className="bg-muted/50" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Подтвердите пароль</Label>
-              <Input 
-                id="confirmPassword" 
-                type="password"
-                placeholder="••••••••"
-                className="bg-muted/50"
-              />
+              <Input id="confirmPassword" type="password" placeholder="••••••••" className="bg-muted/50" />
             </div>
           </div>
         </div>
 
         <div>
           <h3 className="text-base font-medium text-foreground mb-4">Двухфакторная аутентификация</h3>
-          
           <Card className="border">
             <CardContent className="p-4 flex items-center justify-between">
               <div>
                 <p className="font-medium text-foreground">Включить 2FA</p>
-                <p className="text-sm text-muted-foreground">
-                  Добавьте дополнительный уровень защиты
-                </p>
+                <p className="text-sm text-muted-foreground">Добавьте дополнительный уровень защиты</p>
               </div>
-              <Switch
-                checked={twoFactorEnabled}
-                onCheckedChange={setTwoFactorEnabled}
-              />
+              <Switch checked={twoFactorEnabled} onCheckedChange={setTwoFactorEnabled} />
             </CardContent>
           </Card>
         </div>
 
         <div>
           <h3 className="text-base font-medium text-foreground mb-4">Активные сессии</h3>
-          
           <Card className="border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -268,9 +276,7 @@ const Settings = () => {
                   <p className="font-medium text-foreground">Текущее устройство</p>
                   <p className="text-sm text-muted-foreground">Chrome на Windows • Москва</p>
                 </div>
-                <Badge variant="outline" className="text-green-600 border-green-600">
-                  Активна
-                </Badge>
+                <Badge variant="outline" className="text-green-600 border-green-600">Активна</Badge>
               </div>
             </CardContent>
           </Card>
@@ -284,6 +290,89 @@ const Settings = () => {
     </div>
   );
 
+  const renderCommunityContent = () => (
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-xl font-semibold text-foreground mb-1">Сообщество</h2>
+        <p className="text-sm text-muted-foreground">Добавляйте пользователей и управляйте их доступом</p>
+      </div>
+
+      {/* Add new member */}
+      <div className="space-y-4">
+        <h3 className="text-base font-medium text-foreground">Добавить пользователя</h3>
+        <div className="flex items-end gap-3">
+          <div className="flex-1 space-y-2">
+            <Label htmlFor="memberEmail">Эл. почта</Label>
+            <Input
+              id="memberEmail"
+              type="email"
+              placeholder="user@example.com"
+              value={newMemberEmail}
+              onChange={(e) => setNewMemberEmail(e.target.value)}
+              className="bg-muted/50"
+            />
+          </div>
+          <div className="w-40 space-y-2">
+            <Label htmlFor="memberRole">Роль</Label>
+            <select
+              id="memberRole"
+              value={newMemberRole}
+              onChange={(e) => setNewMemberRole(e.target.value)}
+              className="w-full h-10 rounded-md border border-border bg-muted/50 px-3 text-sm"
+            >
+              <option>Сотрудник</option>
+              <option>Менеджер</option>
+              <option>Аналитик</option>
+              <option>Администратор</option>
+            </select>
+          </div>
+          <Button onClick={handleAddMember} disabled={!newMemberEmail.trim()}>
+            <Plus className="h-4 w-4 mr-1" />
+            Добавить
+          </Button>
+        </div>
+      </div>
+
+      {/* Team members list */}
+      <div className="space-y-4">
+        <h3 className="text-base font-medium text-foreground">
+          Участники ({teamMembers.length})
+        </h3>
+        <div className="space-y-3">
+          {teamMembers.map((member) => (
+            <Card key={member.id} className="border">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <span className="text-sm font-medium text-primary">
+                      {member.name.split(" ").map(n => n[0]).join("")}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground text-sm">{member.name}</p>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Mail className="h-3 w-3" />
+                      {member.email}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Badge variant="secondary">{member.role}</Badge>
+                  <button
+                    onClick={() => handleRemoveMember(member.id)}
+                    className="p-1.5 rounded-lg hover:bg-destructive/10 transition-colors"
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   const renderContent = () => {
     switch (activeSection) {
       case "appearances":
@@ -292,46 +381,27 @@ const Settings = () => {
         return renderAccountContent();
       case "security":
         return renderSecurityContent();
+      case "community":
+        return renderCommunityContent();
       default:
         return renderAccountContent();
     }
   };
 
-  // Calculate stroke dasharray for circular progress
   const circumference = 2 * Math.PI * 36;
   const strokeDasharray = `${(profileCompletion / 100) * circumference} ${circumference}`;
 
   return (
     <AppLayout>
       <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 h-full">
-        {/* Left Sidebar */}
         <div className="space-y-6">
-          {/* Profile Completion Card */}
           <Card className="border bg-primary text-primary-foreground overflow-hidden">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <div className="relative w-20 h-20">
                   <svg className="w-20 h-20 -rotate-90">
-                    <circle
-                      cx="40"
-                      cy="40"
-                      r="36"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      className="opacity-20"
-                    />
-                    <circle
-                      cx="40"
-                      cy="40"
-                      r="36"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      strokeDasharray={strokeDasharray}
-                      strokeLinecap="round"
-                      className="text-primary-foreground"
-                    />
+                    <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" strokeWidth="6" className="opacity-20" />
+                    <circle cx="40" cy="40" r="36" fill="none" stroke="currentColor" strokeWidth="6" strokeDasharray={strokeDasharray} strokeLinecap="round" className="text-primary-foreground" />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <span className="text-lg font-bold">{profileCompletion}%</span>
@@ -339,62 +409,37 @@ const Settings = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold">Информация профиля</h3>
-                  <p className="text-sm opacity-80">
-                    Заполните профиль для доступа ко всем функциям
-                  </p>
+                  <p className="text-sm opacity-80">Заполните профиль для доступа ко всем функциям</p>
                 </div>
               </div>
-              <Button 
-                variant="secondary" 
-                className="w-full mt-4 bg-primary-foreground text-primary hover:bg-primary-foreground/90"
-              >
+              <Button variant="secondary" className="w-full mt-4 bg-primary-foreground text-primary hover:bg-primary-foreground/90">
                 Заполнить профиль
               </Button>
             </CardContent>
           </Card>
 
-          {/* Menu Items */}
           <div className="space-y-2">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeSection === item.id;
-              
               return (
                 <Card
                   key={item.id}
                   className={cn(
                     "cursor-pointer border transition-colors",
-                    isActive 
-                      ? "border-primary bg-primary/5" 
-                      : "border-border hover:border-primary/50"
+                    isActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
                   )}
                   onClick={() => setActiveSection(item.id)}
                 >
                   <CardContent className="p-4 flex items-center gap-4">
-                    <div className={cn(
-                      "w-10 h-10 rounded-lg flex items-center justify-center",
-                      isActive ? "bg-primary/10" : "bg-muted"
-                    )}>
-                      <Icon className={cn(
-                        "h-5 w-5",
-                        isActive ? "text-primary" : "text-muted-foreground"
-                      )} />
+                    <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center", isActive ? "bg-primary/10" : "bg-muted")}>
+                      <Icon className={cn("h-5 w-5", isActive ? "text-primary" : "text-muted-foreground")} />
                     </div>
                     <div className="flex-1">
-                      <p className={cn(
-                        "font-medium",
-                        isActive ? "text-primary" : "text-foreground"
-                      )}>
-                        {item.title}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {item.description}
-                      </p>
+                      <p className={cn("font-medium", isActive ? "text-primary" : "text-foreground")}>{item.title}</p>
+                      <p className="text-sm text-muted-foreground">{item.description}</p>
                     </div>
-                    <ChevronRight className={cn(
-                      "h-5 w-5",
-                      isActive ? "text-primary" : "text-muted-foreground"
-                    )} />
+                    <ChevronRight className={cn("h-5 w-5", isActive ? "text-primary" : "text-muted-foreground")} />
                   </CardContent>
                 </Card>
               );
@@ -402,7 +447,6 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* Right Content Area */}
         <Card className="border">
           <CardContent className="p-6">
             {renderContent()}

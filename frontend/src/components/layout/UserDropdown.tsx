@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   User,
   Users,
@@ -15,13 +14,25 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export function UserDropdown() {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/auth", { replace: true });
+  };
+
+  const initials = user?.email?.charAt(0)?.toUpperCase() || "U";
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center transition-transform duration-150 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2">
-          <span className="text-white text-sm font-medium">U</span>
+          <span className="text-white text-sm font-medium">{initials}</span>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -31,18 +42,17 @@ export function UserDropdown() {
       >
         {/* User info header */}
         <div className="flex items-center gap-3 p-4 pb-3">
-          <div className="flex-1">
-            <p className="font-semibold text-foreground">Sophie Bennett</p>
-            <p className="text-sm text-muted-foreground">sophie@ui.live</p>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-foreground truncate">{user?.email || "User"}</p>
           </div>
           <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center flex-shrink-0">
-            <span className="text-white font-medium">S</span>
+            <span className="text-white font-medium">{initials}</span>
           </div>
         </div>
 
         {/* Main menu items */}
         <div className="px-2 pb-2">
-          <DropdownMenuItem className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors hover:bg-muted">
+          <DropdownMenuItem onClick={() => navigate("/cabinet")} className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors hover:bg-muted">
             <User className="h-4 w-4 text-muted-foreground" />
             <span className="flex-1">Profile</span>
           </DropdownMenuItem>
@@ -55,7 +65,7 @@ export function UserDropdown() {
             </div>
           </DropdownMenuItem>
           
-          <DropdownMenuItem className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors hover:bg-muted">
+          <DropdownMenuItem onClick={() => navigate("/billing")} className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors hover:bg-muted">
             <CreditCard className="h-4 w-4 text-muted-foreground" />
             <span className="flex-1">Subscription</span>
             <span className="px-2 py-0.5 rounded-full bg-green-100 text-green-600 text-xs font-medium">
@@ -63,7 +73,7 @@ export function UserDropdown() {
             </span>
           </DropdownMenuItem>
           
-          <DropdownMenuItem className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors hover:bg-muted">
+          <DropdownMenuItem onClick={() => navigate("/settings")} className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors hover:bg-muted">
             <Settings className="h-4 w-4 text-muted-foreground" />
             <span className="flex-1">Settings</span>
           </DropdownMenuItem>
@@ -73,12 +83,12 @@ export function UserDropdown() {
 
         {/* Secondary menu items */}
         <div className="px-2 py-2">
-          <DropdownMenuItem className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors hover:bg-muted">
+          <DropdownMenuItem onClick={() => navigate("/help")} className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors hover:bg-muted">
             <HelpCircle className="h-4 w-4 text-muted-foreground" />
             <span className="flex-1">Help center</span>
           </DropdownMenuItem>
           
-          <DropdownMenuItem className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors hover:bg-muted text-destructive focus:text-destructive">
+          <DropdownMenuItem onClick={handleSignOut} className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors hover:bg-muted text-destructive focus:text-destructive">
             <LogOut className="h-4 w-4" />
             <span className="flex-1">Sign out</span>
           </DropdownMenuItem>

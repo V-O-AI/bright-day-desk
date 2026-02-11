@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, Request, HTTPException
+from fastapi import FastAPI, APIRouter, Request, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
@@ -8,9 +8,10 @@ import logging
 import re
 from pathlib import Path
 from pydantic import BaseModel, Field, validator
-from typing import List
+from typing import List, Optional
 import uuid
 from datetime import datetime
+import jwt as pyjwt
 
 
 ROOT_DIR = Path(__file__).parent
@@ -21,6 +22,9 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# JWT config
+SUPABASE_JWT_SECRET = os.environ.get('SUPABASE_JWT_SECRET', '')
+
 # Create the main app without a prefix
 app = FastAPI()
 
@@ -28,10 +32,31 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 
+# Auth dependency
+async def get_current_user(request: Request) -> dict:
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    token = auth_header.replace("Bearer ", "")
+    try:
+        payload = pyjwt.decode(
+            token,
+            SUPABASE_JWT_SECRET,
+            algorithms=["HS256"],
+            audience="authenticated",
+        )
+        return {"user_id": payload.get("sub"), "email": payload.get("email")}
+    except pyjwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except pyjwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
 # Define Models
 class StatusCheck(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     client_name: str = Field(..., min_length=1, max_length=200)
+    user_id: Optional[str] = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 class StatusCheckCreate(BaseModel):
@@ -44,13 +69,12 @@ class StatusCheckCreate(BaseModel):
             raise ValueError('Client name cannot be empty')
         if len(v) > 200:
             raise ValueError('Client name must be less than 200 characters')
-        # Allow alphanumeric, spaces, basic punctuation, and Cyrillic
         if not re.match(r'^[\w\s\-.,\u0400-\u04FF]+$', v):
             raise ValueError('Client name contains invalid characters')
         return v
 
 
-# Global exception handler to prevent info leakage
+# Global exception handler
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"Unhandled error: {exc}", exc_info=True)
@@ -60,27 +84,28 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
-# Add your routes to the router instead of directly to app
+# Routes
 @api_router.get("/")
 async def root():
     return {"message": "Hello World"}
 
 @api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
+async def create_status_check(input: StatusCheckCreate, current_user: dict = Depends(get_current_user)):
     status_dict = input.dict()
+    status_dict["user_id"] = current_user["user_id"]
     status_obj = StatusCheck(**status_dict)
     _ = await db.status_checks.insert_one(status_obj.dict())
     return status_obj
 
 @api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    status_checks = await db.status_checks.find().to_list(1000)
+async def get_status_checks(current_user: dict = Depends(get_current_user)):
+    status_checks = await db.status_checks.find({"user_id": current_user["user_id"]}).to_list(1000)
     return [StatusCheck(**status_check) for status_check in status_checks]
 
 # Include the router in the main app
 app.include_router(api_router)
 
-# CORS: restrict origins - use CORS_ORIGINS env var with comma-separated allowed origins
+# CORS
 allowed_origins = os.environ.get('CORS_ORIGINS', '').split(',')
 allowed_origins = [o.strip() for o in allowed_origins if o.strip()]
 

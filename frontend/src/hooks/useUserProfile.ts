@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { z } from "zod";
 
 export interface UserProfile {
   id: string;
+  user_id: string;
   first_name: string;
   last_name: string;
   date_of_birth: string;
@@ -28,16 +30,23 @@ const profileSchema = z.object({
 export const useUserProfile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { user } = useAuth();
 
   const fetchProfile = async () => {
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
+
     const { data, error } = await supabase
       .from("user_profiles")
       .select("*")
-      .limit(1)
+      .eq("user_id", user.id)
       .maybeSingle();
 
     if (error) {
       console.error("Failed to fetch profile");
+      setIsLoading(false);
       return;
     }
 
@@ -73,7 +82,7 @@ export const useUserProfile = () => {
 
   useEffect(() => {
     fetchProfile();
-  }, []);
+  }, [user]);
 
   return { profile, isLoading, saveProfile, refetch: fetchProfile };
 };

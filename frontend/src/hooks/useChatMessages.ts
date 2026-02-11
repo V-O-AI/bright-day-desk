@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
 export interface ChatMessage {
@@ -16,6 +17,7 @@ export function useChatMessages() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const lastSentRef = useRef<number>(0);
+  const { user } = useAuth();
 
   // Fetch initial messages
   useEffect(() => {
@@ -82,7 +84,7 @@ export function useChatMessages() {
 
     const { error } = await supabase
       .from("chat_messages")
-      .insert({ content: content.trim(), sender_type: "user" });
+      .insert({ content: content.trim(), sender_type: "user", user_id: user?.id });
 
     if (error) {
       console.error("Failed to send message");

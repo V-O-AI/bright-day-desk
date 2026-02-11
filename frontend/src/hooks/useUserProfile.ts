@@ -46,7 +46,7 @@ export const useUserProfile = () => {
       .maybeSingle();
 
     if (error) {
-      console.error("Failed to fetch profile");
+      if (import.meta.env.DEV) console.error("Failed to fetch profile", error);
       setIsLoading(false);
       return;
     }
@@ -71,7 +71,7 @@ export const useUserProfile = () => {
       .eq("id", profile.id);
 
     if (error) {
-      console.error("Failed to save profile");
+      if (import.meta.env.DEV) console.error("Failed to save profile", error);
       toast.error("Ошибка при сохранении данных");
       return false;
     }

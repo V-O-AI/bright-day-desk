@@ -1,11 +1,13 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, Request, HTTPException
+from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import re
 from pathlib import Path
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from typing import List
 import uuid
 from datetime import datetime
@@ -29,11 +31,34 @@ api_router = APIRouter(prefix="/api")
 # Define Models
 class StatusCheck(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
+    client_name: str = Field(..., min_length=1, max_length=200)
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 class StatusCheckCreate(BaseModel):
-    client_name: str
+    client_name: str = Field(..., min_length=1, max_length=200, description="Client name")
+
+    @validator('client_name')
+    def validate_client_name(cls, v):
+        v = v.strip()
+        if not v:
+            raise ValueError('Client name cannot be empty')
+        if len(v) > 200:
+            raise ValueError('Client name must be less than 200 characters')
+        # Allow alphanumeric, spaces, basic punctuation, and Cyrillic
+        if not re.match(r'^[\w\s\-.,\u0400-\u04FF]+$', v):
+            raise ValueError('Client name contains invalid characters')
+        return v
+
+
+# Global exception handler to prevent info leakage
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled error: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "An internal error occurred."}
+    )
+
 
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
@@ -55,12 +80,16 @@ async def get_status_checks():
 # Include the router in the main app
 app.include_router(api_router)
 
+# CORS: restrict origins - use CORS_ORIGINS env var with comma-separated allowed origins
+allowed_origins = os.environ.get('CORS_ORIGINS', '').split(',')
+allowed_origins = [o.strip() for o in allowed_origins if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=allowed_origins if allowed_origins else ["*"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 # Configure logging

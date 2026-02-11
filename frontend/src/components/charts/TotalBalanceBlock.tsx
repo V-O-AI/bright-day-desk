@@ -19,6 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface TotalBalanceBlockProps {
   period?: MetricPeriod;
@@ -34,7 +35,20 @@ const periodLabels: Record<MetricPeriod, string> = {
   year: "Год",
 };
 
-function formatCurrency(value: number): string {
+const periodLabelsShort: Record<MetricPeriod, string> = {
+  day: "Д",
+  week: "Н",
+  month: "М",
+  year: "Г",
+};
+
+function formatCurrency(value: number, short: boolean = false): string {
+  if (short && value >= 1000000) {
+    return `${(value / 1000000).toFixed(1)}M ₽`;
+  }
+  if (short && value >= 1000) {
+    return `${(value / 1000).toFixed(0)}K ₽`;
+  }
   return `${value.toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₽`;
 }
 
@@ -53,6 +67,7 @@ export function TotalBalanceBlock({
   const [expenseModalOpen, setExpenseModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const rangeLabel =
     dateRange?.from && dateRange?.to
@@ -83,7 +98,7 @@ export function TotalBalanceBlock({
   const marginChange = sales?.change_percent ?? 0;
 
   if (isLoading) {
-    return <Skeleton className={cn("rounded-2xl", compact ? "h-[180px]" : "h-[260px]")} />;
+    return <Skeleton className={cn("rounded-xl xs:rounded-2xl", compact ? "h-[160px] xs:h-[180px]" : "h-[220px] xs:h-[240px] md:h-[260px]")} />;
   }
 
   const periodText = period === "day" ? "день" : period === "week" ? "неделю" : period === "year" ? "год" : "месяц";
@@ -91,17 +106,19 @@ export function TotalBalanceBlock({
 
   return (
     <>
-      <div className="bg-card rounded-2xl p-6 border border-border h-full flex flex-col justify-between">
+      <div className="bg-card rounded-xl xs:rounded-2xl p-4 xs:p-5 md:p-6 border border-border h-full flex flex-col justify-between">
         {/* Top section */}
         <div>
           <div className="flex items-center justify-between mb-1">
-            <span className="text-sm text-muted-foreground font-medium">Общая прибыль</span>
-            <div className="flex items-center gap-2">
+            <span className="text-xs xs:text-sm text-muted-foreground font-medium">
+              {isMobile ? "Прибыль" : "Общая прибыль"}
+            </span>
+            <div className="flex items-center gap-1.5 xs:gap-2">
               {showPeriodSelector && onPeriodChange && (
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-muted text-sm text-foreground hover:bg-muted/80 transition-colors">
-                    {periodLabels[period]}
-                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                  <DropdownMenuTrigger className="flex items-center gap-0.5 xs:gap-1 px-2 xs:px-3 py-1 xs:py-1.5 rounded-lg bg-muted text-xs xs:text-sm text-foreground hover:bg-muted/80 transition-colors">
+                    {isMobile ? periodLabelsShort[period] : periodLabels[period]}
+                    <ChevronDown className="h-3 w-3 xs:h-3.5 xs:w-3.5 text-muted-foreground" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="bg-popover border border-border z-50">
                     {(Object.keys(periodLabels) as MetricPeriod[]).map((p) => (
@@ -109,7 +126,7 @@ export function TotalBalanceBlock({
                         key={p}
                         onClick={() => onPeriodChange(p)}
                         className={cn(
-                          "cursor-pointer",
+                          "cursor-pointer text-xs xs:text-sm",
                           period === p && "bg-primary/10 text-primary font-medium"
                         )}
                       >
@@ -123,19 +140,23 @@ export function TotalBalanceBlock({
                 <PopoverTrigger asChild>
                   <button
                     className={cn(
-                      "p-2 rounded-xl bg-muted hover:bg-muted/80 transition-colors",
+                      "p-1.5 xs:p-2 rounded-lg xs:rounded-xl bg-muted hover:bg-muted/80 transition-colors",
                       dateRange?.from && "ring-1 ring-primary/30"
                     )}
                     title="Выберите период"
                   >
-                    <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                    <CalendarIcon className="h-3.5 w-3.5 xs:h-4 xs:w-4 text-muted-foreground" />
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 z-50" align="end" sideOffset={8}>
-                  <div className="p-3 pb-1">
-                    <p className="text-sm font-medium text-foreground mb-1">Выберите период</p>
+                <PopoverContent 
+                  className="w-auto p-0 z-50" 
+                  align="end" 
+                  sideOffset={8}
+                >
+                  <div className="p-2 xs:p-3 pb-1">
+                    <p className="text-xs xs:text-sm font-medium text-foreground mb-1">Выберите период</p>
                     {rangeLabel && (
-                      <p className="text-xs text-muted-foreground mb-1">{rangeLabel}</p>
+                      <p className="text-[10px] xs:text-xs text-muted-foreground mb-1">{rangeLabel}</p>
                     )}
                   </div>
                   <DayPicker
@@ -144,22 +165,22 @@ export function TotalBalanceBlock({
                     onSelect={setDateRange}
                     locale={ru}
                     showOutsideDays
-                    className="p-3 pointer-events-auto"
+                    className="p-2 xs:p-3 pointer-events-auto"
                     classNames={{
                       months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-                      month: "space-y-4",
+                      month: "space-y-3 xs:space-y-4",
                       caption: "flex justify-center pt-1 relative items-center",
-                      caption_label: "text-sm font-medium",
+                      caption_label: "text-xs xs:text-sm font-medium",
                       nav: "space-x-1 flex items-center",
-                      nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 inline-flex items-center justify-center rounded-md border border-input",
+                      nav_button: "h-6 w-6 xs:h-7 xs:w-7 bg-transparent p-0 opacity-50 hover:opacity-100 inline-flex items-center justify-center rounded-md border border-input",
                       nav_button_previous: "absolute left-1",
                       nav_button_next: "absolute right-1",
                       table: "w-full border-collapse space-y-1",
                       head_row: "flex",
-                      head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-                      row: "flex w-full mt-2",
-                      cell: "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
-                      day: "h-9 w-9 p-0 font-normal rounded-full flex items-center justify-center transition-colors hover:bg-muted aria-selected:opacity-100",
+                      head_cell: "text-muted-foreground rounded-md w-7 xs:w-9 font-normal text-[0.7rem] xs:text-[0.8rem]",
+                      row: "flex w-full mt-1.5 xs:mt-2",
+                      cell: "h-7 w-7 xs:h-9 xs:w-9 text-center text-xs xs:text-sm p-0 relative focus-within:relative focus-within:z-20",
+                      day: "h-7 w-7 xs:h-9 xs:w-9 p-0 font-normal rounded-full flex items-center justify-center transition-colors hover:bg-muted aria-selected:opacity-100",
                       day_today: "bg-accent text-accent-foreground font-semibold",
                       day_outside: "text-muted-foreground opacity-50",
                       day_disabled: "text-muted-foreground opacity-50",
@@ -199,89 +220,98 @@ export function TotalBalanceBlock({
               </Popover>
             </div>
           </div>
-          <p className={cn("font-bold text-foreground", compact ? "text-3xl" : "text-4xl")}>
-            {formatCurrency(balanceValue)}
+          <p className={cn(
+            "font-bold text-foreground",
+            compact ? "text-2xl xs:text-3xl" : "text-2xl xs:text-3xl md:text-4xl"
+          )}>
+            {formatCurrency(balanceValue, isMobile)}
           </p>
-          <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center justify-between mt-1.5 xs:mt-2 flex-wrap gap-1">
             <span className={cn(
-              "text-sm flex items-center gap-1",
+              "text-[10px] xs:text-xs md:text-sm flex items-center gap-0.5 xs:gap-1",
               balanceChange >= 0 ? "text-green-500" : "text-destructive"
             )}>
               {balanceChange >= 0 ? (
-                <TrendingUp className="h-3.5 w-3.5" />
+                <TrendingUp className="h-3 w-3 xs:h-3.5 xs:w-3.5" />
               ) : (
-                <TrendingDown className="h-3.5 w-3.5" />
+                <TrendingDown className="h-3 w-3 xs:h-3.5 xs:w-3.5" />
               )}
-              {balanceChange >= 0 ? "+" : ""}{balanceChange}% за {periodText}
+              {balanceChange >= 0 ? "+" : ""}{balanceChange}% {isMobile ? "" : `за ${periodText}`}
             </span>
-            <span className="text-xs text-muted-foreground">Все связанные счета</span>
+            <span className="text-[9px] xs:text-xs text-muted-foreground hidden xs:block">Все связанные счета</span>
           </div>
         </div>
 
-        {/* Sub cards row */}
-        <div className={cn("grid grid-cols-3 gap-3", compact ? "mt-4" : "mt-6")}>
+        {/* Sub cards row - Responsive grid */}
+        <div className={cn(
+          "grid gap-2 xs:gap-3",
+          compact ? "mt-3 xs:mt-4 grid-cols-3" : "mt-4 xs:mt-5 md:mt-6 grid-cols-3"
+        )}>
           {/* Доход */}
           <div
             onClick={() => setIncomeModalOpen(true)}
-            className="bg-muted/50 rounded-xl p-3 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors"
+            className="bg-muted/50 rounded-lg xs:rounded-xl p-2 xs:p-3 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors"
           >
-            <p className="text-xs text-muted-foreground mb-1">Доход</p>
-            <p className="text-sm font-bold text-foreground">
-              {formatCurrency(incomeValue)}
+            <p className="text-[10px] xs:text-xs text-muted-foreground mb-0.5 xs:mb-1">Доход</p>
+            <p className="text-xs xs:text-sm font-bold text-foreground truncate">
+              {formatCurrency(incomeValue, isMobile)}
             </p>
             <p className={cn(
-              "text-xs mt-1 flex items-center gap-0.5",
+              "text-[9px] xs:text-xs mt-0.5 xs:mt-1 flex items-center gap-0.5",
               incomeChange >= 0 ? "text-green-500" : "text-destructive"
             )}>
               {incomeChange >= 0 ? (
-                <TrendingUp className="h-3 w-3" />
+                <TrendingUp className="h-2.5 w-2.5 xs:h-3 xs:w-3" />
               ) : (
-                <TrendingDown className="h-3 w-3" />
+                <TrendingDown className="h-2.5 w-2.5 xs:h-3 xs:w-3" />
               )}
-              {formatPercent(incomeChange)} за {periodText}
+              <span className="hidden xs:inline">{formatPercent(incomeChange)} за {periodText}</span>
+              <span className="xs:hidden">{formatPercent(incomeChange)}</span>
             </p>
           </div>
 
           {/* Расходы */}
           <div
             onClick={() => setExpenseModalOpen(true)}
-            className="bg-muted/50 rounded-xl p-3 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors"
+            className="bg-muted/50 rounded-lg xs:rounded-xl p-2 xs:p-3 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors"
           >
-            <p className="text-xs text-muted-foreground mb-1">Расходы</p>
-            <p className="text-sm font-bold text-foreground">
-              {formatCurrency(expenseValue)}
+            <p className="text-[10px] xs:text-xs text-muted-foreground mb-0.5 xs:mb-1">Расходы</p>
+            <p className="text-xs xs:text-sm font-bold text-foreground truncate">
+              {formatCurrency(expenseValue, isMobile)}
             </p>
             <p className={cn(
-              "text-xs mt-1 flex items-center gap-0.5",
+              "text-[9px] xs:text-xs mt-0.5 xs:mt-1 flex items-center gap-0.5",
               expenseChange >= 0 ? "text-destructive" : "text-green-500"
             )}>
               {expenseChange >= 0 ? (
-                <TrendingUp className="h-3 w-3" />
+                <TrendingUp className="h-2.5 w-2.5 xs:h-3 xs:w-3" />
               ) : (
-                <TrendingDown className="h-3 w-3" />
+                <TrendingDown className="h-2.5 w-2.5 xs:h-3 xs:w-3" />
               )}
-              {formatPercent(expenseChange)} за {periodText}
+              <span className="hidden xs:inline">{formatPercent(expenseChange)} за {periodText}</span>
+              <span className="xs:hidden">{formatPercent(expenseChange)}</span>
             </p>
           </div>
 
           {/* Маржа */}
-          <div className="bg-muted/50 rounded-xl p-3 border border-border/50">
-            <p className="text-xs text-muted-foreground mb-1">Маржа</p>
-            <div className="flex items-center gap-1.5">
-              <p className="text-sm font-bold text-foreground">
-                {marginPercent.toFixed(1)}%
+          <div className="bg-muted/50 rounded-lg xs:rounded-xl p-2 xs:p-3 border border-border/50">
+            <p className="text-[10px] xs:text-xs text-muted-foreground mb-0.5 xs:mb-1">Маржа</p>
+            <div className="flex items-center gap-1 xs:gap-1.5">
+              <p className="text-xs xs:text-sm font-bold text-foreground">
+                {marginPercent.toFixed(isMobile ? 0 : 1)}%
               </p>
               {marginChange >= 0 ? (
-                <TrendingUp className="h-4 w-4 text-green-500" />
+                <TrendingUp className="h-3 w-3 xs:h-4 xs:w-4 text-green-500" />
               ) : (
-                <TrendingDown className="h-4 w-4 text-destructive" />
+                <TrendingDown className="h-3 w-3 xs:h-4 xs:w-4 text-destructive" />
               )}
             </div>
             <p className={cn(
-              "text-xs mt-1 flex items-center gap-0.5",
+              "text-[9px] xs:text-xs mt-0.5 xs:mt-1 flex items-center gap-0.5",
               marginChange >= 0 ? "text-green-500" : "text-destructive"
             )}>
-              {marginChange >= 0 ? "+" : ""}{marginChange.toFixed(1)}% за {periodText}
+              <span className="hidden xs:inline">{marginChange >= 0 ? "+" : ""}{marginChange.toFixed(1)}% за {periodText}</span>
+              <span className="xs:hidden">{marginChange >= 0 ? "+" : ""}{marginChange.toFixed(0)}%</span>
             </p>
           </div>
         </div>

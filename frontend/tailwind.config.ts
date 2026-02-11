@@ -12,6 +12,17 @@ export default {
         "2xl": "1400px",
       },
     },
+    screens: {
+      // Custom breakpoints for comprehensive responsive design
+      'xs': '480px',      // Narrow phones
+      'sm': '640px',      // Small devices
+      'md': '768px',      // Tablets
+      'lg': '1024px',     // Laptops
+      'xl': '1280px',     // Small desktops
+      'desktop': '1366px', // Standard desktops
+      '2xl': '1536px',    // Large desktops
+      '3xl': '1920px',    // 4K monitors
+    },
     extend: {
       colors: {
         border: "hsl(var(--border))",

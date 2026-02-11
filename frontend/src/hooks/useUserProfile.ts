@@ -38,6 +38,7 @@ export const useUserProfile = () => {
       return;
     }
 
+    // @ts-ignore - Supabase deep type instantiation workaround
     const { data, error } = await supabase
       .from("user_profiles")
       .select("*")
@@ -50,7 +51,7 @@ export const useUserProfile = () => {
       return;
     }
 
-    setProfile(data as UserProfile);
+    setProfile(data as unknown as UserProfile);
     setIsLoading(false);
   };
 

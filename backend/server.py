@@ -10,6 +10,7 @@ from pathlib import Path
 from pydantic import BaseModel, Field, validator
 from typing import List, Optional
 import uuid
+import sys
 from datetime import datetime
 import jwt as pyjwt
 
@@ -17,13 +18,29 @@ import jwt as pyjwt
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
+# Configure logging early
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# JWT config
-SUPABASE_JWT_SECRET = os.environ.get('SUPABASE_JWT_SECRET', '')
+# JWT config — fail fast if secret is missing or too short
+try:
+    SUPABASE_JWT_SECRET = os.environ['SUPABASE_JWT_SECRET']
+    if not SUPABASE_JWT_SECRET or len(SUPABASE_JWT_SECRET) < 32:
+        raise ValueError('SUPABASE_JWT_SECRET must be at least 32 characters')
+except KeyError:
+    logger.error('SUPABASE_JWT_SECRET environment variable is required')
+    sys.exit(1)
+except ValueError as e:
+    logger.error(str(e))
+    sys.exit(1)
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -106,23 +123,19 @@ async def get_status_checks(current_user: dict = Depends(get_current_user)):
 app.include_router(api_router)
 
 # CORS
-allowed_origins = os.environ.get('CORS_ORIGINS', '').split(',')
-allowed_origins = [o.strip() for o in allowed_origins if o.strip()]
+cors_origins_env = os.environ.get('CORS_ORIGINS', '')
+if not cors_origins_env.strip():
+    logger.error('CORS_ORIGINS environment variable must be set (comma-separated origins)')
+    sys.exit(1)
+allowed_origins = [o.strip() for o in cors_origins_env.split(',') if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=allowed_origins if allowed_origins else ["*"],
+    allow_origins=allowed_origins,
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type", "Authorization"],
 )
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

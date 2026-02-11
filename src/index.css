@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 10%;
+
+    --primary: 258 90% 66%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 5% 92%;
+    --secondary-foreground: 240 10% 10%;
+
+    --muted: 240 5% 92%;
+    --muted-foreground: 240 5% 46%;
+
+    --accent: 258 90% 66%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 258 90% 66%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar - темная тема */
+    --sidebar-background: 240 15% 8%;
+    --sidebar-foreground: 240 5% 85%;
+    --sidebar-primary: 258 90% 66%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 12% 16%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 10% 18%;
+    --sidebar-ring: 258 90% 66%;
+    --sidebar-muted: 240 5% 50%;
+
+    /* Chart colors */
+    --chart-income: 258 90% 66%;
+    --chart-expense: 330 80% 65%;
+    --chart-clothing: 258 90% 66%;
+    --chart-shoes: 330 80% 65%;
+    --chart-kids: 45 90% 55%;
+  }
+
+  .dark {
+    --background: 240 15% 8%;
+    --foreground: 240 5% 96%;
+
+    --card: 240 12% 12%;
+    --card-foreground: 240 5% 96%;
+
+    --popover: 240 12% 12%;
+    --popover-foreground: 240 5% 96%;
+
+    --primary: 258 90% 66%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 10% 18%;
+    --secondary-foreground: 240 5% 96%;
+
+    --muted: 240 10% 18%;
+    --muted-foreground: 240 5% 60%;
+
+    --accent: 258 90% 66%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 10% 20%;
+    --input: 240 10% 20%;
+    --ring: 258 90% 66%;
+
+    --sidebar-background: 240 15% 6%;
+    --sidebar-foreground: 240 5% 85%;
+    --sidebar-primary: 258 90% 66%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 12% 14%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 10% 16%;
+    --sidebar-ring: 258 90% 66%;
+    --sidebar-muted: 240 5% 50%;
+
+    /* Chart colors */
+    --chart-income: 258 90% 66%;
+    --chart-expense: 330 80% 65%;
+    --chart-clothing: 258 90% 66%;
+    --chart-shoes: 330 80% 65%;
+    --chart-kids: 45 90% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

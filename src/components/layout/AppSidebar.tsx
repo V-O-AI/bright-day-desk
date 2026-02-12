@@ -100,35 +100,30 @@ export function AppSidebar() {
         <SidebarFooter className="p-4">
           <button
             onClick={() => setShowTgModal(true)}
-            className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[hsl(258,90%,66%)] via-[hsl(280,80%,60%)] to-[hsl(330,80%,65%)] p-[1px] transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 active:scale-[0.98]"
+            className="group relative w-full overflow-hidden rounded-2xl transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98]"
           >
-            <div className="relative rounded-[15px] bg-sidebar-background/90 backdrop-blur-sm p-4 overflow-hidden">
-              {/* Animated sparkle dots */}
-              <div className="absolute top-2 right-3 opacity-60">
-                <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-              </div>
-              <div className="absolute bottom-3 left-3 w-8 h-8 rounded-full bg-primary/10 blur-lg animate-pulse" style={{ animationDelay: "500ms" }} />
+            {/* Glassmorphism card */}
+            <div className="relative rounded-2xl border border-sidebar-border bg-sidebar-accent/50 backdrop-blur-md p-4 overflow-hidden">
+              {/* Subtle animated gradient orb */}
+              <div className="absolute -top-6 -right-6 w-20 h-20 rounded-full bg-primary/15 blur-2xl animate-pulse" />
+              <div className="absolute -bottom-4 -left-4 w-14 h-14 rounded-full bg-[hsl(200,100%,55%)]/10 blur-xl animate-pulse" style={{ animationDelay: "1s" }} />
 
-              <div className="flex items-center gap-3 mb-3">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[hsl(200,100%,55%)] to-[hsl(210,100%,45%)] flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20">
-                  <Send className="h-5 w-5 text-white" />
+              <div className="relative flex items-center gap-3 mb-3">
+                <div className="h-9 w-9 rounded-xl bg-[hsl(200,100%,55%)]/15 flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
+                  <Send className="h-4 w-4 text-[hsl(200,100%,55%)]" />
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-sidebar-foreground">
+                <div className="text-left">
+                  <p className="text-sm font-semibold text-sidebar-foreground leading-tight">
+                    Telegram
+                  </p>
+                  <p className="text-[10px] text-sidebar-muted">
                     Virtual Office AI
                   </p>
-                  <p className="text-[11px] text-sidebar-muted">
-                    Telegram канал
-                  </p>
                 </div>
               </div>
 
-              <p className="text-xs text-sidebar-muted mb-3 leading-relaxed">
-                Новости, обновления и эксклюзивный контент ✨
-              </p>
-
-              <div className="flex items-center justify-center gap-2 w-full py-2 rounded-xl bg-gradient-to-r from-[hsl(200,100%,55%)] to-[hsl(210,100%,45%)] text-white text-sm font-medium transition-all duration-200 group-hover:shadow-md group-hover:shadow-blue-500/20">
-                <Send className="h-3.5 w-3.5" />
+              <div className="relative flex items-center justify-center gap-2 w-full py-2 rounded-xl border border-sidebar-border bg-sidebar-background/60 text-sidebar-foreground text-xs font-medium transition-all duration-200 group-hover:bg-[hsl(200,100%,55%)]/10 group-hover:border-[hsl(200,100%,55%)]/30 group-hover:text-[hsl(200,100%,55%)]">
+                <Sparkles className="h-3 w-3" />
                 Подписаться
               </div>
             </div>
@@ -138,38 +133,38 @@ export function AppSidebar() {
 
       {/* Telegram Modal */}
       <Dialog open={showTgModal} onOpenChange={setShowTgModal}>
-        <DialogContent className="sm:max-w-md rounded-2xl border-border p-0 overflow-hidden">
-          {/* Top gradient banner */}
-          <div className="relative h-32 bg-gradient-to-br from-[hsl(200,100%,55%)] via-[hsl(210,100%,50%)] to-[hsl(258,90%,66%)] flex items-center justify-center">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.15),transparent)]" />
-            <div className="h-16 w-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-xl">
-              <Send className="h-8 w-8 text-white" />
+        <DialogContent className="sm:max-w-sm rounded-2xl border-border p-0 overflow-hidden">
+          {/* Minimal top accent */}
+          <div className="relative h-24 bg-sidebar-accent/30 flex items-center justify-center overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,hsl(200_100%_55%/0.12),transparent)]" />
+            <div className="h-14 w-14 rounded-2xl border border-border bg-card flex items-center justify-center shadow-sm">
+              <Send className="h-6 w-6 text-[hsl(200,100%,55%)]" />
             </div>
           </div>
 
-          <div className="p-6 text-center">
+          <div className="p-6 pt-4 text-center">
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-foreground">
+              <DialogTitle className="text-lg font-bold text-foreground">
                 Virtual Office AI
               </DialogTitle>
             </DialogHeader>
-            <p className="text-muted-foreground text-sm mt-2 mb-6">
-              Присоединяйтесь к нашему Telegram каналу для получения последних новостей, обновлений и эксклюзивного контента о платформе.
+            <p className="text-muted-foreground text-sm mt-2 mb-5 leading-relaxed">
+              Новости, обновления и эксклюзивный контент о платформе в нашем Telegram канале.
             </p>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2.5">
               <a
                 href="https://t.me/VirtualOfficeAI"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-[hsl(200,100%,55%)] to-[hsl(210,100%,45%)] text-white font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5 active:scale-[0.98]"
+                className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-[hsl(200,100%,55%)]/30 bg-[hsl(200,100%,55%)]/10 text-[hsl(200,100%,55%)] font-medium text-sm transition-all duration-200 hover:bg-[hsl(200,100%,55%)]/20 hover:-translate-y-0.5 active:scale-[0.98]"
               >
                 <ExternalLink className="h-4 w-4" />
                 Открыть в Telegram
               </a>
               <button
                 onClick={() => setShowTgModal(false)}
-                className="w-full py-3 rounded-xl text-sm text-muted-foreground hover:bg-muted transition-colors"
+                className="w-full py-2.5 rounded-xl text-sm text-muted-foreground hover:bg-muted transition-colors"
               >
                 Закрыть
               </button>

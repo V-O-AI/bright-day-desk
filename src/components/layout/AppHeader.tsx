@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
-import { Bell, X, Package, MessageCircle, CreditCard, AlertCircle, CheckCircle, Bot, Send } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Bell, X, Package, MessageCircle, CreditCard, AlertCircle, CheckCircle, Bot, Send, Sparkles, FileText, CalendarCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserDropdown } from "./UserDropdown";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -100,6 +100,7 @@ const mockNotifications: Notification[] = [
 
 export function AppHeader() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isHome = location.pathname === "/";
 
   const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
@@ -156,19 +157,21 @@ export function AppHeader() {
         )}
       >
         {isHome && (
-          <div className="opacity-0 animate-fade-in" style={{ animationFillMode: "forwards" }}>
-            <h1 className="text-2xl lg:text-3xl tracking-tight">
-              <span className="font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent animate-fade-in" style={{ animationDelay: "100ms", animationFillMode: "forwards" }}>
-                Добрый день,
-              </span>{" "}
-              <span className="text-muted-foreground font-normal opacity-0 animate-fade-in" style={{ animationDelay: "250ms", animationFillMode: "forwards" }}>
-                чем сегодня могу помочь?
-              </span>
-            </h1>
-            <p className="text-sm text-muted-foreground capitalize mt-1 opacity-0 animate-fade-in" style={{ animationDelay: "400ms", animationFillMode: "forwards" }}>
-              <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse" />
-              {weekday} / {dateStr}
-            </p>
+          <div className="opacity-0 animate-fade-in flex items-center gap-4" style={{ animationFillMode: "forwards" }}>
+            <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10 rounded-2xl px-6 py-3">
+              <h1 className="text-2xl lg:text-3xl tracking-tight">
+                <span className="font-bold bg-gradient-to-r from-primary via-foreground to-primary bg-clip-text text-transparent animate-fade-in" style={{ animationDelay: "100ms", animationFillMode: "forwards" }}>
+                  Добрый день 👋
+                </span>{" "}
+                <span className="text-muted-foreground font-normal opacity-0 animate-fade-in" style={{ animationDelay: "250ms", animationFillMode: "forwards" }}>
+                  Чем займёмся сегодня?
+                </span>
+              </h1>
+              <p className="text-sm text-muted-foreground capitalize mt-1 opacity-0 animate-fade-in" style={{ animationDelay: "400ms", animationFillMode: "forwards" }}>
+                <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse" />
+                {weekday} / {dateStr}
+              </p>
+            </div>
           </div>
         )}
 
@@ -177,14 +180,28 @@ export function AppHeader() {
         <div className="flex items-center gap-3 opacity-0 animate-fade-in" style={{ animationDelay: "300ms", animationFillMode: "forwards" }}>
           {isHome && (
             <>
-              <Button variant="outline" className="rounded-full transition-all duration-200 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97]">
-                Кнопка:
+              <Button
+                variant="outline"
+                className="rounded-full transition-all duration-200 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97] gap-2"
+                onClick={() => navigate("/staff-chat?new=true")}
+              >
+                <Sparkles className="h-4 w-4 text-primary" />
+                Обратиться к AI
               </Button>
-              <Button variant="outline" className="rounded-full transition-all duration-200 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97]">
-                Кнопка:
+              <Button
+                variant="outline"
+                className="rounded-full transition-all duration-200 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97] gap-2"
+              >
+                <FileText className="h-4 w-4 text-primary" />
+                Подготовить отчёт
               </Button>
-              <Button variant="outline" className="rounded-full transition-all duration-200 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97]">
-                Кнопка:
+              <Button
+                variant="outline"
+                className="rounded-full transition-all duration-200 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97] gap-2"
+                onClick={() => navigate("/cabinet")}
+              >
+                <CalendarCheck className="h-4 w-4 text-primary" />
+                Запланировать задачу
               </Button>
             </>
           )}

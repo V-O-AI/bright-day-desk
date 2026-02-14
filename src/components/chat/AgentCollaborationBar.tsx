@@ -12,6 +12,27 @@ export function AgentCollaborationBar({ state }: AgentCollaborationBarProps) {
   const isActive = collaboration !== "CLOSED";
   const iconCount = Math.min(agents.length, 3);
 
+  // Position icons in a tight triangular cluster around center
+  // Each icon is offset from center so they overlap like a stack
+  const getPosition = (index: number, total: number) => {
+    if (total === 1) return { x: 0, y: 0 };
+    if (total === 2) {
+      // Side by side, overlapping
+      const offsets = [
+        { x: -8, y: 0 },
+        { x: 8, y: 0 },
+      ];
+      return offsets[index];
+    }
+    // 3 icons: triangle formation, tightly packed
+    const offsets = [
+      { x: 0, y: -7 },   // top center
+      { x: -9, y: 6 },   // bottom left
+      { x: 9, y: 6 },    // bottom right
+    ];
+    return offsets[index];
+  };
+
   return (
     <div className="flex flex-col items-start gap-1.5 py-2 px-3 animate-fade-in">
       {/* Thought-style log lines — above icons, only during processing */}
@@ -30,32 +51,36 @@ export function AgentCollaborationBar({ state }: AgentCollaborationBarProps) {
 
       {/* Icons row + completion text */}
       <div className="flex items-center gap-3">
-        {/* Orbiting cluster */}
+        {/* Orbiting cluster — icons positioned around a shared center */}
         <div
           className={cn(
-            "relative flex items-center",
+            "relative",
             isActive && "animate-[orbit-spin_3s_linear_infinite]"
           )}
-          style={{ width: `${32 + Math.max(0, iconCount - 1) * 22}px`, height: 32 }}
+          style={{ width: 48, height: 48 }}
         >
-          {agents.slice(0, 3).map((agent, i) => (
-            <div
-              key={agent.id}
-              className={cn(
-                "absolute w-8 h-8 rounded-lg bg-muted border-2 border-background flex items-center justify-center text-sm shadow-sm transition-all duration-300 animate-scale-in",
-                isActive && "animate-[agent-pulse_2s_ease-in-out_infinite]"
-              )}
-              style={{
-                left: `${i * 22}px`,
-                zIndex: 10 - i,
-              }}
-            >
-              {agent.emoji}
-            </div>
-          ))}
+          {agents.slice(0, 3).map((agent, i) => {
+            const pos = getPosition(i, iconCount);
+            return (
+              <div
+                key={agent.id}
+                className={cn(
+                  "absolute w-8 h-8 rounded-lg bg-muted border-2 border-background flex items-center justify-center text-sm shadow-sm transition-all duration-300 animate-scale-in",
+                  isActive && "animate-[agent-pulse_2s_ease-in-out_infinite]"
+                )}
+                style={{
+                  left: `calc(50% + ${pos.x}px - 16px)`,
+                  top: `calc(50% + ${pos.y}px - 16px)`,
+                  zIndex: 10 - i,
+                }}
+              >
+                {agent.emoji}
+              </div>
+            );
+          })}
         </div>
 
-        {/* Completion: show response text instead of just checkmark */}
+        {/* Completion: show response text */}
         {collaboration === "CLOSED" && (
           <p className="text-sm text-foreground animate-fade-in leading-snug">
             {logs[logs.length - 1] || "Задача выполнена"}

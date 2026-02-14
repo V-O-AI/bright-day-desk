@@ -115,11 +115,12 @@ function MiniChatInner(
           ))
         )}
 
-        {/* Agent Collaboration Bar — shown during processing or right after close */}
-        {(isProcessing || (agentState.collaboration === "CLOSED" && agentState.agents.length > 0)) && (
-          <AgentCollaborationBar state={agentState} />
-        )}
       </div>
+
+      {/* Agent Collaboration Bar — directly above input */}
+      {(isProcessing || (agentState.collaboration === "CLOSED" && agentState.agents.length > 0)) && (
+        <AgentCollaborationBar state={agentState} />
+      )}
 
       {/* Action icons row */}
       {isCompact && (

@@ -131,17 +131,21 @@ export default {
             boxShadow: "0 0 0 6px hsl(var(--primary) / 0)",
           },
         },
+        "orbit-spin": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
         "log-fade-up": {
           "0%": {
             opacity: "0",
             transform: "translateY(8px)",
           },
           "15%": {
-            opacity: "1",
+            opacity: "0.6",
             transform: "translateY(0)",
           },
           "85%": {
-            opacity: "1",
+            opacity: "0.6",
             transform: "translateY(0)",
           },
           "100%": {
@@ -158,6 +162,7 @@ export default {
         "scale-in": "scale-in 0.2s ease-out forwards",
         "shimmer": "shimmer 1.5s infinite linear",
         "agent-pulse": "agent-pulse 2s ease-in-out infinite",
+        "orbit-spin": "orbit-spin 3s linear infinite",
         "log-fade-up": "log-fade-up 3s ease-out forwards",
       },
     },

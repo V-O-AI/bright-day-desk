@@ -111,7 +111,7 @@ export function useAgentProcess() {
         ...prev,
         collaboration: "CLOSED",
         inputState: "AVAILABLE",
-        logs: [...prev.logs.slice(-2), "✓ Задача выполнена"],
+        logs: [...prev.logs.slice(-2), "Отчёт сформирован и отправлен. Всего обработано 47 позиций на сумму ₽284 500."],
       }));
     }, 7000);
 

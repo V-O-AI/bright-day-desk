@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useChatMessages } from "@/hooks/useChatMessages";
 import { useAgentProcess } from "@/hooks/useAgentProcess";
 import { AgentCollaborationBar } from "./AgentCollaborationBar";
+import { AgentIconChain } from "./AgentIconChain";
 import { cn } from "@/lib/utils";
 
 interface MiniChatProps {
@@ -115,15 +116,21 @@ function MiniChatInner(
           ))
         )}
 
+        {/* Orbiting animation — centered in dialog area */}
+        {(isProcessing || (agentState.collaboration === "CLOSED" && agentState.agents.length > 0)) && (
+          <div className="flex justify-center py-4">
+            <AgentCollaborationBar state={agentState} />
+          </div>
+        )}
       </div>
 
-      {/* Agent Collaboration Bar — directly above input */}
+      {/* Icon chain — directly above input, only during processing */}
       {(isProcessing || (agentState.collaboration === "CLOSED" && agentState.agents.length > 0)) && (
-        <AgentCollaborationBar state={agentState} />
+        <AgentIconChain state={agentState} />
       )}
 
       {/* Action icons row */}
-      {isCompact && (
+      {isCompact && !isProcessing && agentState.agents.length === 0 && (
         <div className="flex items-center gap-2 mt-4">
           <div className="w-8 h-8 rounded bg-muted" />
           <div className="w-8 h-8 rounded bg-muted" />

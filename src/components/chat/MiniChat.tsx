@@ -26,6 +26,8 @@ function MiniChatInner(
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const isProcessing = agentState.inputState === "PROCESSING";
+  const prevCollabRef = useRef(agentState.collaboration);
+  const [agentResponses, setAgentResponses] = useState<Array<{id: string; content: string; agents: typeof agentState.agents}>>([]);
 
   useImperativeHandle(ref, () => ({
     setInputText: (text: string) => {
@@ -33,18 +35,30 @@ function MiniChatInner(
     },
   }));
 
+  // When agent finishes, add result to local chat history
+  useEffect(() => {
+    if (prevCollabRef.current !== "CLOSED" && agentState.collaboration === "CLOSED" && agentState.agents.length > 0) {
+      const resultText = agentState.logs[agentState.logs.length - 1] || "Задача выполнена";
+      setAgentResponses(prev => [...prev, {
+        id: `agent-${Date.now()}`,
+        content: resultText,
+        agents: [...agentState.agents],
+      }]);
+    }
+    prevCollabRef.current = agentState.collaboration;
+  }, [agentState.collaboration, agentState.agents, agentState.logs]);
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, agentState]);
+  }, [messages, agentState, agentResponses]);
 
   const handleSend = async () => {
     if (!input.trim() || isProcessing) return;
     const text = input;
     setInput("");
     await sendMessage(text);
-    // Start agent simulation after sending
     startProcessing();
   };
 
@@ -84,40 +98,64 @@ function MiniChatInner(
           <div className="flex items-center justify-center py-8">
             <span className="text-sm text-muted-foreground">Загрузка...</span>
           </div>
-        ) : messages.length === 0 ? (
+        ) : messages.length === 0 && agentResponses.length === 0 ? (
           <div className="flex items-center justify-center py-8">
             <span className="text-sm text-muted-foreground">Нет сообщений</span>
           </div>
         ) : (
-          messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={cn(
-                "flex gap-3",
-                msg.sender_type === "user" ? "justify-end" : "justify-start"
-              )}
-            >
-              {msg.sender_type === "ai" && (
-                <div className="w-8 h-8 rounded-lg bg-muted flex-shrink-0" />
-              )}
+          <>
+            {messages.map((msg) => (
               <div
+                key={msg.id}
                 className={cn(
-                  "rounded-xl px-4 py-2 text-sm max-w-[80%]",
-                  msg.sender_type === "user"
-                    ? "bg-primary/10"
-                    : "bg-muted"
+                  "flex gap-3",
+                  msg.sender_type === "user" ? "justify-end" : "justify-start"
                 )}
               >
-                <p className={msg.sender_type === "ai" ? "text-muted-foreground" : ""}>
-                  {msg.content}
-                </p>
+                {msg.sender_type === "ai" && (
+                  <div className="relative w-10 h-8 flex-shrink-0">
+                    <div className="absolute left-0 top-0 w-6 h-6 rounded-md bg-muted border-2 border-background" style={{zIndex:2}} />
+                    <div className="absolute left-3 top-1 w-6 h-6 rounded-md bg-muted border-2 border-background" style={{zIndex:1}} />
+                  </div>
+                )}
+                <div
+                  className={cn(
+                    "rounded-xl px-4 py-2 text-sm max-w-[80%]",
+                    msg.sender_type === "user" ? "bg-primary/10" : ""
+                  )}
+                >
+                  <p className={msg.sender_type === "ai" ? "text-muted-foreground" : ""}>
+                    {msg.content}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+
+            {/* Agent completion responses rendered as chat messages */}
+            {agentResponses.map((resp) => (
+              <div key={resp.id} className="flex gap-3 justify-start animate-fade-in">
+                <div className="relative flex-shrink-0" style={{width: Math.min(resp.agents.length, 3) * 10 + 18, height: 28}}>
+                  {resp.agents.slice(0, 3).map((agent, i) => (
+                    <div
+                      key={agent.id}
+                      className="absolute w-6 h-6 rounded-md bg-muted border-2 border-background flex items-center justify-center text-[10px]"
+                      style={{left: i * 10, top: i % 2 === 0 ? 0 : 2, zIndex: 10 - i}}
+                    >
+                      {agent.emoji}
+                    </div>
+                  ))}
+                </div>
+                <div className="text-sm max-w-[80%]">
+                  <p className="font-medium text-xs text-muted-foreground mb-0.5">Вот ваш результат...</p>
+                  <p className="text-muted-foreground leading-relaxed">{resp.content}</p>
+                </div>
+              </div>
+            ))}
+          </>
         )}
 
         {/* Orbiting animation — centered in dialog area */}
-        {(isProcessing || (agentState.collaboration === "CLOSED" && agentState.agents.length > 0)) && (
+        {isProcessing && (
           <div className="flex justify-center py-4">
             <AgentCollaborationBar state={agentState} />
           </div>
@@ -125,7 +163,7 @@ function MiniChatInner(
       </div>
 
       {/* Icon chain — directly above input, only during processing */}
-      {(isProcessing || (agentState.collaboration === "CLOSED" && agentState.agents.length > 0)) && (
+      {isProcessing && (
         <AgentIconChain state={agentState} />
       )}
 

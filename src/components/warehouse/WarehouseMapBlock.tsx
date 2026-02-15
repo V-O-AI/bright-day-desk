@@ -300,27 +300,9 @@ export function WarehouseMapBlock() {
 }
 
 export function WarehouseMapHeader() {
-  const [activeFloor, setActiveFloor] = useState(0);
-
   return (
     <div className="flex items-center justify-between">
       <h3 className="font-semibold text-foreground">Полезные данные</h3>
-      <div className="flex gap-1 bg-muted rounded-lg p-0.5">
-        {floors.map((floor, idx) => (
-          <button
-            key={idx}
-            className={cn(
-              "px-3 py-1 text-xs rounded-md transition-colors",
-              activeFloor === idx
-                ? "bg-foreground text-background font-medium"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-            onClick={() => setActiveFloor(idx)}
-          >
-            {floor}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }

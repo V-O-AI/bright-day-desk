@@ -51,13 +51,13 @@ const MyDataWarehouse = () => {
         </div>
 
         {/* Row 3: Warehouse Map + Activity Log */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2 space-y-4">
-            <WarehouseMapHeader />
+        <div className="space-y-4">
+          <WarehouseMapHeader />
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4">
             <WarehouseMapBlock />
-          </div>
-          <div className="lg:col-span-1">
-            <WarehouseActivityLog />
+            <div className="w-full lg:w-[260px]">
+              <WarehouseActivityLog />
+            </div>
           </div>
         </div>
       </div>

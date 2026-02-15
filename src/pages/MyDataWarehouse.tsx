@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { WarehousePieChart } from "@/components/charts/WarehousePieChart";
 import { WarehouseProductCards } from "@/components/warehouse/WarehouseProductCards";
-import { CapacityUsageChart } from "@/components/warehouse/CapacityUsageChart";
+
 import { WarehouseStorageTable } from "@/components/warehouse/WarehouseStorageTable";
 import { WarehouseMapBlock, WarehouseMapHeader } from "@/components/warehouse/WarehouseMapBlock";
 import { WarehouseActivityLog } from "@/components/warehouse/WarehouseActivityLog";
@@ -27,14 +27,9 @@ const MyDataWarehouse = () => {
           <h1 className="text-2xl font-bold text-foreground">Мой склад</h1>
         </div>
 
-        {/* Row 1: Product Cards + Capacity Usage */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-          <div className="lg:col-span-3">
-            <WarehouseProductCards />
-          </div>
-          <div className="lg:col-span-1">
-            <CapacityUsageChart />
-          </div>
+        {/* Row 1: Product Cards (full width) */}
+        <div>
+          <WarehouseProductCards />
         </div>
 
         {/* Row 2: Storage Table + Pie Chart */}

@@ -17,18 +17,17 @@ export function AgentCollaborationBar({ state }: AgentCollaborationBarProps) {
   const getPosition = (index: number, total: number) => {
     if (total === 1) return { x: 0, y: 0 };
     if (total === 2) {
-      // Side by side, overlapping
       const offsets = [
-        { x: -8, y: 0 },
-        { x: 8, y: 0 },
+        { x: -10, y: 0 },
+        { x: 10, y: 0 },
       ];
       return offsets[index];
     }
-    // 3 icons: triangle formation, tightly packed
+    // 3 icons: triangle, slightly touching
     const offsets = [
-      { x: 0, y: -7 },   // top center
-      { x: -9, y: 6 },   // bottom left
-      { x: 9, y: 6 },    // bottom right
+      { x: 0, y: -11 },   // top center
+      { x: -12, y: 8 },   // bottom left
+      { x: 12, y: 8 },    // bottom right
     ];
     return offsets[index];
   };

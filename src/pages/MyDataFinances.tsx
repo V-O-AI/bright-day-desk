@@ -53,11 +53,11 @@ const MyDataFinances = () => {
           </div>
           <div className="lg:col-span-2">
             <RecentTransactions />
+          </div>
         </div>
 
-        {/* SKU Profitability Matrix */}
+        {/* SKU Profitability Matrix — full width */}
         <SkuProfitabilityMatrix />
-      </div>
       </div>
     </AppLayout>
   );

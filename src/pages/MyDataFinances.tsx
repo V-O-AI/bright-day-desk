@@ -9,6 +9,8 @@ import { CashFlowChart } from "@/components/charts/CashFlowChart";
 import { RecentTransactions } from "@/components/charts/RecentTransactions";
 import { MetricPeriod } from "@/hooks/useFinancialMetrics";
 import { SkuProfitabilityMatrix } from "@/components/charts/SkuProfitabilityMatrix";
+import { UnitEconomicsOverview } from "@/components/charts/UnitEconomicsOverview";
+import { WhereProfitIsLost } from "@/components/charts/WhereProfitIsLost";
 
 const MyDataFinances = () => {
   const navigate = useNavigate();
@@ -32,28 +34,24 @@ const MyDataFinances = () => {
           </div>
         </div>
 
-        {/* Top row: Total Balance | Budget Overview */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-          <div className="lg:col-span-3">
-            <TotalBalanceBlock
-              period={period}
-              onPeriodChange={setPeriod}
-              showPeriodSelector
-            />
-          </div>
-          <div className="lg:col-span-2">
-            <BudgetOverview />
-          </div>
+        {/* Row 1: Total Balance | Budget Overview | Recent Transactions */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <TotalBalanceBlock
+            period={period}
+            onPeriodChange={setPeriod}
+            showPeriodSelector
+          />
+          <BudgetOverview />
+          <RecentTransactions />
         </div>
 
-        {/* Bottom row: Cash Flow Trend | Recent Transactions */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-          <div className="lg:col-span-3 h-[380px]">
+        {/* Row 2: Cash Flow | Unit Economics | Where Profit Lost */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="h-[380px]">
             <CashFlowChart />
           </div>
-          <div className="lg:col-span-2">
-            <RecentTransactions />
-          </div>
+          <UnitEconomicsOverview />
+          <WhereProfitIsLost />
         </div>
 
         {/* SKU Profitability Matrix — full width */}

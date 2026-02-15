@@ -291,7 +291,7 @@ export function WarehouseProductCards() {
   };
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-5 h-full flex flex-col">
+    <div className="bg-card border border-border rounded-2xl p-5 h-full flex flex-col overflow-hidden">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           {selectedCategory && (

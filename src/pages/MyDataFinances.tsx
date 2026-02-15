@@ -8,6 +8,7 @@ import { BudgetOverview } from "@/components/charts/BudgetOverview";
 import { CashFlowChart } from "@/components/charts/CashFlowChart";
 import { RecentTransactions } from "@/components/charts/RecentTransactions";
 import { MetricPeriod } from "@/hooks/useFinancialMetrics";
+import { SkuProfitabilityMatrix } from "@/components/charts/SkuProfitabilityMatrix";
 
 const MyDataFinances = () => {
   const navigate = useNavigate();
@@ -52,8 +53,11 @@ const MyDataFinances = () => {
           </div>
           <div className="lg:col-span-2">
             <RecentTransactions />
-          </div>
         </div>
+
+        {/* SKU Profitability Matrix */}
+        <SkuProfitabilityMatrix />
+      </div>
       </div>
     </AppLayout>
   );

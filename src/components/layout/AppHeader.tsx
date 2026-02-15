@@ -182,7 +182,7 @@ export function AppHeader() {
             <>
               <Button
                 variant="outline"
-                className="rounded-full transition-all duration-200 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97] gap-2 [&:hover_svg]:text-primary"
+                className="rounded-full transition-all duration-200 hover:bg-primary/5 hover:border-primary/30 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97] gap-2"
                 onClick={() => navigate("/staff-chat?new=true")}
               >
                 <Sparkles className="h-4 w-4 text-primary" />
@@ -190,7 +190,7 @@ export function AppHeader() {
               </Button>
               <Button
                 variant="outline"
-                className="rounded-full transition-all duration-200 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97] gap-2 [&:hover_svg]:text-primary"
+                className="rounded-full transition-all duration-200 hover:bg-primary/5 hover:border-primary/30 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97] gap-2"
                 onClick={() => navigate("/staff-chat?new=true&message=" + encodeURIComponent("Подготовить таблицу"))}
               >
                 <FileText className="h-4 w-4 text-primary" />
@@ -198,7 +198,7 @@ export function AppHeader() {
               </Button>
               <Button
                 variant="outline"
-                className="rounded-full transition-all duration-200 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97] gap-2 [&:hover_svg]:text-primary"
+                className="rounded-full transition-all duration-200 hover:bg-primary/5 hover:border-primary/30 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97] gap-2"
                 onClick={() => navigate("/cabinet")}
               >
                 <CalendarCheck className="h-4 w-4 text-primary" />

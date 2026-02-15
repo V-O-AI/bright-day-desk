@@ -43,7 +43,7 @@ const warehouseItems: WarehouseItem[] = [
 ];
 
 function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ru-RU")} ₽`;
+  return `$${value.toLocaleString("en-US")}`;
 }
 
 export function BudgetOverview() {

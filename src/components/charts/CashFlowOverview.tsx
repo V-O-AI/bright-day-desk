@@ -84,7 +84,7 @@ const drawerBreakdown = [
   { sku: "Пинетки", revenue: 6400, cost: 2800, cac: 600, logistics: 500, returns: 100, net: 2400 },
 ];
 
-const fmt = (v: number) => v.toLocaleString("ru-RU") + " ₽";
+const fmt = (v: number) => "$" + v.toLocaleString("en-US");
 
 /* ───── component ───── */
 export function CashFlowOverview() {
@@ -145,8 +145,8 @@ export function CashFlowOverview() {
           label="Прогноз баланса"
           sub={
             <div className="text-xs text-muted-foreground mt-1 space-y-0.5">
-              <div>+30 дней: 62 400 ₽</div>
-              <div>+60 дней: 24 000 ₽</div>
+              <div>+30 дней: $62,400</div>
+              <div>+60 дней: $24,000</div>
             </div>
           }
           onClick={() => openDrawer("Прогноз баланса")}
@@ -213,7 +213,7 @@ export function CashFlowOverview() {
             </div>
             <span className="text-xs text-muted-foreground">Последние {dateRange} дней</span>
           </div>
-          <div className="text-xs text-muted-foreground mb-1">Начальный баланс: <span className="font-semibold text-foreground">84 200 ₽</span></div>
+          <div className="text-xs text-muted-foreground mb-1">Начальный баланс: <span className="font-semibold text-foreground">$84,200</span></div>
           <div className="h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={waterfallData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>

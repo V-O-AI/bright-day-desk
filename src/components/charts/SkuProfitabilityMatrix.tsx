@@ -137,7 +137,7 @@ function getRecommendation(zone: Zone, margin: number, returnPercent: number): s
 }
 
 function fmt(v: number) {
-  return v.toLocaleString("ru-RU");
+  return "$" + v.toLocaleString("en-US");
 }
 
 // ---------- component ----------
@@ -206,12 +206,13 @@ export function SkuProfitabilityMatrix() {
     if (!active || !payload?.[0]) return null;
     const d: SkuPoint = payload[0].payload;
     return (
-      <div className="rounded-lg border bg-card p-3 shadow-lg text-sm space-y-1 max-w-[220px]">
-        <p className="font-bold text-foreground">{d.id}</p>
-        <p className="text-muted-foreground">Выручка: {fmt(d.revenue)} ₽</p>
+      <div className="rounded-lg border bg-card p-3 shadow-lg text-sm space-y-1 max-w-[240px]">
+        <p className="font-bold text-foreground">{d.name}</p>
+        <p className="text-[10px] text-muted-foreground/70">{d.category} · {d.id}</p>
+        <p className="text-muted-foreground">Выручка: {fmt(d.revenue)}</p>
         <p className="text-muted-foreground">Маржа: {d.margin.toFixed(0)}%</p>
         <p className="text-muted-foreground">ROI: {d.roi.toFixed(1)}</p>
-        <p className="text-muted-foreground">Прибыль/ед: {fmt(d.unitProfit)} ₽</p>
+        <p className="text-muted-foreground">Прибыль/ед: {fmt(d.unitProfit)}</p>
         <p className="text-muted-foreground">Возвраты: {d.returnPercent}%</p>
         <div className="flex items-center gap-1.5 pt-1">
           <div className="h-2.5 w-2.5 rounded-full" style={{ background: ZONE_COLORS[d.zone] }} />
@@ -257,7 +258,7 @@ export function SkuProfitabilityMatrix() {
             </Select>
           </div>
           <div className="space-y-1 w-[160px]">
-            <span className="text-xs text-muted-foreground">Мин. выручка: {fmt(minRevenue[0])} ₽</span>
+            <span className="text-xs text-muted-foreground">Мин. выручка: {fmt(minRevenue[0])}</span>
             <Slider
               value={minRevenue}
               onValueChange={setMinRevenue}
@@ -370,9 +371,9 @@ export function SkuProfitabilityMatrix() {
             </Badge>
           </div>
           <p className="text-sm text-foreground italic">
-            {aiInsight.pct}% выручки приходится на SKU в зоне Optimize.
+            {aiInsight.pct}% выручки приходится на товары в зоне Optimize.
             Увеличение их маржи на 4% принесёт дополнительно{" "}
-            <span className="font-bold text-primary">+{fmt(aiInsight.potentialGain)} ₽</span> прибыли.
+            <span className="font-bold text-primary">+{fmt(aiInsight.potentialGain)}</span> прибыли.
           </p>
         </div>
 
@@ -382,7 +383,8 @@ export function SkuProfitabilityMatrix() {
             {selectedSku && (
               <>
                 <SheetHeader>
-                  <SheetTitle className="text-lg">{selectedSku.id} — {selectedSku.name}</SheetTitle>
+                  <SheetTitle className="text-lg">{selectedSku.name}</SheetTitle>
+                  <p className="text-xs text-muted-foreground">{selectedSku.category} · {selectedSku.id}</p>
                 </SheetHeader>
                 <div className="mt-6 space-y-4">
                   <div className="flex items-center gap-2">
@@ -391,16 +393,16 @@ export function SkuProfitabilityMatrix() {
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     {[
-                      ["Выручка", `${fmt(selectedSku.revenue)} ₽`],
-                      ["Общая прибыль", `${fmt(selectedSku.totalProfit)} ₽`],
+                      ["Выручка", fmt(selectedSku.revenue)],
+                      ["Общая прибыль", fmt(selectedSku.totalProfit)],
                       ["Маржа", `${selectedSku.margin.toFixed(1)}%`],
-                      ["Рекламные расходы", `${fmt(selectedSku.adSpend)} ₽`],
-                      ["Переменные расходы", `${fmt(selectedSku.variableCosts)} ₽`],
+                      ["Рекламные расходы", fmt(selectedSku.adSpend)],
+                      ["Переменные расходы", fmt(selectedSku.variableCosts)],
                       ["Возвраты", `${selectedSku.returnPercent}%`],
                       ["ROI", selectedSku.roi.toFixed(2)],
-                      ["Прибыль/ед", `${fmt(selectedSku.unitProfit)} ₽`],
-                      ["Оценка выручки", selectedSku.revenueScore.toFixed(3)],
-                      ["Оценка эффективности", selectedSku.efficiencyScore.toFixed(3)],
+                      ["Прибыль/ед", fmt(selectedSku.unitProfit)],
+                      ["Объём продаж", `${selectedSku.salesVolume} шт.`],
+                      ["Рост", `${(selectedSku.growthRate * 100).toFixed(0)}%`],
                     ].map(([label, value]) => (
                       <div key={label} className="rounded-md border p-2.5">
                         <p className="text-xs text-muted-foreground">{label}</p>

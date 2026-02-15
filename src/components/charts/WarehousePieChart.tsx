@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { ArrowLeft } from "lucide-react";
 import { useWarehouseCategories, useWarehouseProducts } from "@/hooks/useWarehouseData";
@@ -17,7 +18,7 @@ interface LabelProps {
   index: number;
 }
 
-const renderCustomizedLabel = ({
+const renderCustomizedLabel = (labelOffset: number) => ({
   cx,
   cy,
   midAngle,
@@ -30,20 +31,22 @@ const renderCustomizedLabel = ({
   const insideX = cx + insideRadius * Math.cos(-midAngle * RADIAN);
   const insideY = cy + insideRadius * Math.sin(-midAngle * RADIAN);
 
-  const labelRadius = outerRadius + 30;
+  const labelRadius = outerRadius + labelOffset;
   const labelX = cx + labelRadius * Math.cos(-midAngle * RADIAN);
   const labelY = cy + labelRadius * Math.sin(-midAngle * RADIAN);
 
-  const lineStartRadius = outerRadius + 5;
+  const lineStartRadius = outerRadius + 4;
   const lineStartX = cx + lineStartRadius * Math.cos(-midAngle * RADIAN);
   const lineStartY = cy + lineStartRadius * Math.sin(-midAngle * RADIAN);
 
-  const lineEndRadius = outerRadius + 22;
+  const lineEndRadius = outerRadius + labelOffset - 8;
   const lineEndX = cx + lineEndRadius * Math.cos(-midAngle * RADIAN);
   const lineEndY = cy + lineEndRadius * Math.sin(-midAngle * RADIAN);
 
   const isRight = labelX > cx;
   const textAnchor = isRight ? "start" : "end";
+
+  const fontSize = labelOffset < 25 ? 10 : 12;
 
   return (
     <g>
@@ -53,7 +56,7 @@ const renderCustomizedLabel = ({
         fill="white"
         textAnchor="middle"
         dominantBaseline="central"
-        style={{ fontSize: 12, fontWeight: 600 }}
+        style={{ fontSize: fontSize, fontWeight: 600 }}
       >
         {`${(percent * 100).toFixed(0)}%`}
       </text>
@@ -71,7 +74,7 @@ const renderCustomizedLabel = ({
         fill="hsl(var(--foreground))"
         textAnchor={textAnchor}
         dominantBaseline="central"
-        style={{ fontSize: 12, fontWeight: 500 }}
+        style={{ fontSize: fontSize, fontWeight: 500 }}
       >
         {name}
       </text>
@@ -81,9 +84,11 @@ const renderCustomizedLabel = ({
 
 interface WarehousePieChartProps {
   enlarged?: boolean;
+  compact?: boolean;
 }
 
-export function WarehousePieChart({ enlarged = false }: WarehousePieChartProps) {
+export function WarehousePieChart({ enlarged = false, compact = false }: WarehousePieChartProps) {
+  const isSmallScreen = useIsMobile(1024);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [selectedCategoryName, setSelectedCategoryName] = useState<string | null>(null);
 
@@ -144,12 +149,12 @@ export function WarehousePieChart({ enlarged = false }: WarehousePieChartProps) 
             data={chartData}
             cx="50%"
             cy="50%"
-           innerRadius={enlarged ? 55 : 40}
-            outerRadius={enlarged ? 95 : 70}
+           innerRadius={isSmallScreen ? 40 : (enlarged ? 55 : 40)}
+            outerRadius={isSmallScreen ? 70 : (enlarged ? 95 : 70)}
             paddingAngle={2}
             dataKey="value"
             labelLine={false}
-            label={renderCustomizedLabel}
+            label={renderCustomizedLabel(isSmallScreen ? 20 : 30)}
             style={{ cursor: isDrillDown ? "default" : "pointer" }}
             animationBegin={0}
             animationDuration={400}

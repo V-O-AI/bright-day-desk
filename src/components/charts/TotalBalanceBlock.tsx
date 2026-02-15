@@ -247,7 +247,7 @@ export function TotalBalanceBlock({
         )}
 
         {/* Sub cards row */}
-        <div className={cn("grid gap-2 md:gap-3", compact ? "grid-cols-2 sm:grid-cols-4 mt-1" : "grid-cols-2 sm:grid-cols-3 mt-2")}>
+        <div className={cn("grid gap-2 md:gap-2.5 lg:gap-3", compact ? "grid-cols-2 md:grid-cols-4 mt-1" : "grid-cols-2 sm:grid-cols-3 mt-2")}>
           {/* ROI — inline in compact mode */}
           {compact && (
             <div

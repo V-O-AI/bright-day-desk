@@ -37,25 +37,25 @@ const lossCategories: LossCategory[] = [
   { name: "Логистика", amount: 12400, color: "hsl(217, 91%, 60%)" },
   { name: "Реклама", amount: 10800, color: "hsl(258, 90%, 66%)" },
   { name: "Комиссии", amount: 4200, color: "hsl(45, 93%, 55%)" },
-  { name: "Низкая маржа SKU", amount: 3000, color: "hsl(160, 60%, 45%)" },
+  { name: "Низкая маржа товаров", amount: 3000, color: "hsl(160, 60%, 45%)" },
 ];
 
 const maxLoss = Math.max(...lossCategories.map(c => c.amount));
 
 // Drawer mock data per category
 const skuLossTable = [
-  { sku: "SKU-223", orders: 150, discountUsed: "22%", unitMarginLoss: "18 zł", totalLoss: "2 700 zł" },
-  { sku: "SKU-315", orders: 95, discountUsed: "28%", unitMarginLoss: "24 zł", totalLoss: "2 280 zł" },
-  { sku: "SKU-184", orders: 210, discountUsed: "15%", unitMarginLoss: "12 zł", totalLoss: "2 520 zł" },
-  { sku: "SKU-042", orders: 180, discountUsed: "18%", unitMarginLoss: "8 zł", totalLoss: "1 440 zł" },
-  { sku: "SKU-067", orders: 130, discountUsed: "12%", unitMarginLoss: "6 zł", totalLoss: "780 zł" },
+  { sku: "Конверт на выписку", orders: 150, discountUsed: "22%", unitMarginLoss: "18 ₽", totalLoss: "2 700 ₽" },
+  { sku: "Кроссовки спорт", orders: 95, discountUsed: "28%", unitMarginLoss: "24 ₽", totalLoss: "2 280 ₽" },
+  { sku: "Боди хлопок", orders: 210, discountUsed: "15%", unitMarginLoss: "12 ₽", totalLoss: "2 520 ₽" },
+  { sku: "Шапка вязаная", orders: 180, discountUsed: "18%", unitMarginLoss: "8 ₽", totalLoss: "1 440 ₽" },
+  { sku: "Футболка оверсайз", orders: 130, discountUsed: "12%", unitMarginLoss: "6 ₽", totalLoss: "780 ₽" },
 ];
 
 const segmentedLoss = [
-  { segment: "Платная реклама", loss: "8 200 zł" },
-  { segment: "Органика", loss: "2 100 zł" },
-  { segment: "Промо-кампания", loss: "5 400 zł" },
-  { segment: "Склад А", loss: "1 800 zł" },
+  { segment: "Платная реклама", loss: "8 200 ₽" },
+  { segment: "Органика", loss: "2 100 ₽" },
+  { segment: "Промо-кампания", loss: "5 400 ₽" },
+  { segment: "Склад А", loss: "1 800 ₽" },
 ];
 
 const lossDistribution = [
@@ -87,12 +87,12 @@ export function WhereProfitIsLost() {
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h3 className="font-semibold text-foreground text-sm">Where Profit is Lost</h3>
+            <h3 className="font-semibold text-foreground text-sm">Где теряется прибыль</h3>
             <p className="text-xs text-muted-foreground">Источники потери маржи</p>
           </div>
           <div className="text-right">
             <p className="text-xs text-muted-foreground">Потеряно прибыли</p>
-            <p className="text-sm font-bold text-destructive">−{totalLostProfit.toLocaleString()} zł</p>
+            <p className="text-sm font-bold text-destructive">−{totalLostProfit.toLocaleString()} ₽</p>
           </div>
         </div>
 
@@ -110,7 +110,7 @@ export function WhereProfitIsLost() {
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs text-foreground font-medium">{cat.name}</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-destructive">−{cat.amount.toLocaleString()} zł</span>
+                    <span className="text-xs font-semibold text-destructive">−{cat.amount.toLocaleString()} ₽</span>
                     <span className="text-[10px] text-muted-foreground">{pct}%</span>
                   </div>
                 </div>
@@ -139,22 +139,22 @@ export function WhereProfitIsLost() {
         <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
           <SheetHeader>
             <SheetTitle className="text-base">
-              {selectedCategory?.name || ""} — Breakdown
+              {selectedCategory?.name || ""} — Детализация
             </SheetTitle>
             <SheetDescription className="text-xs">
-              Потери: {selectedCategory ? `−${selectedCategory.amount.toLocaleString()} zł` : ""} · Месяц
+              Потери: {selectedCategory ? `−${selectedCategory.amount.toLocaleString()} ₽` : ""} · Месяц
             </SheetDescription>
           </SheetHeader>
 
           <div className="mt-4 space-y-5">
             {/* SKU Loss Table */}
             <div>
-              <h4 className="text-xs font-semibold text-muted-foreground mb-2">По SKU</h4>
+              <h4 className="text-xs font-semibold text-muted-foreground mb-2">По товарам</h4>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="border-b border-border text-muted-foreground">
-                      <th className="text-left pb-2 font-medium">SKU</th>
+                      <th className="text-left pb-2 font-medium">Товар</th>
                       <th className="text-right pb-2 font-medium">Заказы</th>
                       <th className="text-right pb-2 font-medium">Скидка</th>
                       <th className="text-right pb-2 font-medium">Потеря/ед</th>
@@ -236,7 +236,7 @@ export function WhereProfitIsLost() {
             <div className="bg-primary/5 rounded-xl p-3 border border-primary/10">
               <p className="text-xs text-muted-foreground">
                 <span className="text-primary font-medium">AI: </span>
-                SKU со скидками более 15% генерируют отрицательную маржу в 38% случаев.
+                Товары со скидками более 15% генерируют отрицательную маржу в 38% случаев.
               </p>
             </div>
           </div>

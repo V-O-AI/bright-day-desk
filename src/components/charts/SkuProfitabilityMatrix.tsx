@@ -230,7 +230,7 @@ export function SkuProfitabilityMatrix() {
   return (
     <Card className="overflow-hidden">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg font-semibold">SKU Profitability Matrix</CardTitle>
+        <CardTitle className="text-lg font-semibold">Матрица прибыльности товаров</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* FILTERS */}
@@ -399,8 +399,8 @@ export function SkuProfitabilityMatrix() {
                       ["Возвраты", `${selectedSku.returnPercent}%`],
                       ["ROI", selectedSku.roi.toFixed(2)],
                       ["Прибыль/ед", `${fmt(selectedSku.unitProfit)} ₽`],
-                      ["Revenue Score", selectedSku.revenueScore.toFixed(3)],
-                      ["Efficiency Score", selectedSku.efficiencyScore.toFixed(3)],
+                      ["Оценка выручки", selectedSku.revenueScore.toFixed(3)],
+                      ["Оценка эффективности", selectedSku.efficiencyScore.toFixed(3)],
                     ].map(([label, value]) => (
                       <div key={label} className="rounded-md border p-2.5">
                         <p className="text-xs text-muted-foreground">{label}</p>

@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { IncomeDetailModal } from "./IncomeDetailModal";
 import { ExpenseDetailModal } from "./ExpenseDetailModal";
+import { MarginMatrixModal } from "./MarginMatrixModal";
 import { format, isWithinInterval, isSameDay } from "date-fns";
 import { ru } from "date-fns/locale";
 import { DayPicker, DateRange } from "react-day-picker";
@@ -51,6 +52,7 @@ export function TotalBalanceBlock({
   const { data: metrics, isLoading } = useFinancialMetrics(period);
   const [incomeModalOpen, setIncomeModalOpen] = useState(false);
   const [expenseModalOpen, setExpenseModalOpen] = useState(false);
+  const [marginModalOpen, setMarginModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [calendarOpen, setCalendarOpen] = useState(false);
 
@@ -265,7 +267,10 @@ export function TotalBalanceBlock({
           </div>
 
           {/* Маржа */}
-          <div className="bg-muted/50 rounded-xl p-3 border border-border/50">
+          <div
+            onClick={() => setMarginModalOpen(true)}
+            className="bg-muted/50 rounded-xl p-3 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors"
+          >
             <p className="text-xs text-muted-foreground mb-1">Маржа</p>
             <div className="flex items-center gap-1.5">
               <p className="text-sm font-bold text-foreground">
@@ -298,6 +303,10 @@ export function TotalBalanceBlock({
         onOpenChange={setExpenseModalOpen}
         totalExpense={expenseValue}
         periodLabel={currentPeriodLabel}
+      />
+      <MarginMatrixModal
+        open={marginModalOpen}
+        onOpenChange={setMarginModalOpen}
       />
     </>
   );

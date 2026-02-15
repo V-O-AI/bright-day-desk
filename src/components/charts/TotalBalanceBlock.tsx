@@ -221,18 +221,18 @@ export function TotalBalanceBlock({
         </div>
 
         {/* Sub cards row */}
-        <div className={cn("grid grid-cols-3 gap-3", compact ? "mt-4" : "mt-6")}>
+        <div className={cn("grid grid-cols-3 gap-2", compact ? "mt-4" : "mt-6")}>
           {/* Доход */}
           <div
             onClick={() => setIncomeModalOpen(true)}
-            className="bg-muted/50 rounded-xl p-3 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors"
+            className="bg-muted/50 rounded-xl p-2.5 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors text-center"
           >
-            <p className="text-xs text-muted-foreground mb-1">Доход</p>
-            <p className="text-sm font-bold text-foreground">
+            <p className="text-[11px] text-muted-foreground mb-1">Доход</p>
+            <p className="text-xs font-bold text-foreground">
               {formatCurrency(incomeValue)}
             </p>
             <p className={cn(
-              "text-xs mt-1 flex items-center gap-0.5",
+              "text-[10px] mt-1 flex items-center justify-center gap-0.5",
               incomeChange >= 0 ? "text-green-500" : "text-destructive"
             )}>
               {incomeChange >= 0 ? (
@@ -247,14 +247,14 @@ export function TotalBalanceBlock({
           {/* Расходы */}
           <div
             onClick={() => setExpenseModalOpen(true)}
-            className="bg-muted/50 rounded-xl p-3 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors"
+            className="bg-muted/50 rounded-xl p-2.5 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors text-center"
           >
-            <p className="text-xs text-muted-foreground mb-1">Расходы</p>
-            <p className="text-sm font-bold text-foreground">
+            <p className="text-[11px] text-muted-foreground mb-1">Расходы</p>
+            <p className="text-xs font-bold text-foreground">
               {formatCurrency(expenseValue)}
             </p>
             <p className={cn(
-              "text-xs mt-1 flex items-center gap-0.5",
+              "text-[10px] mt-1 flex items-center justify-center gap-0.5",
               expenseChange >= 0 ? "text-destructive" : "text-green-500"
             )}>
               {expenseChange >= 0 ? (
@@ -269,21 +269,21 @@ export function TotalBalanceBlock({
           {/* Маржа */}
           <div
             onClick={() => setMarginModalOpen(true)}
-            className="bg-muted/50 rounded-xl p-3 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors"
+            className="bg-muted/50 rounded-xl p-2.5 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors text-center"
           >
-            <p className="text-xs text-muted-foreground mb-1">Маржа</p>
-            <div className="flex items-center gap-1.5">
-              <p className="text-sm font-bold text-foreground">
+            <p className="text-[11px] text-muted-foreground mb-1">Маржа</p>
+            <div className="flex items-center justify-center gap-1.5">
+              <p className="text-xs font-bold text-foreground">
                 {marginPercent.toFixed(1)}%
               </p>
               {marginChange >= 0 ? (
-                <TrendingUp className="h-4 w-4 text-green-500" />
+                <TrendingUp className="h-3 w-3 text-green-500" />
               ) : (
-                <TrendingDown className="h-4 w-4 text-destructive" />
+                <TrendingDown className="h-3 w-3 text-destructive" />
               )}
             </div>
             <p className={cn(
-              "text-xs mt-1 flex items-center gap-0.5",
+              "text-[10px] mt-1 flex items-center justify-center gap-0.5",
               marginChange >= 0 ? "text-green-500" : "text-destructive"
             )}>
               {marginChange >= 0 ? "+" : ""}{marginChange.toFixed(1)}% за {periodText}

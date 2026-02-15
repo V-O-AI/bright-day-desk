@@ -64,10 +64,10 @@ const availabilityModalData = [
 
 type ModalType = "turnover" | "activity" | "availability" | null;
 
-const metrics: { label: string; value: string; unit: string; change: string; positive: boolean; key: ModalType; icon: React.ReactNode }[] = [
-  { label: "Средний оборот", value: "24", unit: "дн.", change: "+2.58%", positive: true, key: "turnover", icon: <RotateCcw className="h-4 w-4" /> },
-  { label: "Активность склада", value: "73.3%", unit: "", change: "+4.37%", positive: true, key: "activity", icon: <Activity className="h-4 w-4" /> },
-  { label: "Доступность склада", value: "100%", unit: "", change: "+1.54%", positive: true, key: "availability", icon: <PackageCheck className="h-4 w-4" /> },
+const metrics: { label: string; value: string; unit: string; change: string; positive: boolean; key: ModalType; icon: React.ReactNode; description: string; bgAccent: string; iconBg: string }[] = [
+  { label: "Средний оборот", value: "24", unit: "дн.", change: "+2.58%", positive: true, key: "turnover", icon: <RotateCcw className="h-4 w-4" />, description: "Среднее время от поступления до продажи", bgAccent: "from-primary/5 to-transparent", iconBg: "bg-primary/10 text-primary" },
+  { label: "Активность склада", value: "73.3%", unit: "", change: "+4.37%", positive: true, key: "activity", icon: <Activity className="h-4 w-4" />, description: "Доля товаров с активными продажами", bgAccent: "from-green-500/5 to-transparent", iconBg: "bg-green-500/10 text-green-600" },
+  { label: "Доступность склада", value: "100%", unit: "", change: "+1.54%", positive: true, key: "availability", icon: <PackageCheck className="h-4 w-4" />, description: "Категории с остатком больше 0", bgAccent: "from-blue-500/5 to-transparent", iconBg: "bg-blue-500/10 text-blue-600" },
 ];
 
 function TurnoverModal({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -210,24 +210,38 @@ export function WarehouseMetricCards() {
         {metrics.map((m, idx) => (
           <div
             key={idx}
-            className="bg-card border border-border rounded-xl p-3 cursor-pointer hover:border-primary/40 hover:shadow-sm transition-all"
+            className={cn(
+              "relative overflow-hidden bg-card border border-border rounded-xl p-4 cursor-pointer transition-all duration-200",
+              "hover:border-primary/40 hover:shadow-md hover:-translate-y-0.5"
+            )}
             onClick={() => setActiveModal(m.key)}
           >
-            <div className="flex items-center gap-1.5">
-              <span className="text-muted-foreground">{m.icon}</span>
-              <p className="text-[10px] text-muted-foreground">{m.label}</p>
+            {/* Subtle gradient accent */}
+            <div className={cn("absolute inset-0 bg-gradient-to-br pointer-events-none", m.bgAccent)} />
+
+            <div className="relative flex items-start gap-3">
+              <div className={cn("h-9 w-9 rounded-lg flex items-center justify-center flex-shrink-0", m.iconBg)}>
+                {m.icon}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-muted-foreground">{m.label}</p>
+                <div className="flex items-baseline gap-1.5 mt-0.5">
+                  <span className="text-xl font-bold text-foreground">{m.value}</span>
+                  {m.unit && <span className="text-xs text-muted-foreground">{m.unit}</span>}
+                </div>
+                <p className="text-[10px] text-muted-foreground/70 mt-0.5 leading-tight">{m.description}</p>
+              </div>
             </div>
-            <div className="flex items-baseline gap-1.5 mt-1">
-              <span className="text-lg font-bold text-foreground">{m.value}</span>
-              {m.unit && <span className="text-[10px] text-muted-foreground">{m.unit}</span>}
-            </div>
-            <div className="flex items-center gap-1 mt-1">
-              {m.positive ? (
-                <TrendingUp className="h-3 w-3 text-green-500" />
-              ) : (
-                <TrendingDown className="h-3 w-3 text-destructive" />
-              )}
-              <span className={cn("text-[10px] font-medium", m.positive ? "text-green-500" : "text-destructive")}>{m.change}</span>
+
+            <div className="relative flex items-center gap-1.5 mt-2 pt-2 border-t border-border/50">
+              <div className={cn(
+                "flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-semibold",
+                m.positive ? "bg-green-500/10 text-green-600" : "bg-destructive/10 text-destructive"
+              )}>
+                {m.positive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                {m.change}
+              </div>
+              <span className="text-[10px] text-muted-foreground">за период</span>
             </div>
           </div>
         ))}

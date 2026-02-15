@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { IncomeDetailModal } from "./IncomeDetailModal";
 import { ExpenseDetailModal } from "./ExpenseDetailModal";
 import { MarginMatrixModal } from "./MarginMatrixModal";
+import { RoiDetailModal } from "./RoiDetailModal";
 import { format, isWithinInterval, isSameDay } from "date-fns";
 import { ru } from "date-fns/locale";
 import { DayPicker, DateRange } from "react-day-picker";
@@ -53,6 +54,7 @@ export function TotalBalanceBlock({
   const [incomeModalOpen, setIncomeModalOpen] = useState(false);
   const [expenseModalOpen, setExpenseModalOpen] = useState(false);
   const [marginModalOpen, setMarginModalOpen] = useState(false);
+  const [roiModalOpen, setRoiModalOpen] = useState(false);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [calendarOpen, setCalendarOpen] = useState(false);
 
@@ -83,6 +85,10 @@ export function TotalBalanceBlock({
   const marginPercent = incomeValue > 0 ? ((incomeValue - expenseValue) / incomeValue) * 100 : 0;
   // Compare with previous period — use sales change as proxy
   const marginChange = sales?.change_percent ?? 0;
+
+  // ROI = (income - expense) / expense * 100
+  const roiPercent = expenseValue > 0 ? ((incomeValue - expenseValue) / expenseValue) * 100 : 0;
+  const roiChange = totalRevenue?.change_percent ?? 0;
 
   if (isLoading) {
     return <Skeleton className={cn("rounded-2xl", compact ? "h-[180px]" : "h-[260px]")} />;
@@ -216,30 +222,21 @@ export function TotalBalanceBlock({
               )}
               {balanceChange >= 0 ? "+" : ""}{balanceChange}% за {periodText}
             </span>
-            <span className="text-xs text-muted-foreground">Все связанные счета</span>
+            
           </div>
         </div>
 
         {/* Sub cards row */}
-        <div className={cn("grid grid-cols-3 gap-2", compact ? "mt-4" : "mt-6")}>
+        <div className={cn("grid grid-cols-4 gap-2", compact ? "mt-4" : "mt-6")}>
           {/* Доход */}
           <div
             onClick={() => setIncomeModalOpen(true)}
             className="bg-muted/50 rounded-xl p-2.5 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors text-center"
           >
             <p className="text-[11px] text-muted-foreground mb-1">Доход</p>
-            <p className="text-xs font-bold text-foreground">
-              {formatCurrency(incomeValue)}
-            </p>
-            <p className={cn(
-              "text-[10px] mt-1 flex items-center justify-center gap-0.5",
-              incomeChange >= 0 ? "text-green-500" : "text-destructive"
-            )}>
-              {incomeChange >= 0 ? (
-                <TrendingUp className="h-3 w-3" />
-              ) : (
-                <TrendingDown className="h-3 w-3" />
-              )}
+            <p className="text-xs font-bold text-foreground">{formatCurrency(incomeValue)}</p>
+            <p className={cn("text-[10px] mt-1 flex items-center justify-center gap-0.5", incomeChange >= 0 ? "text-green-500" : "text-destructive")}>
+              {incomeChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
               {formatPercent(incomeChange)} за {periodText}
             </p>
           </div>
@@ -250,19 +247,25 @@ export function TotalBalanceBlock({
             className="bg-muted/50 rounded-xl p-2.5 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors text-center"
           >
             <p className="text-[11px] text-muted-foreground mb-1">Расходы</p>
-            <p className="text-xs font-bold text-foreground">
-              {formatCurrency(expenseValue)}
-            </p>
-            <p className={cn(
-              "text-[10px] mt-1 flex items-center justify-center gap-0.5",
-              expenseChange >= 0 ? "text-destructive" : "text-green-500"
-            )}>
-              {expenseChange >= 0 ? (
-                <TrendingUp className="h-3 w-3" />
-              ) : (
-                <TrendingDown className="h-3 w-3" />
-              )}
+            <p className="text-xs font-bold text-foreground">{formatCurrency(expenseValue)}</p>
+            <p className={cn("text-[10px] mt-1 flex items-center justify-center gap-0.5", expenseChange >= 0 ? "text-destructive" : "text-green-500")}>
+              {expenseChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
               {formatPercent(expenseChange)} за {periodText}
+            </p>
+          </div>
+
+          {/* ROI */}
+          <div
+            onClick={() => setRoiModalOpen(true)}
+            className="bg-muted/50 rounded-xl p-2.5 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors text-center"
+          >
+            <p className="text-[11px] text-muted-foreground mb-1">ROI</p>
+            <div className="flex items-center justify-center gap-1.5">
+              <p className="text-xs font-bold text-foreground">{roiPercent.toFixed(1)}%</p>
+              {roiChange >= 0 ? <TrendingUp className="h-3 w-3 text-green-500" /> : <TrendingDown className="h-3 w-3 text-destructive" />}
+            </div>
+            <p className={cn("text-[10px] mt-1 flex items-center justify-center gap-0.5", roiChange >= 0 ? "text-green-500" : "text-destructive")}>
+              {roiChange >= 0 ? "+" : ""}{roiChange.toFixed(1)}% за {periodText}
             </p>
           </div>
 
@@ -273,19 +276,10 @@ export function TotalBalanceBlock({
           >
             <p className="text-[11px] text-muted-foreground mb-1">Маржа</p>
             <div className="flex items-center justify-center gap-1.5">
-              <p className="text-xs font-bold text-foreground">
-                {marginPercent.toFixed(1)}%
-              </p>
-              {marginChange >= 0 ? (
-                <TrendingUp className="h-3 w-3 text-green-500" />
-              ) : (
-                <TrendingDown className="h-3 w-3 text-destructive" />
-              )}
+              <p className="text-xs font-bold text-foreground">{marginPercent.toFixed(1)}%</p>
+              {marginChange >= 0 ? <TrendingUp className="h-3 w-3 text-green-500" /> : <TrendingDown className="h-3 w-3 text-destructive" />}
             </div>
-            <p className={cn(
-              "text-[10px] mt-1 flex items-center justify-center gap-0.5",
-              marginChange >= 0 ? "text-green-500" : "text-destructive"
-            )}>
+            <p className={cn("text-[10px] mt-1 flex items-center justify-center gap-0.5", marginChange >= 0 ? "text-green-500" : "text-destructive")}>
               {marginChange >= 0 ? "+" : ""}{marginChange.toFixed(1)}% за {periodText}
             </p>
           </div>
@@ -307,6 +301,11 @@ export function TotalBalanceBlock({
       <MarginMatrixModal
         open={marginModalOpen}
         onOpenChange={setMarginModalOpen}
+      />
+      <RoiDetailModal
+        open={roiModalOpen}
+        onOpenChange={setRoiModalOpen}
+        overallRoi={Math.round(roiPercent)}
       />
     </>
   );

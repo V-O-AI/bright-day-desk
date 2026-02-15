@@ -132,31 +132,45 @@ function MiniChatInner(
             ))}
 
             {/* Agent completion responses rendered as chat messages */}
-            {agentResponses.map((resp) => (
-              <div key={resp.id} className="flex gap-3 justify-start animate-fade-in">
-                <div className="relative flex-shrink-0" style={{width: Math.min(resp.agents.length, 3) * 10 + 18, height: 28}}>
-                  {resp.agents.slice(0, 3).map((agent, i) => (
-                    <div
-                      key={agent.id}
-                      className="absolute w-6 h-6 rounded-md bg-muted border-2 border-background flex items-center justify-center text-[10px]"
-                      style={{left: i * 10, top: i % 2 === 0 ? 0 : 2, zIndex: 10 - i}}
-                    >
-                      {agent.emoji}
-                    </div>
-                  ))}
+            {agentResponses.map((resp) => {
+              const count = Math.min(resp.agents.length, 3);
+              const clusterOffsets = count === 1
+                ? [{ x: 0, y: 0 }]
+                : count === 2
+                ? [{ x: -6, y: -4 }, { x: 6, y: 4 }]
+                : [{ x: 0, y: -8 }, { x: -9, y: 6 }, { x: 9, y: 6 }];
+              return (
+                <div key={resp.id} className="flex gap-3 items-start justify-start animate-fade-in">
+                  <div className="relative flex-shrink-0" style={{ width: 44, height: 44 }}>
+                    {resp.agents.slice(0, 3).map((agent, i) => {
+                      const pos = clusterOffsets[i];
+                      return (
+                        <div
+                          key={agent.id}
+                          className="absolute w-7 h-7 rounded-lg bg-muted border-2 border-background flex items-center justify-center text-xs shadow-sm"
+                          style={{
+                            left: `calc(50% + ${pos.x}px - 14px)`,
+                            top: `calc(50% + ${pos.y}px - 14px)`,
+                            zIndex: 10 - i,
+                          }}
+                        >
+                          {agent.emoji}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="text-sm max-w-[75%] pt-2">
+                    <p className="text-muted-foreground leading-relaxed">{resp.content}</p>
+                  </div>
                 </div>
-                <div className="text-sm max-w-[80%]">
-                  <p className="font-medium text-xs text-muted-foreground mb-0.5">Вот ваш результат...</p>
-                  <p className="text-muted-foreground leading-relaxed">{resp.content}</p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </>
         )}
 
         {/* Orbiting animation — centered in dialog area */}
         {isProcessing && (
-          <div className="flex justify-center py-4">
+          <div className="flex justify-start py-4 pl-2">
             <AgentCollaborationBar state={agentState} />
           </div>
         )}

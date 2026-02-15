@@ -204,7 +204,7 @@ function CategoryCardItem({ category, onClick }: { category: CategoryCard; onCli
     <div
       onClick={onClick}
       className="flex-shrink-0 bg-card border border-border rounded-2xl p-4 flex flex-col justify-between transition-all duration-200 hover:shadow-lg hover:border-primary/30 hover:-translate-y-0.5 cursor-pointer group"
-      style={{ width: "calc((100% - 6 * 0.75rem) / 7)", minWidth: "130px" }}
+      style={{ width: "calc((100% - 4 * 0.75rem) / 5)", minWidth: "130px" }}
     >
       <div>
         <div className="flex items-start justify-between mb-3">

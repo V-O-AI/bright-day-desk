@@ -41,9 +41,14 @@ const CABINET_TRANSACTIONS = [
   { initials: "BN", title: 'Бонус за реферальную программу', amount: "+ $15,00", color: "text-primary", bgColor: "bg-amber-100 dark:bg-amber-900/30" },
   { initials: "UP", title: 'Оплата плана "Growth" (месяц)', amount: "- $79,00", color: "text-destructive", bgColor: "bg-blue-100 dark:bg-blue-900/30" },
   { initials: "TK", title: 'Применён тикет "5% кешбэк"', amount: "+ $3,95", color: "text-primary", bgColor: "bg-orange-100 dark:bg-orange-900/30" },
+  { initials: "UP", title: 'Оплата плана "Professional" (месяц)', amount: "- $89,00", color: "text-destructive", bgColor: "bg-blue-100 dark:bg-blue-900/30" },
+  { initials: "BN", title: 'Бонус за приглашённого друга', amount: "+ $10,00", color: "text-primary", bgColor: "bg-amber-100 dark:bg-amber-900/30" },
+  { initials: "RF", title: 'Частичный возврат средств', amount: "+ $12,00", color: "text-primary", bgColor: "bg-green-100 dark:bg-green-900/30" },
+  { initials: "UP", title: 'Оплата плана "Professional" (месяц)', amount: "- $89,00", color: "text-destructive", bgColor: "bg-blue-100 dark:bg-blue-900/30" },
+  { initials: "TK", title: 'Применён тикет "10% скидка"', amount: "+ $8,90", color: "text-primary", bgColor: "bg-orange-100 dark:bg-orange-900/30" },
+  { initials: "UP", title: 'Оплата плана "Professional" (месяц)', amount: "- $89,00", color: "text-destructive", bgColor: "bg-blue-100 dark:bg-blue-900/30" },
+  { initials: "BN", title: 'Кешбэк за годовую подписку', amount: "+ $45,00", color: "text-primary", bgColor: "bg-amber-100 dark:bg-amber-900/30" },
 ];
-
-const MAX_VISIBLE_TRANSACTIONS = 8;
 
 const Cabinet = () => {
   const [activeTab, setActiveTab] = useState<"cabinet" | "referral">("cabinet");
@@ -525,8 +530,8 @@ const Cabinet = () => {
               <button className="text-sm text-primary hover:underline">Все</button>
             </div>
             
-            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1 scrollbar-thin">
-              {CABINET_TRANSACTIONS.slice(0, MAX_VISIBLE_TRANSACTIONS).map((transaction, index) => (
+            <div className="space-y-4 max-h-[340px] overflow-y-auto pr-1 scrollbar-thin">
+              {CABINET_TRANSACTIONS.map((transaction, index) => (
                 <div key={index} className="flex items-center gap-4">
                   <div className={`w-12 h-12 rounded-xl ${transaction.bgColor} flex items-center justify-center flex-shrink-0`}>
                     <span className="text-sm font-bold text-primary">{transaction.initials}</span>

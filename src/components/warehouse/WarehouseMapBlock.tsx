@@ -244,7 +244,7 @@ export function WarehouseMapBlock() {
         </div>
 
         {/* Dead stock chart */}
-        <div className="flex-1 bg-card border border-border rounded-2xl p-5">
+        <div className="flex-[0.9] bg-card border border-border rounded-2xl p-5">
           <div className="flex items-center justify-between mb-1">
             <h3 className="font-semibold text-foreground text-sm">Мертвые товары</h3>
             <MoreHorizontal className="h-4 w-4 text-muted-foreground" />

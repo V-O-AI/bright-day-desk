@@ -99,7 +99,7 @@ export function TotalBalanceBlock({
 
   return (
     <>
-      <div className={cn("bg-card rounded-2xl border border-border h-full flex flex-col justify-between", compact ? "p-4 gap-2" : "p-6")}>
+      <div className={cn("bg-card rounded-2xl border border-border h-full flex flex-col justify-between", compact ? "p-3 md:p-4 gap-2" : "p-4 md:p-6")}>
         {/* Top section */}
         <div>
           <div className="flex items-center justify-between mb-1">
@@ -207,7 +207,7 @@ export function TotalBalanceBlock({
               </Popover>
             </div>
           </div>
-          <p className={cn("font-bold text-foreground", compact ? "text-3xl" : "text-4xl")}>
+          <p className={cn("font-bold text-foreground", compact ? "text-2xl md:text-3xl" : "text-3xl md:text-4xl")}>
             {formatCurrency(balanceValue)}
           </p>
           <div className="flex items-center justify-between mt-2">
@@ -247,7 +247,7 @@ export function TotalBalanceBlock({
         )}
 
         {/* Sub cards row */}
-        <div className={cn("grid gap-3", compact ? "grid-cols-4 mt-1" : "grid-cols-3 mt-2")}>
+        <div className={cn("grid gap-2 md:gap-3", compact ? "grid-cols-2 sm:grid-cols-4 mt-1" : "grid-cols-2 sm:grid-cols-3 mt-2")}>
           {/* ROI — inline in compact mode */}
           {compact && (
             <div

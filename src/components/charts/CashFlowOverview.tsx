@@ -91,9 +91,11 @@ export function CashFlowOverview() {
   const [dateRange, setDateRange] = useState("60");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("");
+  const [drawerKey, setDrawerKey] = useState<"balance" | "netflow" | "forecast" | "runway" | "generic">("generic");
 
-  const openDrawer = (title: string) => {
+  const openDrawer = (title: string, key: "balance" | "netflow" | "forecast" | "runway" | "generic" = "generic") => {
     setDrawerTitle(title);
+    setDrawerKey(key);
     setDrawerOpen(true);
   };
 
@@ -131,14 +133,14 @@ export function CashFlowOverview() {
           icon={<Wallet className="w-4 h-4 text-primary" />}
           label="Текущий баланс"
           value={fmt(84200)}
-          onClick={() => openDrawer("Текущий баланс")}
+          onClick={() => openDrawer("Текущий баланс", "balance")}
         />
         <KpiCard
           icon={<ArrowRightLeft className="w-4 h-4 text-destructive" />}
           label="Чистый денежный поток"
           value={fmt(-12300)}
           valueClass="text-destructive"
-          onClick={() => openDrawer("Чистый денежный поток")}
+          onClick={() => openDrawer("Чистый денежный поток", "netflow")}
         />
         <KpiCard
           icon={<TrendingUp className="w-4 h-4 text-primary" />}
@@ -149,9 +151,9 @@ export function CashFlowOverview() {
               <div>+60 дней: $24,000</div>
             </div>
           }
-          onClick={() => openDrawer("Прогноз баланса")}
+          onClick={() => openDrawer("Прогноз баланса", "forecast")}
         />
-        <CashRunwayCard onClick={() => openDrawer("Запас прочности")} />
+        <CashRunwayCard onClick={() => openDrawer("Запас прочности", "runway")} />
       </div>
 
       {/* Charts row */}
@@ -334,58 +336,12 @@ export function CashFlowOverview() {
           </SheetHeader>
           <div className="mt-4 space-y-5">
             <div className="text-xs text-muted-foreground">Период: Последние {dateRange} дней</div>
-            {/* Breakdown table */}
-            <div>
-              <h4 className="text-sm font-semibold mb-2">Детализация по товарам</h4>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead><tr className="border-b border-border text-muted-foreground">
-                    <th className="text-left py-1.5">Товар</th>
-                    <th className="text-right py-1.5">Выручка</th>
-                    <th className="text-right py-1.5">Себест.</th>
-                    <th className="text-right py-1.5">CAC</th>
-                    <th className="text-right py-1.5">Лог.</th>
-                    <th className="text-right py-1.5">Возвр.</th>
-                    <th className="text-right py-1.5">Чистый</th>
-                  </tr></thead>
-                  <tbody>
-                    {drawerBreakdown.map((r) => (
-                      <tr key={r.sku} className="border-b border-border/50">
-                        <td className="py-2 font-medium">{r.sku}</td>
-                        <td className="py-2 text-right">{fmt(r.revenue)}</td>
-                        <td className="py-2 text-right">{fmt(r.cost)}</td>
-                        <td className="py-2 text-right">{fmt(r.cac)}</td>
-                        <td className="py-2 text-right">{fmt(r.logistics)}</td>
-                        <td className="py-2 text-right">{fmt(r.returns)}</td>
-                        <td className={cn("py-2 text-right font-semibold", r.net >= 0 ? "text-emerald-600" : "text-destructive")}>{fmt(r.net)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            {/* Segment analysis */}
-            <div>
-              <h4 className="text-sm font-semibold mb-2">Сегментный анализ</h4>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                {[
-                  { segment: "Платный трафик", net: 5200 },
-                  { segment: "Органический", net: 16400 },
-                  { segment: "Регион А", net: 8600 },
-                  { segment: "Регион Б", net: 4200 },
-                ].map((s) => (
-                  <div key={s.segment} className="bg-muted/50 rounded-lg p-3">
-                    <div className="text-muted-foreground">{s.segment}</div>
-                    <div className={cn("font-semibold mt-0.5", s.net >= 0 ? "text-emerald-600" : "text-destructive")}>{fmt(s.net)}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            {/* AI rec */}
-            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 text-xs">
-              <div className="font-semibold mb-1 flex items-center gap-1.5"><Lightbulb className="w-3.5 h-3.5 text-amber-500" />AI Рекомендация</div>
-              <p className="text-muted-foreground">Отложите несущественные маркетинговые расходы на 2 недели для стабилизации кэш-флоу. Ускорьте сбор дебиторской задолженности.</p>
-            </div>
+
+            {drawerKey === "balance" && <BalanceDrawerContent />}
+            {drawerKey === "netflow" && <NetflowDrawerContent />}
+            {drawerKey === "forecast" && <ForecastDrawerContent />}
+            {drawerKey === "runway" && <RunwayDrawerContent />}
+            {drawerKey === "generic" && <GenericDrawerContent drawerTitle={drawerTitle} />}
           </div>
         </SheetContent>
       </Sheet>
@@ -440,5 +396,223 @@ function CashRunwayCard({ onClick }: { onClick: () => void }) {
         </div>
       </div>
     </div>
+  );
+}
+
+/* ───── Drawer content per KPI ───── */
+function BalanceDrawerContent() {
+  return (
+    <>
+      <div>
+        <h4 className="text-sm font-semibold mb-2">Структура текущего баланса</h4>
+        <div className="space-y-2 text-xs">
+          {[
+            { label: "Расчётный счёт", value: 52400 },
+            { label: "Средства на маркетплейсах", value: 18600 },
+            { label: "Дебиторская задолженность", value: 9200 },
+            { label: "Наличные", value: 4000 },
+          ].map((r) => (
+            <div key={r.label} className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+              <span className="text-muted-foreground">{r.label}</span>
+              <span className="font-semibold text-foreground">{fmt(r.value)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h4 className="text-sm font-semibold mb-2">Динамика за последние 7 дней</h4>
+        <div className="grid grid-cols-3 gap-2 text-xs">
+          {[
+            { label: "Макс.", value: "$91,400" },
+            { label: "Мин.", value: "$78,100" },
+            { label: "Среднее", value: "$84,750" },
+          ].map((r) => (
+            <div key={r.label} className="bg-muted/50 rounded-lg p-3 text-center">
+              <div className="text-muted-foreground">{r.label}</div>
+              <div className="font-semibold text-foreground mt-0.5">{r.value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 text-xs">
+        <div className="font-semibold mb-1 flex items-center gap-1.5"><Lightbulb className="w-3.5 h-3.5 text-amber-500" />AI Рекомендация</div>
+        <p className="text-muted-foreground">Переведите $9,200 дебиторской задолженности на расчётный счёт для повышения ликвидности. Текущий баланс на 12% выше среднемесячного.</p>
+      </div>
+    </>
+  );
+}
+
+function NetflowDrawerContent() {
+  return (
+    <>
+      <div>
+        <h4 className="text-sm font-semibold mb-2">Разбивка чистого потока</h4>
+        <div className="space-y-2 text-xs">
+          {[
+            { label: "Общие притоки", value: 164200, positive: true },
+            { label: "Общие оттоки", value: -176500, positive: false },
+            { label: "Чистый поток", value: -12300, positive: false },
+          ].map((r) => (
+            <div key={r.label} className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+              <span className="text-muted-foreground">{r.label}</span>
+              <span className={cn("font-semibold", r.positive ? "text-emerald-600" : "text-destructive")}>{fmt(r.value)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h4 className="text-sm font-semibold mb-2">Крупнейшие оттоки</h4>
+        <div className="space-y-1.5 text-xs">
+          {[
+            { cat: "Себестоимость", amt: 92700, pct: 53 },
+            { cat: "Маркетинг", amt: 31200, pct: 18 },
+            { cat: "Логистика", amt: 19400, pct: 11 },
+            { cat: "Возвраты", amt: 14200, pct: 8 },
+          ].map((r) => (
+            <div key={r.cat}>
+              <div className="flex justify-between mb-0.5">
+                <span className="text-muted-foreground">{r.cat}</span>
+                <span className="text-foreground font-medium">{fmt(r.amt)} ({r.pct}%)</span>
+              </div>
+              <Progress value={r.pct} className="h-1.5" />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 text-xs">
+        <div className="font-semibold mb-1 flex items-center gap-1.5"><Lightbulb className="w-3.5 h-3.5 text-amber-500" />AI Рекомендация</div>
+        <p className="text-muted-foreground">Отрицательный чистый поток вызван повышенными расходами на маркетинг (+22% к прошлому месяцу). Сократите таргетированную рекламу на 15% для выхода в плюс.</p>
+      </div>
+    </>
+  );
+}
+
+function ForecastDrawerContent() {
+  return (
+    <>
+      <div>
+        <h4 className="text-sm font-semibold mb-2">Прогноз по периодам</h4>
+        <div className="space-y-2 text-xs">
+          {[
+            { period: "+10 дней", balance: 72000, change: -14 },
+            { period: "+20 дней", balance: 62400, change: -26 },
+            { period: "+30 дней", balance: 55000, change: -35 },
+            { period: "+40 дней", balance: 48600, change: -42 },
+            { period: "+50 дней", balance: 38000, change: -55 },
+            { period: "+60 дней", balance: 24000, change: -71 },
+          ].map((r) => (
+            <div key={r.period} className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+              <span className="text-muted-foreground">{r.period}</span>
+              <div className="text-right">
+                <span className="font-semibold text-foreground">{fmt(r.balance)}</span>
+                <span className="text-destructive ml-2 text-[10px]">{r.change}%</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h4 className="text-sm font-semibold mb-2">Факторы влияния</h4>
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          {[
+            { factor: "Сезонный спад", impact: "-$18,000" },
+            { factor: "Ожидаемые возвраты", impact: "-$6,400" },
+            { factor: "Новые заказы", impact: "+$12,000" },
+            { factor: "Дебиторка к оплате", impact: "+$9,200" },
+          ].map((r) => (
+            <div key={r.factor} className="bg-muted/50 rounded-lg p-3">
+              <div className="text-muted-foreground">{r.factor}</div>
+              <div className={cn("font-semibold mt-0.5", r.impact.startsWith("+") ? "text-emerald-600" : "text-destructive")}>{r.impact}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 text-xs">
+        <div className="font-semibold mb-1 flex items-center gap-1.5"><Lightbulb className="w-3.5 h-3.5 text-amber-500" />AI Рекомендация</div>
+        <p className="text-muted-foreground">Прогнозируемое снижение баланса на 71% за 60 дней. Рекомендуется ускорить сбор дебиторской задолженности и отложить несрочные закупки.</p>
+      </div>
+    </>
+  );
+}
+
+function RunwayDrawerContent() {
+  return (
+    <>
+      <div>
+        <h4 className="text-sm font-semibold mb-2">Анализ запаса прочности</h4>
+        <div className="space-y-2 text-xs">
+          {[
+            { label: "Текущий баланс", value: "$84,200" },
+            { label: "Среднедневные расходы", value: "$2,005" },
+            { label: "Запас прочности", value: "42 дня" },
+            { label: "Критический порог", value: "$15,000" },
+          ].map((r) => (
+            <div key={r.label} className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+              <span className="text-muted-foreground">{r.label}</span>
+              <span className="font-semibold text-foreground">{r.value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h4 className="text-sm font-semibold mb-2">Сценарии</h4>
+        <div className="space-y-2 text-xs">
+          {[
+            { scenario: "Оптимистичный (рост продаж +20%)", days: 68, color: "text-emerald-600" },
+            { scenario: "Базовый (текущие тренды)", days: 42, color: "text-amber-600" },
+            { scenario: "Пессимистичный (спад -15%)", days: 28, color: "text-destructive" },
+          ].map((r) => (
+            <div key={r.scenario} className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+              <span className="text-muted-foreground">{r.scenario}</span>
+              <span className={cn("font-semibold", r.color)}>{r.days} дней</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 text-xs">
+        <div className="font-semibold mb-1 flex items-center gap-1.5"><Lightbulb className="w-3.5 h-3.5 text-amber-500" />AI Рекомендация</div>
+        <p className="text-muted-foreground">При пессимистичном сценарии баланс достигнет критического порога через 28 дней. Создайте резервный фонд в размере $20,000 для подстраховки.</p>
+      </div>
+    </>
+  );
+}
+
+function GenericDrawerContent({ drawerTitle }: { drawerTitle: string }) {
+  return (
+    <>
+      <div>
+        <h4 className="text-sm font-semibold mb-2">Детализация по товарам</h4>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead><tr className="border-b border-border text-muted-foreground">
+              <th className="text-left py-1.5">Товар</th>
+              <th className="text-right py-1.5">Выручка</th>
+              <th className="text-right py-1.5">Себест.</th>
+              <th className="text-right py-1.5">CAC</th>
+              <th className="text-right py-1.5">Лог.</th>
+              <th className="text-right py-1.5">Возвр.</th>
+              <th className="text-right py-1.5">Чистый</th>
+            </tr></thead>
+            <tbody>
+              {drawerBreakdown.map((r) => (
+                <tr key={r.sku} className="border-b border-border/50">
+                  <td className="py-2 font-medium">{r.sku}</td>
+                  <td className="py-2 text-right">{fmt(r.revenue)}</td>
+                  <td className="py-2 text-right">{fmt(r.cost)}</td>
+                  <td className="py-2 text-right">{fmt(r.cac)}</td>
+                  <td className="py-2 text-right">{fmt(r.logistics)}</td>
+                  <td className="py-2 text-right">{fmt(r.returns)}</td>
+                  <td className={cn("py-2 text-right font-semibold", r.net >= 0 ? "text-emerald-600" : "text-destructive")}>{fmt(r.net)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 text-xs">
+        <div className="font-semibold mb-1 flex items-center gap-1.5"><Lightbulb className="w-3.5 h-3.5 text-amber-500" />AI Рекомендация</div>
+        <p className="text-muted-foreground">Отложите несущественные маркетинговые расходы на 2 недели для стабилизации кэш-флоу. Ускорьте сбор дебиторской задолженности.</p>
+      </div>
+    </>
   );
 }

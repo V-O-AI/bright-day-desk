@@ -54,6 +54,13 @@ interface SkuData {
 
 type Zone = "Scale" | "Optimize" | "Promote" | "Eliminate";
 
+const ZONE_LABELS: Record<Zone, string> = {
+  Scale: "Масштабировать",
+  Optimize: "Оптимизировать",
+  Promote: "Продвигать",
+  Eliminate: "Исключить",
+};
+
 interface SkuPoint extends SkuData {
   revenueScore: number;
   efficiencyScore: number;
@@ -214,10 +221,10 @@ export function SkuProfitabilityMatrix() {
         <p className="text-muted-foreground">ROI: {d.roi.toFixed(1)}</p>
         <p className="text-muted-foreground">Прибыль/ед: {fmt(d.unitProfit)}</p>
         <p className="text-muted-foreground">Возвраты: {d.returnPercent}%</p>
-        <div className="flex items-center gap-1.5 pt-1">
-          <div className="h-2.5 w-2.5 rounded-full" style={{ background: ZONE_COLORS[d.zone] }} />
-          <span className="font-medium text-foreground">{d.zone}</span>
-        </div>
+          <div className="flex items-center gap-1.5 pt-1">
+            <div className="h-2.5 w-2.5 rounded-full" style={{ background: ZONE_COLORS[d.zone] }} />
+            <span className="font-medium text-foreground">{ZONE_LABELS[d.zone]}</span>
+          </div>
         <div className="border-t pt-1 mt-1">
           <p className="text-xs text-muted-foreground italic flex items-start gap-1">
             <Lightbulb className="h-3 w-3 mt-0.5 shrink-0" />
@@ -294,7 +301,7 @@ export function SkuProfitabilityMatrix() {
               style={segment === s && s !== "All" ? { backgroundColor: ZONE_COLORS[s as Zone] } : undefined}
               onClick={() => setSegment(s)}
             >
-              {s === "All" ? "Все" : s}
+              {s === "All" ? "Все" : ZONE_LABELS[s as Zone]}
             </Button>
           ))}
         </div>
@@ -303,16 +310,16 @@ export function SkuProfitabilityMatrix() {
         <div className="relative rounded-lg border bg-muted/20 p-2">
           {/* Quadrant labels */}
           <div className="absolute top-3 left-6 text-xs font-medium flex items-center gap-1" style={{ color: ZONE_COLORS.Promote }}>
-            {ZONE_ICONS.Promote} Promote
+            {ZONE_ICONS.Promote} {ZONE_LABELS.Promote}
           </div>
           <div className="absolute top-3 right-6 text-xs font-medium flex items-center gap-1" style={{ color: ZONE_COLORS.Scale }}>
-            {ZONE_ICONS.Scale} Scale
+            {ZONE_ICONS.Scale} {ZONE_LABELS.Scale}
           </div>
           <div className="absolute bottom-10 left-6 text-xs font-medium flex items-center gap-1" style={{ color: ZONE_COLORS.Eliminate }}>
-            {ZONE_ICONS.Eliminate} Eliminate
+            {ZONE_ICONS.Eliminate} {ZONE_LABELS.Eliminate}
           </div>
           <div className="absolute bottom-10 right-6 text-xs font-medium flex items-center gap-1" style={{ color: ZONE_COLORS.Optimize }}>
-            {ZONE_ICONS.Optimize} Optimize
+            {ZONE_ICONS.Optimize} {ZONE_LABELS.Optimize}
           </div>
 
           <ResponsiveContainer width="100%" height={380}>
@@ -322,14 +329,14 @@ export function SkuProfitabilityMatrix() {
                 dataKey="revenueScore"
                 name="Revenue Impact"
                 tick={{ fontSize: 11 }}
-                label={{ value: "Revenue Impact Score →", position: "bottom", fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
+                label={{ value: "Влияние на выручку →", position: "bottom", fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
               />
               <YAxis
                 type="number"
                 dataKey="efficiencyScore"
-                name="Profit Efficiency"
+                name="Эффективность прибыли"
                 tick={{ fontSize: 11 }}
-                label={{ value: "Profit Efficiency Score ↑", angle: -90, position: "insideLeft", fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
+                label={{ value: "Эффективность прибыли ↑", angle: -90, position: "insideLeft", fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
               />
               <ZAxis type="number" dataKey="totalProfit" range={[40, 400]} />
               <ReferenceLine x={medX} stroke="hsl(var(--border))" strokeDasharray="4 4" />
@@ -356,7 +363,7 @@ export function SkuProfitabilityMatrix() {
           {(["Scale", "Optimize", "Promote", "Eliminate"] as Zone[]).map((z) => (
             <div key={z} className="flex items-center gap-1.5">
               <div className="h-3 w-3 rounded-sm" style={{ background: ZONE_COLORS[z] }} />
-              <span className="text-muted-foreground">{z}</span>
+              <span className="text-muted-foreground">{ZONE_LABELS[z]}</span>
             </div>
           ))}
           <span className="text-xs text-muted-foreground ml-2">Размер = Общая прибыль</span>
@@ -371,7 +378,7 @@ export function SkuProfitabilityMatrix() {
             </Badge>
           </div>
           <p className="text-sm text-foreground italic">
-            {aiInsight.pct}% выручки приходится на товары в зоне Optimize.
+            {aiInsight.pct}% выручки приходится на товары в зоне «Оптимизировать».
             Увеличение их маржи на 4% принесёт дополнительно{" "}
             <span className="font-bold text-primary">+{fmt(aiInsight.potentialGain)}</span> прибыли.
           </p>
@@ -389,7 +396,7 @@ export function SkuProfitabilityMatrix() {
                 <div className="mt-6 space-y-4">
                   <div className="flex items-center gap-2">
                     <div className="h-3 w-3 rounded-full" style={{ background: ZONE_COLORS[selectedSku.zone] }} />
-                    <Badge style={{ backgroundColor: ZONE_COLORS[selectedSku.zone], color: "#fff" }}>{selectedSku.zone}</Badge>
+                    <Badge style={{ backgroundColor: ZONE_COLORS[selectedSku.zone], color: "#fff" }}>{ZONE_LABELS[selectedSku.zone]}</Badge>
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     {[

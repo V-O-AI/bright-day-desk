@@ -11,6 +11,7 @@ import { MetricPeriod } from "@/hooks/useFinancialMetrics";
 import { SkuProfitabilityMatrix } from "@/components/charts/SkuProfitabilityMatrix";
 import { UnitEconomicsOverview } from "@/components/charts/UnitEconomicsOverview";
 import { WhereProfitIsLost } from "@/components/charts/WhereProfitIsLost";
+import { CashFlowOverview } from "@/components/charts/CashFlowOverview";
 
 const MyDataFinances = () => {
   const navigate = useNavigate();
@@ -56,6 +57,9 @@ const MyDataFinances = () => {
 
         {/* SKU Profitability Matrix — full width */}
         <SkuProfitabilityMatrix />
+
+        {/* Cash Flow Overview — full width */}
+        <CashFlowOverview />
       </div>
     </AppLayout>
   );

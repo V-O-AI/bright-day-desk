@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -48,7 +49,22 @@ const initialHistory = {
 
 const StaffChat = () => {
   const chatRef = useRef<MiniChatHandle>(null);
+  const [searchParams] = useSearchParams();
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const isNew = searchParams.get("new");
+    const message = searchParams.get("message");
+    if (isNew) {
+      setActiveChatId(`new-${Date.now()}`);
+      if (message && chatRef.current) {
+        setTimeout(() => {
+          chatRef.current?.setInputText(message);
+          chatRef.current?.sendCurrentMessage?.();
+        }, 300);
+      }
+    }
+  }, [searchParams]);
 
   const handleQuickAction = (text: string) => {
     chatRef.current?.setInputText(text);

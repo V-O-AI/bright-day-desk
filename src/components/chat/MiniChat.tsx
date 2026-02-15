@@ -14,6 +14,7 @@ interface MiniChatProps {
 
 export interface MiniChatHandle {
   setInputText: (text: string) => void;
+  sendCurrentMessage: () => void;
 }
 
 function MiniChatInner(
@@ -24,6 +25,7 @@ function MiniChatInner(
   const { state: agentState, startProcessing, stopProcessing } = useAgentProcess();
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const pendingSendRef = useRef(false);
 
   const isProcessing = agentState.inputState === "PROCESSING";
   const prevCollabRef = useRef(agentState.collaboration);
@@ -32,6 +34,9 @@ function MiniChatInner(
   useImperativeHandle(ref, () => ({
     setInputText: (text: string) => {
       setInput(text);
+    },
+    sendCurrentMessage: () => {
+      pendingSendRef.current = true;
     },
   }));
 
@@ -61,6 +66,14 @@ function MiniChatInner(
     await sendMessage(text);
     startProcessing();
   };
+
+  // Handle deferred send from imperative handle
+  useEffect(() => {
+    if (pendingSendRef.current && input.trim()) {
+      pendingSendRef.current = false;
+      handleSend();
+    }
+  }, [input]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {

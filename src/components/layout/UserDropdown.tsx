@@ -54,10 +54,10 @@ export function UserDropdown() {
           
           <DropdownMenuItem
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors hover:bg-muted"
-            onClick={() => navigate("/settings")}
+            onClick={() => navigate("/settings?section=community")}
           >
             <Users className="h-4 w-4 text-muted-foreground" />
-            <span className="flex-1">Сообщество</span>
+            <span className="flex-1">Коллеги</span>
             <div className="h-5 w-5 rounded-md bg-muted flex items-center justify-center">
               <Plus className="h-3 w-3 text-muted-foreground" />
             </div>

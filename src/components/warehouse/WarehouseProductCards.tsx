@@ -203,7 +203,7 @@ function CategoryCardItem({ category, onClick }: { category: CategoryCard; onCli
   return (
     <div
       onClick={onClick}
-      className="w-[150px] min-w-[150px] flex-shrink-0 bg-card border border-border rounded-2xl p-3 flex flex-col justify-between transition-all duration-200 hover:shadow-lg hover:border-primary/30 hover:-translate-y-0.5 cursor-pointer group"
+      className="w-[180px] min-w-[180px] flex-shrink-0 bg-card border border-border rounded-2xl p-3 flex flex-col justify-between transition-all duration-200 hover:shadow-lg hover:border-primary/30 hover:-translate-y-0.5 cursor-pointer group"
     >
       <div>
         <div className="flex items-start justify-between mb-3">
@@ -236,7 +236,7 @@ function ProductCardItem({ product }: { product: ProductItem }) {
   const visibleProps = product.properties.slice(propPage * VISIBLE_PROPS, (propPage + 1) * VISIBLE_PROPS);
 
   return (
-    <div className="w-[150px] min-w-[150px] flex-shrink-0 bg-card border border-border rounded-2xl p-3 flex flex-col justify-between transition-all duration-200 hover:shadow-lg hover:border-primary/30 hover:-translate-y-0.5">
+    <div className="w-[180px] min-w-[180px] flex-shrink-0 bg-card border border-border rounded-2xl p-3 flex flex-col justify-between transition-all duration-200 hover:shadow-lg hover:border-primary/30 hover:-translate-y-0.5">
       <div>
         <div className="flex items-start justify-between mb-3">
           <h4 className="text-sm font-bold text-foreground leading-tight">{product.name}</h4>

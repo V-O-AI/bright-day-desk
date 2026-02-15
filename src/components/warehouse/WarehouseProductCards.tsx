@@ -203,6 +203,111 @@ const categories: CategoryData[] = [
       },
     ],
   },
+  {
+    name: "Спорт и Отдых",
+    icon: <Package className="h-4 w-4" />,
+    totalProducts: 4,
+    totalQuantity: 620,
+    avgCheck: "5 800$",
+    topProduct: "Гантели 10кг",
+    turnover: "28 дн.",
+    products: [
+      {
+        name: "Гантели 10кг",
+        price: "3 200$",
+        quantity: 200,
+        pages: [
+          [{ label: "Вес", value: "10 кг" }, { label: "Материал", value: "Чугун" }, { label: "Покрытие", value: "Неопрен" }],
+        ],
+      },
+      {
+        name: "Коврик для йоги",
+        price: "1 800$",
+        quantity: 320,
+        pages: [
+          [{ label: "Размер", value: "183x61 см" }, { label: "Толщина", value: "6 мм" }, { label: "Материал", value: "TPE" }],
+        ],
+      },
+      {
+        name: "Скакалка скоростная",
+        price: "950$",
+        quantity: 100,
+        pages: [
+          [{ label: "Длина", value: "3 м" }, { label: "Ручки", value: "Алюминий" }, { label: "Бренд", value: "FitPro" }],
+        ],
+      },
+    ],
+  },
+  {
+    name: "Канцелярия",
+    icon: <Package className="h-4 w-4" />,
+    totalProducts: 3,
+    totalQuantity: 2100,
+    avgCheck: "680$",
+    topProduct: "Ежедневник A5",
+    turnover: "8 дн.",
+    products: [
+      {
+        name: "Ежедневник A5",
+        price: "890$",
+        quantity: 900,
+        pages: [
+          [{ label: "Формат", value: "A5" }, { label: "Страниц", value: "192" }, { label: "Обложка", value: "Кожзам" }],
+        ],
+      },
+      {
+        name: "Ручка гелевая",
+        price: "120$",
+        quantity: 800,
+        pages: [
+          [{ label: "Цвет", value: "Чёрный" }, { label: "Толщина", value: "0.5 мм" }, { label: "Комплект", value: "10 шт" }],
+        ],
+      },
+      {
+        name: "Маркеры набор",
+        price: "1 030$",
+        quantity: 400,
+        pages: [
+          [{ label: "Кол-во", value: "12 шт" }, { label: "Тип", value: "Перманент" }, { label: "Бренд", value: "ArtLine" }],
+        ],
+      },
+    ],
+  },
+  {
+    name: "Продукты",
+    icon: <Package className="h-4 w-4" />,
+    totalProducts: 3,
+    totalQuantity: 1500,
+    avgCheck: "1 200$",
+    topProduct: "Кофе Арабика",
+    turnover: "5 дн.",
+    products: [
+      {
+        name: "Кофе Арабика",
+        price: "1 800$",
+        quantity: 600,
+        pages: [
+          [{ label: "Вес", value: "1 кг" }, { label: "Обжарка", value: "Средняя" }, { label: "Страна", value: "Колумбия" }],
+        ],
+      },
+      {
+        name: "Чай зелёный",
+        price: "650$",
+        quantity: 500,
+        pages: [
+          [{ label: "Вес", value: "250 г" }, { label: "Тип", value: "Листовой" }, { label: "Бренд", value: "TeaHouse" }],
+        ],
+      },
+      {
+        name: "Шоколад горький",
+        price: "1 150$",
+        quantity: 400,
+        pages: [
+          [{ label: "Вес", value: "200 г" }, { label: "Какао", value: "72%" }, { label: "Бренд", value: "ChocoFine" }],
+        ],
+      },
+    ],
+  },
 ];
 
 function ProductCardItem({ product }: { product: ProductCard }) {
@@ -325,12 +430,12 @@ export function WarehouseProductCards() {
           <ChevronLeft className="h-4 w-4" />
         </button>
 
-        <div ref={scrollRef} className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin" style={{ scrollbarWidth: "thin" }}>
+        <div ref={scrollRef} className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin max-w-full" style={{ scrollbarWidth: "thin" }}>
           {selectedCategory
             ? selectedCategory.products.map((product, idx) => (
                 <ProductCardItem key={idx} product={product} />
               ))
-            : categories.map((cat, idx) => (
+            : categories.slice(0, 6).map((cat, idx) => (
                 <CategoryCard key={idx} category={cat} onClick={() => setSelectedCategory(cat)} />
               ))
           }

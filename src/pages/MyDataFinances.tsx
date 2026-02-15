@@ -5,7 +5,6 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { TotalBalanceBlock } from "@/components/charts/TotalBalanceBlock";
 import { BudgetOverview } from "@/components/charts/BudgetOverview";
-import { CashFlowChart } from "@/components/charts/CashFlowChart";
 import { RecentTransactions } from "@/components/charts/RecentTransactions";
 import { MetricPeriod } from "@/hooks/useFinancialMetrics";
 import { SkuProfitabilityMatrix } from "@/components/charts/SkuProfitabilityMatrix";
@@ -35,24 +34,21 @@ const MyDataFinances = () => {
           </div>
         </div>
 
-        {/* Row 1: Total Balance | Budget Overview | Recent Transactions */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Row 1: Total Balance (wider) | Budget Overview */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-4">
           <TotalBalanceBlock
             period={period}
             onPeriodChange={setPeriod}
             showPeriodSelector
           />
           <BudgetOverview />
-          <RecentTransactions />
         </div>
 
-        {/* Row 2: Cash Flow | Unit Economics | Where Profit Lost */}
+        {/* Row 2: Unit Economics | Where Profit Lost | Recent Transactions */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="h-[380px]">
-            <CashFlowChart />
-          </div>
           <UnitEconomicsOverview />
           <WhereProfitIsLost />
+          <RecentTransactions />
         </div>
 
         {/* SKU Profitability Matrix — full width */}

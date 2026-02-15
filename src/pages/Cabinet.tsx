@@ -271,6 +271,33 @@ const Cabinet = () => {
     </div>
   );
 
+  const CardsBlock = () => (
+    <div className="bg-card rounded-2xl p-4 lg:p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "200ms", animationFillMode: "forwards" }}>
+      <div className="flex items-center justify-between mb-3 lg:mb-4">
+        <h3 className="font-semibold text-sm lg:text-base">Карты</h3>
+        <button className="p-2 hover:bg-muted rounded-lg transition-colors" onClick={() => setCardSettingsOpen(true)}>
+          <Settings className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </div>
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative w-full sm:max-w-[280px] h-[150px] sm:h-[160px] bg-gradient-to-br from-purple-500 via-purple-600 to-pink-500 rounded-2xl p-5 shadow-lg flex-shrink-0">
+          <div className="absolute top-5 left-5"><div className="w-10 h-7 bg-yellow-300/80 rounded-md" /></div>
+          <div className="absolute bottom-16 left-5 text-white/90 text-sm tracking-[0.2em] font-mono">•••• •••• •••• 6844</div>
+          <div className="absolute bottom-5 left-5 text-white/70 text-sm font-mono">•••• ••••</div>
+          <div className="absolute bottom-5 right-5"><div className="flex -space-x-3"><div className="w-8 h-8 rounded-full bg-red-500/80" /><div className="w-8 h-8 rounded-full bg-orange-400/80" /></div></div>
+        </div>
+        <div className="relative w-full sm:max-w-[280px] h-[120px] sm:h-[160px] rounded-2xl border-2 border-dashed border-border hover:border-primary/50 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 group" onClick={() => setCardSettingsOpen(true)}>
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-muted/80 group-hover:bg-primary/10 flex items-center justify-center transition-colors">
+            <CreditCard className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground group-hover:text-primary transition-colors" />
+          </div>
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground group-hover:text-primary transition-colors font-medium">
+            <Plus className="h-4 w-4" />Добавить карту
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const AccountsSection = () => (
     <div className="space-y-4 lg:space-y-6">
       {/* Привязать аккаунты */}
@@ -299,31 +326,11 @@ const Cabinet = () => {
         </div>
       </div>
 
-      {/* Карты */}
-      <div className="bg-card rounded-2xl p-4 lg:p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "200ms", animationFillMode: "forwards" }}>
-        <div className="flex items-center justify-between mb-3 lg:mb-4">
-          <h3 className="font-semibold text-sm lg:text-base">Карты</h3>
-          <button className="p-2 hover:bg-muted rounded-lg transition-colors" onClick={() => setCardSettingsOpen(true)}>
-            <Settings className="h-4 w-4 text-muted-foreground" />
-          </button>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative w-full sm:max-w-[280px] h-[150px] sm:h-[160px] bg-gradient-to-br from-purple-500 via-purple-600 to-pink-500 rounded-2xl p-5 shadow-lg flex-shrink-0">
-            <div className="absolute top-5 left-5"><div className="w-10 h-7 bg-yellow-300/80 rounded-md" /></div>
-            <div className="absolute bottom-16 left-5 text-white/90 text-sm tracking-[0.2em] font-mono">•••• •••• •••• 6844</div>
-            <div className="absolute bottom-5 left-5 text-white/70 text-sm font-mono">•••• ••••</div>
-            <div className="absolute bottom-5 right-5"><div className="flex -space-x-3"><div className="w-8 h-8 rounded-full bg-red-500/80" /><div className="w-8 h-8 rounded-full bg-orange-400/80" /></div></div>
-          </div>
-          <div className="relative w-full sm:max-w-[280px] h-[120px] sm:h-[160px] rounded-2xl border-2 border-dashed border-border hover:border-primary/50 transition-colors cursor-pointer flex flex-col items-center justify-center gap-2 group" onClick={() => setCardSettingsOpen(true)}>
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-muted/80 group-hover:bg-primary/10 flex items-center justify-center transition-colors">
-              <CreditCard className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-            </div>
-            <div className="flex items-center gap-1.5 text-sm text-muted-foreground group-hover:text-primary transition-colors font-medium">
-              <Plus className="h-4 w-4" />Добавить карту
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Карты — only on desktop */}
+      {!isMobile && <CardsBlock />}
+
+      {/* Календарь — only on mobile */}
+      {isMobile && <CalendarNotes />}
     </div>
   );
 
@@ -346,6 +353,9 @@ const Cabinet = () => {
         <Button className="w-full bg-primary hover:bg-primary/90" onClick={() => setPaymentModalOpen(true)}>Продлить подписку</Button>
       </div>
 
+      {/* Карты — only on mobile */}
+      {isMobile && <CardsBlock />}
+
       {/* Транзакции */}
       <div className="bg-card rounded-2xl p-4 lg:p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "300ms", animationFillMode: "forwards" }}>
         <div className="flex items-center justify-between mb-3 lg:mb-4">
@@ -367,8 +377,8 @@ const Cabinet = () => {
         </div>
       </div>
 
-      {/* Календарь */}
-      <CalendarNotes />
+      {/* Календарь — only on desktop */}
+      {!isMobile && <CalendarNotes />}
     </div>
   );
 

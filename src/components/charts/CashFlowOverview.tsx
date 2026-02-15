@@ -59,17 +59,17 @@ const waterfallData = (() => {
 })();
 
 const topInflows = [
-  { id: 1, source: "Органические продажи", amount: 24400, pct: 15 },
-  { id: 2, source: "Маркетплейсы", amount: 19200, pct: 12 },
-  { id: 3, source: "Ожидаемые поступления", amount: 16200, pct: 10 },
-  { id: 4, source: "Комбинезон зимний", amount: 7800, pct: 5 },
+  { id: 1, source: "Органические продажи", amount: 24400, pct: 15, trend: "+8%", orders: 312, avgCheck: 78, topProduct: "Боди хлопок", channel: "Собственный сайт", note: "Стабильный рост за счёт SEO и повторных покупок. Конверсия 3.2%." },
+  { id: 2, source: "Маркетплейсы", amount: 19200, pct: 12, trend: "+14%", orders: 248, avgCheck: 77, topProduct: "Шапка вязаная", channel: "Wildberries / Ozon", note: "Wildberries — 62% от суммы, Ozon — 38%. Комиссия площадок ~18%." },
+  { id: 3, source: "Ожидаемые поступления", amount: 16200, pct: 10, trend: "0%", orders: 0, avgCheck: 0, topProduct: "—", channel: "Дебиторка / Предоплаты", note: "Включает $9,200 дебиторской задолженности и $7,000 оплаченных предзаказов." },
+  { id: 4, source: "Оптовые заказы", amount: 7800, pct: 5, trend: "+3%", orders: 4, avgCheck: 1950, topProduct: "Комбинезон зимний", channel: "B2B прямые продажи", note: "4 оптовых клиента. Средний чек значительно выше розницы, маржа ~32%." },
 ];
 
 const topOutflows = [
-  { id: 1, category: "Контекстная реклама", amount: 16100, pct: 12 },
-  { id: 2, category: "Возвраты", amount: 14200, pct: 10 },
-  { id: 3, category: "Логистика", amount: 11800, pct: 8 },
-  { id: 4, category: "Таргетированная реклама", amount: 11300, pct: 8 },
+  { id: 1, category: "Контекстная реклама", amount: 16100, pct: 12, trend: "+22%", roas: 2.4, cpc: 0.85, conversions: 189, note: "ROAS снизился с 3.1 до 2.4 за месяц. Яндекс.Директ — 70%, Google Ads — 30%." },
+  { id: 2, category: "Возвраты", amount: 14200, pct: 10, trend: "+5%", returnRate: 8.4, topReason: "Не подошёл размер", items: 118, note: "48% возвратов — несоответствие размера. Рекомендуется обновить размерную сетку." },
+  { id: 3, category: "Логистика", amount: 11800, pct: 8, trend: "-3%", shipments: 540, avgCost: 21.85, lateRate: 4.2, note: "Средняя стоимость доставки снизилась на 3%. Задержки — 4.2% от отправок." },
+  { id: 4, category: "Таргетированная реклама", amount: 11300, pct: 8, trend: "+18%", roas: 1.8, cpl: 3.20, leads: 3531, note: "CPL вырос на 18%. Instagram — 55%, VK — 45%. Конверсия лидов в покупку — 6.1%." },
 ];
 
 const ordersData = [
@@ -91,11 +91,13 @@ export function CashFlowOverview() {
   const [dateRange, setDateRange] = useState("60");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTitle, setDrawerTitle] = useState("");
-  const [drawerKey, setDrawerKey] = useState<"balance" | "netflow" | "forecast" | "runway" | "generic">("generic");
+  const [drawerKey, setDrawerKey] = useState<"balance" | "netflow" | "forecast" | "runway" | "inflow" | "outflow" | "generic">("generic");
+  const [drawerPayload, setDrawerPayload] = useState<any>(null);
 
-  const openDrawer = (title: string, key: "balance" | "netflow" | "forecast" | "runway" | "generic" = "generic") => {
+  const openDrawer = (title: string, key: "balance" | "netflow" | "forecast" | "runway" | "inflow" | "outflow" | "generic" = "generic", payload?: any) => {
     setDrawerTitle(title);
     setDrawerKey(key);
+    setDrawerPayload(payload ?? null);
     setDrawerOpen(true);
   };
 
@@ -252,7 +254,7 @@ export function CashFlowOverview() {
             </tr></thead>
             <tbody>
               {topInflows.map((r) => (
-                <tr key={r.id} className="border-b border-border/50 hover:bg-muted/40 cursor-pointer" onClick={() => openDrawer(`Приток: ${r.source}`)}>
+                <tr key={r.id} className="border-b border-border/50 hover:bg-muted/40 cursor-pointer" onClick={() => openDrawer(`Приток: ${r.source}`, "inflow", r)}>
                   <td className="py-2 text-muted-foreground">{r.id}</td>
                   <td className="py-2 text-foreground">{r.source}</td>
                   <td className="py-2 text-right font-medium text-foreground">{fmt(r.amount)}</td>
@@ -275,7 +277,7 @@ export function CashFlowOverview() {
             </tr></thead>
             <tbody>
               {topOutflows.map((r) => (
-                <tr key={r.id} className="border-b border-border/50 hover:bg-muted/40 cursor-pointer" onClick={() => openDrawer(`Отток: ${r.category}`)}>
+                <tr key={r.id} className="border-b border-border/50 hover:bg-muted/40 cursor-pointer" onClick={() => openDrawer(`Отток: ${r.category}`, "outflow", r)}>
                   <td className="py-2 text-muted-foreground">{r.id}</td>
                   <td className="py-2 text-foreground">{r.category}</td>
                   <td className="py-2 text-right font-medium text-destructive">{fmt(r.amount)}</td>
@@ -341,6 +343,8 @@ export function CashFlowOverview() {
             {drawerKey === "netflow" && <NetflowDrawerContent />}
             {drawerKey === "forecast" && <ForecastDrawerContent />}
             {drawerKey === "runway" && <RunwayDrawerContent />}
+            {drawerKey === "inflow" && drawerPayload && <InflowDrawerContent data={drawerPayload} />}
+            {drawerKey === "outflow" && drawerPayload && <OutflowDrawerContent data={drawerPayload} />}
             {drawerKey === "generic" && <GenericDrawerContent drawerTitle={drawerTitle} />}
           </div>
         </SheetContent>
@@ -612,6 +616,92 @@ function GenericDrawerContent({ drawerTitle }: { drawerTitle: string }) {
       <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 text-xs">
         <div className="font-semibold mb-1 flex items-center gap-1.5"><Lightbulb className="w-3.5 h-3.5 text-amber-500" />AI Рекомендация</div>
         <p className="text-muted-foreground">Отложите несущественные маркетинговые расходы на 2 недели для стабилизации кэш-флоу. Ускорьте сбор дебиторской задолженности.</p>
+      </div>
+    </>
+  );
+}
+
+function InflowDrawerContent({ data }: { data: typeof topInflows[number] }) {
+  return (
+    <>
+      <div>
+        <h4 className="text-sm font-semibold mb-2">Ключевые показатели</h4>
+        <div className="space-y-2 text-xs">
+          {[
+            { label: "Сумма притока", value: fmt(data.amount) },
+            { label: "Доля от общего", value: `${data.pct}%` },
+            { label: "Динамика", value: data.trend },
+            { label: "Канал", value: data.channel },
+            { label: "Заказов", value: data.orders > 0 ? data.orders.toLocaleString("en-US") : "—" },
+            { label: "Средний чек", value: data.avgCheck > 0 ? fmt(data.avgCheck) : "—" },
+            { label: "Топ-товар", value: data.topProduct },
+          ].map((r) => (
+            <div key={r.label} className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+              <span className="text-muted-foreground">{r.label}</span>
+              <span className={cn("font-semibold", data.trend.startsWith("+") ? "text-emerald-600" : "text-foreground")}>{r.value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h4 className="text-sm font-semibold mb-2">Описание</h4>
+        <p className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-3">{data.note}</p>
+      </div>
+      <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 text-xs">
+        <div className="font-semibold mb-1 flex items-center gap-1.5"><Lightbulb className="w-3.5 h-3.5 text-amber-500" />AI Рекомендация</div>
+        <p className="text-muted-foreground">
+          {data.pct >= 12
+            ? `«${data.source}» — ключевой источник дохода (${data.pct}%). Увеличьте инвестиции в этот канал для масштабирования.`
+            : `Доля «${data.source}» составляет ${data.pct}%. Оптимизируйте конверсию для повышения вклада в общий поток.`}
+        </p>
+      </div>
+    </>
+  );
+}
+
+function OutflowDrawerContent({ data }: { data: typeof topOutflows[number] }) {
+  const metricRows: { label: string; value: string }[] = [
+    { label: "Сумма оттока", value: fmt(data.amount) },
+    { label: "Доля от расходов", value: `${data.pct}%` },
+    { label: "Динамика", value: data.trend },
+  ];
+
+  if ("roas" in data && data.roas) metricRows.push({ label: "ROAS", value: `${data.roas}x` });
+  if ("cpc" in data && data.cpc) metricRows.push({ label: "CPC", value: `$${data.cpc}` });
+  if ("cpl" in data && data.cpl) metricRows.push({ label: "CPL", value: `$${data.cpl}` });
+  if ("conversions" in data && data.conversions) metricRows.push({ label: "Конверсии", value: String(data.conversions) });
+  if ("leads" in data && data.leads) metricRows.push({ label: "Лиды", value: data.leads.toLocaleString("en-US") });
+  if ("returnRate" in data && data.returnRate) metricRows.push({ label: "Процент возвратов", value: `${data.returnRate}%` });
+  if ("topReason" in data && data.topReason) metricRows.push({ label: "Главная причина", value: data.topReason });
+  if ("items" in data && data.items) metricRows.push({ label: "Кол-во единиц", value: String(data.items) });
+  if ("shipments" in data && data.shipments) metricRows.push({ label: "Отправок", value: data.shipments.toLocaleString("en-US") });
+  if ("avgCost" in data && data.avgCost) metricRows.push({ label: "Средняя стоимость", value: `$${data.avgCost}` });
+  if ("lateRate" in data && data.lateRate) metricRows.push({ label: "Задержки", value: `${data.lateRate}%` });
+
+  return (
+    <>
+      <div>
+        <h4 className="text-sm font-semibold mb-2">Ключевые показатели</h4>
+        <div className="space-y-2 text-xs">
+          {metricRows.map((r) => (
+            <div key={r.label} className="flex items-center justify-between bg-muted/50 rounded-lg p-3">
+              <span className="text-muted-foreground">{r.label}</span>
+              <span className={cn("font-semibold", data.trend.startsWith("+") ? "text-destructive" : "text-emerald-600")}>{r.value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h4 className="text-sm font-semibold mb-2">Описание</h4>
+        <p className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-3">{data.note}</p>
+      </div>
+      <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3 text-xs">
+        <div className="font-semibold mb-1 flex items-center gap-1.5"><Lightbulb className="w-3.5 h-3.5 text-amber-500" />AI Рекомендация</div>
+        <p className="text-muted-foreground">
+          {data.trend.startsWith("+")
+            ? `Расходы на «${data.category}» выросли на ${data.trend}. Проведите аудит эффективности и сократите неэффективные каналы.`
+            : `Расходы на «${data.category}» снизились (${data.trend}). Продолжайте оптимизацию для дальнейшего сокращения издержек.`}
+        </p>
       </div>
     </>
   );

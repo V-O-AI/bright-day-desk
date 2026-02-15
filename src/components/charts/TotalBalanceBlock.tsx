@@ -99,7 +99,7 @@ export function TotalBalanceBlock({
 
   return (
     <>
-      <div className="bg-card rounded-2xl p-6 border border-border h-full flex flex-col justify-between">
+      <div className={cn("bg-card rounded-2xl border border-border h-full flex flex-col justify-between", compact ? "p-4 gap-2" : "p-6")}>
         {/* Top section */}
         <div>
           <div className="flex items-center justify-between mb-1">
@@ -227,7 +227,7 @@ export function TotalBalanceBlock({
         </div>
 
         {/* ROI card — centered */}
-        <div className={cn("flex justify-center", compact ? "mt-4" : "mt-6")}>
+        <div className={cn("flex justify-center", compact ? "mt-2" : "mt-6")}>
           <div
             onClick={() => setRoiModalOpen(true)}
             className="bg-muted/50 rounded-xl p-2.5 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors text-center w-1/3"
@@ -244,7 +244,7 @@ export function TotalBalanceBlock({
         </div>
 
         {/* Sub cards row — 3 columns */}
-        <div className="grid grid-cols-3 gap-2 mt-2">
+        <div className={cn("grid grid-cols-3 gap-2", compact ? "mt-1" : "mt-2")}>
           {/* Доход */}
           <div
             onClick={() => setIncomeModalOpen(true)}

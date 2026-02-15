@@ -31,6 +31,7 @@ const Index = () => {
               period={period}
               onPeriodChange={setPeriod}
               showPeriodSelector
+              compact
             />
           </div>
 

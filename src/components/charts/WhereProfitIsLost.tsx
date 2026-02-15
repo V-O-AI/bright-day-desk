@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { SlidersHorizontal } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -19,6 +20,12 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts";
+
+const months = [
+  "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь",
+  "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь",
+];
+const years = [2024, 2025, 2026];
 
 // --- Mock data ---
 const potentialProfit = 136000;
@@ -449,6 +456,20 @@ function GeneralDrawerContent() {
 export function WhereProfitIsLost() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<LossCategory | null>(null);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(1); // February (0-indexed)
+  const [selectedYear, setSelectedYear] = useState(2026);
+  const filterRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
+        setFilterOpen(false);
+      }
+    };
+    if (filterOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [filterOpen]);
 
   const handleCategoryClick = (e: React.MouseEvent, cat: LossCategory) => {
     e.stopPropagation();
@@ -466,8 +487,8 @@ export function WhereProfitIsLost() {
     : "Где теряется прибыль — Обзор";
 
   const drawerSubtitle = selectedCategory
-    ? `Потери: −${selectedCategory.amount.toLocaleString()} ₽ · Месяц`
-    : `Общие потери: −${totalLostProfit.toLocaleString()} ₽ · Месяц`;
+    ? `Потери: −${selectedCategory.amount.toLocaleString()} ₽ · ${months[selectedMonth]} ${selectedYear}`
+    : `Общие потери: −${totalLostProfit.toLocaleString()} ₽ · ${months[selectedMonth]} ${selectedYear}`;
 
   return (
     <>
@@ -480,9 +501,57 @@ export function WhereProfitIsLost() {
             <h3 className="font-semibold text-foreground text-sm">Где теряется прибыль</h3>
             <p className="text-xs text-muted-foreground">Источники потери маржи</p>
           </div>
-          <div className="text-right">
-            <p className="text-xs text-muted-foreground">Потеряно прибыли</p>
-            <p className="text-sm font-bold text-destructive">−{totalLostProfit.toLocaleString()} ₽</p>
+          <div className="flex items-center gap-2">
+            <div className="relative" ref={filterRef}>
+              <button
+                onClick={(e) => { e.stopPropagation(); setFilterOpen(!filterOpen); }}
+                className={cn(
+                  "p-1.5 rounded-lg transition-colors",
+                  filterOpen ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <SlidersHorizontal className="h-3.5 w-3.5" />
+              </button>
+              {filterOpen && (
+                <div
+                  className="absolute right-0 top-full mt-1 z-50 bg-popover border border-border rounded-xl shadow-lg p-2 min-w-[140px]"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex gap-1 mb-1.5">
+                    {years.map((y) => (
+                      <button
+                        key={y}
+                        onClick={() => setSelectedYear(y)}
+                        className={cn(
+                          "text-[10px] px-2 py-0.5 rounded-md transition-colors",
+                          selectedYear === y ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                        )}
+                      >
+                        {y}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-3 gap-0.5">
+                    {months.map((m, i) => (
+                      <button
+                        key={m}
+                        onClick={() => { setSelectedMonth(i); setFilterOpen(false); }}
+                        className={cn(
+                          "text-[10px] px-1.5 py-1 rounded-md transition-colors text-center",
+                          selectedMonth === i ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"
+                        )}
+                      >
+                        {m.slice(0, 3)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-muted-foreground">Потеряно прибыли</p>
+              <p className="text-sm font-bold text-destructive">−{totalLostProfit.toLocaleString()} ₽</p>
+            </div>
           </div>
         </div>
 

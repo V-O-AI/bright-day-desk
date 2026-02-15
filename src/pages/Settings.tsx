@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,14 @@ import { cn } from "@/lib/utils";
 type SettingsSection = "appearances" | "account" | "security" | "community";
 
 const Settings = () => {
-  const [activeSection, setActiveSection] = useState<SettingsSection>("account");
+  const [searchParams] = useSearchParams();
+  const [activeSection, setActiveSection] = useState<SettingsSection>(() => {
+    const section = searchParams.get("section");
+    if (section && ["appearances", "account", "security", "community"].includes(section)) {
+      return section as SettingsSection;
+    }
+    return "account";
+  });
   const [profileCompletion] = useState(75);
 
   // Account settings state
@@ -79,7 +87,7 @@ const Settings = () => {
     {
       id: "community" as SettingsSection,
       icon: Users,
-      title: "Сообщество",
+      title: "Коллеги",
       description: "Управление пользователями",
     },
   ];
@@ -293,7 +301,7 @@ const Settings = () => {
   const renderCommunityContent = () => (
     <div className="space-y-8">
       <div>
-        <h2 className="text-xl font-semibold text-foreground mb-1">Сообщество</h2>
+        <h2 className="text-xl font-semibold text-foreground mb-1">Коллеги</h2>
         <p className="text-sm text-muted-foreground">Добавляйте пользователей и управляйте их доступом</p>
       </div>
 

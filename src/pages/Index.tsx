@@ -16,13 +16,13 @@ const Index = () => {
 
   return (
     <AppLayout>
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 h-full">
+      {/* Main Grid — stacks vertically on mobile */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6 h-full">
         
         {/* Left column */}
-        <div className="lg:col-span-3 flex flex-col gap-6">
+        <div className="lg:col-span-3 flex flex-col gap-4 md:gap-6">
           
-          {/* Total Balance Block — full version with period selector */}
+          {/* Total Balance Block */}
           <div 
             className="opacity-0 animate-fade-in-up" 
             style={{ animationDelay: "0ms" }}
@@ -37,45 +37,45 @@ const Index = () => {
 
           {/* Mini chat */}
           <div 
-            className="bg-card rounded-2xl p-6 border border-border flex-1 flex flex-col opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5" 
-            style={{ minHeight: "280px", animationDelay: "50ms" }}
+            className="bg-card rounded-2xl p-4 md:p-6 border border-border flex-1 flex flex-col opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5" 
+            style={{ minHeight: "220px", animationDelay: "50ms" }}
           >
             <MiniChat variant="compact" />
           </div>
         </div>
 
         {/* Right column */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
+        <div className="lg:col-span-2 flex flex-col gap-4 md:gap-6">
           
           {/* Latest chats */}
           <div 
-            className="bg-card rounded-2xl p-6 border border-border opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5"
+            className="bg-card rounded-2xl p-4 md:p-6 border border-border opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5"
             style={{ animationDelay: "100ms" }}
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold">Последние 3 чата с клиентами</h3>
+            <div className="flex items-center justify-between mb-3 md:mb-4">
+              <h3 className="font-semibold text-sm md:text-base">Последние чаты</h3>
               <button 
                 onClick={() => navigate("/client-chats")}
-                className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm transition-all duration-150 active:scale-[0.97] hover:bg-primary/90"
+                className="flex items-center gap-1.5 md:gap-2 bg-primary text-primary-foreground px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm transition-all duration-150 active:scale-[0.97] hover:bg-primary/90"
               >
-                <MessageCircle className="h-4 w-4" />
+                <MessageCircle className="h-3.5 w-3.5 md:h-4 md:w-4" />
                 Chat
               </button>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2 md:space-y-3">
               {chatsLoading ? (
                 Array.from({ length: 3 }).map((_, i) => (
-                  <Skeleton key={i} className="h-12 rounded-lg" />
+                  <Skeleton key={i} className="h-11 md:h-12 rounded-lg" />
                 ))
               ) : (
                 (clientChats || []).map((chat) => (
                    <button
                     key={chat.id}
                     onClick={() => navigate(`/client-chats?chatId=${chat.id}&chatName=${encodeURIComponent(chat.client_name)}`, { replace: false })}
-                    className="flex items-center justify-between py-2 border-b border-border last:border-0 w-full text-left hover:bg-muted/50 rounded-lg px-2 -mx-2"
+                    className="flex items-center justify-between py-2 border-b border-border last:border-0 w-full text-left hover:bg-muted/50 rounded-lg px-2 -mx-2 gap-2"
                   >
-                    <div className="flex items-center gap-2">
-                      <div className="relative">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <div className="relative flex-shrink-0">
                         <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
                           {chat.client_name.split(" ").map(n => n[0]).join("")}
                         </div>
@@ -83,10 +83,10 @@ const Index = () => {
                           <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-green-500 border-2 border-card" />
                         )}
                       </div>
-                      <span className="font-medium text-sm">{chat.client_name}</span>
+                      <span className="font-medium text-sm truncate">{chat.client_name}</span>
                     </div>
-                    <span className="text-muted-foreground text-xs">{chat.client_type}</span>
-                    <div className="bg-foreground text-background px-3 py-1 rounded-lg text-xs hover:opacity-90">
+                    <span className="text-muted-foreground text-xs hidden sm:inline flex-shrink-0">{chat.client_type}</span>
+                    <div className="bg-foreground text-background px-3 py-1 rounded-lg text-xs hover:opacity-90 flex-shrink-0">
                       Открыть
                     </div>
                   </button>
@@ -97,18 +97,18 @@ const Index = () => {
 
           {/* Warehouse chart */}
           <div 
-            className="bg-card rounded-2xl p-6 border border-border flex-1 opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 cursor-pointer"
+            className="bg-card rounded-2xl p-4 md:p-6 border border-border flex-1 opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 cursor-pointer"
             style={{ animationDelay: "150ms" }}
             onClick={() => navigate("/my-data/warehouse")}
           >
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-3 md:mb-4">
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Retention</p>
-                <h3 className="font-semibold">Данные склада</h3>
+                <h3 className="font-semibold text-sm md:text-base">Данные склада</h3>
                 <p className="text-xs text-muted-foreground">Conversion Rate</p>
               </div>
             </div>
-            <div className="h-[260px]">
+            <div className="h-[220px] md:h-[260px]">
               <WarehousePieChart enlarged />
             </div>
           </div>

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Calendar as CalendarIcon, Plus, Settings, MessageCircle, CalendarDays, Copy, Check, Users, CreditCard, ChevronDown } from "lucide-react";
+import { Calendar as CalendarIcon, Plus, Settings, Copy, Check, Users, CreditCard, ChevronDown } from "lucide-react";
 import { CalendarNotes } from "@/components/CalendarNotes";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { useLatestClientChats } from "@/hooks/useClientChats";
+// removed useLatestClientChats import
 import ReferralProgram from "@/components/billing/ReferralProgram";
 import PaymentModal from "@/components/billing/PaymentModal";
 import { format } from "date-fns";
@@ -49,7 +49,7 @@ const Cabinet = () => {
   const [activeTab, setActiveTab] = useState<"cabinet" | "referral">("cabinet");
   const navigate = useNavigate();
   const { profile, isLoading, saveProfile } = useUserProfile();
-  const { data: chats } = useLatestClientChats(100);
+  
 
   // Form state
   const [firstName, setFirstName] = useState("");
@@ -134,13 +134,6 @@ const Cabinet = () => {
     c.toLowerCase().includes((citySearch || city).toLowerCase())
   );
 
-  // Calculate days since registration
-  const daysSinceRegistration = profile?.created_at
-    ? Math.floor((Date.now() - new Date(profile.created_at).getTime()) / (1000 * 60 * 60 * 24))
-    : 0;
-
-  // Count new chats (unread_count > 0 as "processed by AI")
-  const newChatsCount = chats?.filter(c => c.unread_count > 0).length || 0;
 
   const integrationCards = [
     {
@@ -443,27 +436,6 @@ const Cabinet = () => {
             </div>
           </div>
 
-          {/* Статистика */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-card rounded-2xl p-6 border border-border flex items-center gap-4 opacity-0 animate-fade-in-up" style={{ animationDelay: "100ms", animationFillMode: "forwards" }}>
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                <MessageCircle className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Чатов с клиентами</p>
-                <p className="text-2xl font-bold">{newChatsCount}</p>
-              </div>
-            </div>
-            <div className="bg-card rounded-2xl p-6 border border-border flex items-center gap-4 opacity-0 animate-fade-in-up" style={{ animationDelay: "150ms", animationFillMode: "forwards" }}>
-              <div className="w-12 h-12 rounded-xl bg-destructive/10 flex items-center justify-center">
-                <CalendarDays className="h-6 w-6 text-destructive" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">Дней с нами</p>
-                <p className="text-2xl font-bold">{daysSinceRegistration}</p>
-              </div>
-            </div>
-          </div>
 
           {/* Блок с картами */}
           <div className="bg-card rounded-2xl p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "200ms", animationFillMode: "forwards" }}>

@@ -10,27 +10,29 @@ interface StorageRow {
   remaining: number;
   lastChange: string;
   turnoverDays: number;
+  salesSpeed: number; // units per day
+  expiresIn: string;
 }
 
 const mockData: StorageRow[] = [
-  { id: 1, category: "Электроника", productName: "Смартфон X200", purchased: 200, remaining: 45, lastChange: "02.02.2026", turnoverDays: 12 },
-  { id: 2, category: "Одежда", productName: "Куртка зимняя", purchased: 500, remaining: 120, lastChange: "01.02.2026", turnoverDays: 30 },
-  { id: 3, category: "Дом и Кухня", productName: "Набор посуды", purchased: 150, remaining: 18, lastChange: "31.01.2026", turnoverDays: 7 },
-  { id: 4, category: "Автозапчасти", productName: "Масляный фильтр", purchased: 1000, remaining: 340, lastChange: "03.02.2026", turnoverDays: 45 },
-  { id: 5, category: "Красота и Здоровье", productName: "Крем для лица", purchased: 300, remaining: 75, lastChange: "30.01.2026", turnoverDays: 20 },
-  { id: 6, category: "Электроника", productName: "Наушники BT-500", purchased: 400, remaining: 310, lastChange: "04.02.2026", turnoverDays: 60 },
-  { id: 7, category: "Одежда", productName: "Футболка базовая", purchased: 800, remaining: 95, lastChange: "28.01.2026", turnoverDays: 8 },
-  { id: 8, category: "Дом и Кухня", productName: "Чайник электрический", purchased: 250, remaining: 200, lastChange: "05.02.2026", turnoverDays: 55 },
-  { id: 9, category: "Автозапчасти", productName: "Тормозные колодки", purchased: 600, remaining: 30, lastChange: "29.01.2026", turnoverDays: 5 },
-  { id: 10, category: "Красота и Здоровье", productName: "Шампунь органик", purchased: 350, remaining: 280, lastChange: "03.02.2026", turnoverDays: 40 },
-  { id: 11, category: "Электроника", productName: "Роутер Wi-Fi 6", purchased: 180, remaining: 12, lastChange: "27.01.2026", turnoverDays: 3 },
-  { id: 12, category: "Одежда", productName: "Джинсы классика", purchased: 450, remaining: 370, lastChange: "04.02.2026", turnoverDays: 50 },
-  { id: 13, category: "Дом и Кухня", productName: "Сковорода антипригар", purchased: 300, remaining: 55, lastChange: "01.02.2026", turnoverDays: 14 },
-  { id: 14, category: "Автозапчасти", productName: "Свечи зажигания", purchased: 700, remaining: 580, lastChange: "05.02.2026", turnoverDays: 70 },
-  { id: 15, category: "Красота и Здоровье", productName: "Маска для волос", purchased: 200, remaining: 25, lastChange: "26.01.2026", turnoverDays: 6 },
+  { id: 1, category: "Электроника", productName: "Смартфон X200", purchased: 200, remaining: 45, lastChange: "02.02.2026", turnoverDays: 12, salesSpeed: 3.8, expiresIn: "12 дн." },
+  { id: 2, category: "Одежда", productName: "Куртка зимняя", purchased: 500, remaining: 120, lastChange: "01.02.2026", turnoverDays: 30, salesSpeed: 4.0, expiresIn: "30 дн." },
+  { id: 3, category: "Дом и Кухня", productName: "Набор посуды", purchased: 150, remaining: 18, lastChange: "31.01.2026", turnoverDays: 7, salesSpeed: 2.6, expiresIn: "7 дн." },
+  { id: 4, category: "Автозапчасти", productName: "Масляный фильтр", purchased: 1000, remaining: 340, lastChange: "03.02.2026", turnoverDays: 45, salesSpeed: 7.6, expiresIn: "45 дн." },
+  { id: 5, category: "Красота и Здоровье", productName: "Крем для лица", purchased: 300, remaining: 75, lastChange: "30.01.2026", turnoverDays: 20, salesSpeed: 3.8, expiresIn: "20 дн." },
+  { id: 6, category: "Электроника", productName: "Наушники BT-500", purchased: 400, remaining: 310, lastChange: "04.02.2026", turnoverDays: 60, salesSpeed: 1.5, expiresIn: "207 дн." },
+  { id: 7, category: "Одежда", productName: "Футболка базовая", purchased: 800, remaining: 95, lastChange: "28.01.2026", turnoverDays: 8, salesSpeed: 11.9, expiresIn: "8 дн." },
+  { id: 8, category: "Дом и Кухня", productName: "Чайник электрический", purchased: 250, remaining: 200, lastChange: "05.02.2026", turnoverDays: 55, salesSpeed: 0.9, expiresIn: "222 дн." },
+  { id: 9, category: "Автозапчасти", productName: "Тормозные колодки", purchased: 600, remaining: 30, lastChange: "29.01.2026", turnoverDays: 5, salesSpeed: 6.0, expiresIn: "5 дн." },
+  { id: 10, category: "Красота и Здоровье", productName: "Шампунь органик", purchased: 350, remaining: 280, lastChange: "03.02.2026", turnoverDays: 40, salesSpeed: 1.8, expiresIn: "156 дн." },
+  { id: 11, category: "Электроника", productName: "Роутер Wi-Fi 6", purchased: 180, remaining: 12, lastChange: "27.01.2026", turnoverDays: 3, salesSpeed: 4.0, expiresIn: "3 дн." },
+  { id: 12, category: "Одежда", productName: "Джинсы классика", purchased: 450, remaining: 370, lastChange: "04.02.2026", turnoverDays: 50, salesSpeed: 1.6, expiresIn: "231 дн." },
+  { id: 13, category: "Дом и Кухня", productName: "Сковорода антипригар", purchased: 300, remaining: 55, lastChange: "01.02.2026", turnoverDays: 14, salesSpeed: 3.9, expiresIn: "14 дн." },
+  { id: 14, category: "Автозапчасти", productName: "Свечи зажигания", purchased: 700, remaining: 580, lastChange: "05.02.2026", turnoverDays: 70, salesSpeed: 1.7, expiresIn: "341 дн." },
+  { id: 15, category: "Красота и Здоровье", productName: "Маска для волос", purchased: 200, remaining: 25, lastChange: "26.01.2026", turnoverDays: 6, salesSpeed: 4.2, expiresIn: "6 дн." },
 ];
 
-type SortKey = "id" | "category" | "productName" | "remaining_pct" | "remaining" | "lastChange" | "turnoverDays";
+type SortKey = "category" | "productName" | "remaining_pct" | "remaining" | "lastChange" | "expiresIn" | "salesSpeed";
 type SortDir = "asc" | "desc";
 
 const parseDate = (d: string) => {
@@ -38,14 +40,16 @@ const parseDate = (d: string) => {
   return new Date(+year, +month - 1, +day).getTime();
 };
 
+const parseDays = (s: string) => parseInt(s) || 0;
+
 const columns: { key: SortKey; label: string }[] = [
-  { key: "id", label: "№" },
   { key: "category", label: "Категория" },
   { key: "productName", label: "Товар" },
   { key: "remaining_pct", label: "Остаток" },
   { key: "remaining", label: "Кол-во" },
   { key: "lastChange", label: "Посл. продажа" },
-  { key: "turnoverDays", label: "Оборот" },
+  { key: "expiresIn", label: "Товар закон." },
+  { key: "salesSpeed", label: "Скор. Продажи" },
 ];
 
 export function WarehouseStorageTable() {
@@ -66,13 +70,13 @@ export function WarehouseStorageTable() {
     return [...mockData].sort((a, b) => {
       let cmp = 0;
       switch (sortKey) {
-        case "id": cmp = a.id - b.id; break;
         case "category": cmp = a.category.localeCompare(b.category); break;
         case "productName": cmp = a.productName.localeCompare(b.productName); break;
         case "remaining_pct": cmp = (a.remaining / a.purchased) - (b.remaining / b.purchased); break;
         case "remaining": cmp = a.remaining - b.remaining; break;
         case "lastChange": cmp = parseDate(a.lastChange) - parseDate(b.lastChange); break;
-        case "turnoverDays": cmp = a.turnoverDays - b.turnoverDays; break;
+        case "expiresIn": cmp = parseDays(a.expiresIn) - parseDays(b.expiresIn); break;
+        case "salesSpeed": cmp = a.salesSpeed - b.salesSpeed; break;
       }
       return sortDir === "asc" ? cmp : -cmp;
     });
@@ -102,7 +106,7 @@ export function WarehouseStorageTable() {
               {columns.map((col) => (
                 <th
                   key={col.key}
-                  className="text-left pb-3 font-medium cursor-pointer select-none hover:text-foreground transition-colors"
+                  className="text-left pb-3 font-medium cursor-pointer select-none hover:text-foreground transition-colors whitespace-nowrap"
                   onClick={() => handleSort(col.key)}
                 >
                   <span className="inline-flex items-center gap-1">
@@ -119,12 +123,11 @@ export function WarehouseStorageTable() {
 
               return (
                 <tr key={row.id} className="border-t border-border">
-                  <td className="py-3 text-foreground font-medium">{row.id}</td>
                   <td className="py-3 text-foreground">{row.category}</td>
                   <td className="py-3 text-foreground">{row.productName}</td>
                   <td className="py-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-16 h-2 bg-muted rounded-full overflow-hidden">
+                      <div className="w-14 h-2 bg-muted rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all"
                           style={{
@@ -142,14 +145,28 @@ export function WarehouseStorageTable() {
                     <span
                       className={cn(
                         "text-xs font-medium px-2 py-0.5 rounded-full",
-                        row.turnoverDays <= 10
-                          ? "bg-red-500/10 text-red-500"
-                          : row.turnoverDays <= 25
+                        parseDays(row.expiresIn) <= 10
+                          ? "bg-destructive/10 text-destructive"
+                          : parseDays(row.expiresIn) <= 30
                           ? "bg-orange-500/10 text-orange-500"
                           : "bg-green-500/10 text-green-500"
                       )}
                     >
-                      {row.turnoverDays} дн.
+                      {row.expiresIn}
+                    </span>
+                  </td>
+                  <td className="py-3">
+                    <span
+                      className={cn(
+                        "text-xs font-semibold",
+                        row.salesSpeed >= 5
+                          ? "text-green-500"
+                          : row.salesSpeed >= 2
+                          ? "text-foreground"
+                          : "text-destructive"
+                      )}
+                    >
+                      {row.salesSpeed} шт/д
                     </span>
                   </td>
                 </tr>

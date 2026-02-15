@@ -206,7 +206,7 @@ export function WarehouseMetricCards() {
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="flex flex-col gap-3">
         {metrics.map((m, idx) => (
           <div
             key={idx}
@@ -292,9 +292,5 @@ export function WarehouseMapBlock() {
 }
 
 export function WarehouseMapHeader() {
-  return (
-    <div className="flex items-center justify-between">
-      <h3 className="font-semibold text-foreground">Полезные данные</h3>
-    </div>
-  );
+  return null;
 }

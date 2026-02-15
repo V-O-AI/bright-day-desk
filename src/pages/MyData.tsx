@@ -250,21 +250,28 @@ const MyData = () => {
               <Card 
                 key={card.id}
                 className={cn(
-                  "cursor-pointer select-none bg-background",
+                  "cursor-pointer select-none bg-background group overflow-hidden",
                   card.borderColor,
-                  "border"
+                  "border",
+                  "transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-primary/30"
                 )}
                 style={{ animationDelay: `${index * 100}ms` }}
                 onClick={() => navigate(card.url)}
               >
-                <CardContent className="p-6">
+                <CardContent className="p-6 relative">
+                  {/* Hover gradient overlay */}
+                  <div className={cn(
+                    "absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300",
+                    card.gradient
+                  )} />
                   <div className="relative pointer-events-none">
                     <div className={cn(
                       "w-12 h-12 rounded-xl flex items-center justify-center mb-4",
-                      "bg-background border",
+                      "bg-background border transition-all duration-300",
+                      "group-hover:scale-110 group-hover:shadow-md",
                       card.borderColor
                     )}>
-                      <Icon className={cn("h-6 w-6", card.iconColor)} />
+                      <Icon className={cn("h-6 w-6 transition-colors duration-300", card.iconColor)} />
                     </div>
                     <h3 className="text-lg font-semibold text-foreground mb-1">
                       {card.title}

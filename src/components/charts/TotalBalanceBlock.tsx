@@ -226,8 +226,25 @@ export function TotalBalanceBlock({
           </div>
         </div>
 
-        {/* Sub cards row */}
-        <div className={cn("grid grid-cols-4 gap-2", compact ? "mt-4" : "mt-6")}>
+        {/* ROI card — centered */}
+        <div className={cn("flex justify-center", compact ? "mt-4" : "mt-6")}>
+          <div
+            onClick={() => setRoiModalOpen(true)}
+            className="bg-muted/50 rounded-xl p-2.5 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors text-center w-1/3"
+          >
+            <p className="text-[11px] text-muted-foreground mb-1">ROI</p>
+            <div className="flex items-center justify-center gap-1.5">
+              <p className="text-xs font-bold text-foreground">{roiPercent.toFixed(1)}%</p>
+              {roiChange >= 0 ? <TrendingUp className="h-3 w-3 text-green-500" /> : <TrendingDown className="h-3 w-3 text-destructive" />}
+            </div>
+            <p className={cn("text-[10px] mt-1 flex items-center justify-center gap-0.5", roiChange >= 0 ? "text-green-500" : "text-destructive")}>
+              {roiChange >= 0 ? "+" : ""}{roiChange.toFixed(1)}% за {periodText}
+            </p>
+          </div>
+        </div>
+
+        {/* Sub cards row — 3 columns */}
+        <div className="grid grid-cols-3 gap-2 mt-2">
           {/* Доход */}
           <div
             onClick={() => setIncomeModalOpen(true)}
@@ -251,21 +268,6 @@ export function TotalBalanceBlock({
             <p className={cn("text-[10px] mt-1 flex items-center justify-center gap-0.5", expenseChange >= 0 ? "text-destructive" : "text-green-500")}>
               {expenseChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
               {formatPercent(expenseChange)} за {periodText}
-            </p>
-          </div>
-
-          {/* ROI */}
-          <div
-            onClick={() => setRoiModalOpen(true)}
-            className="bg-muted/50 rounded-xl p-2.5 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors text-center"
-          >
-            <p className="text-[11px] text-muted-foreground mb-1">ROI</p>
-            <div className="flex items-center justify-center gap-1.5">
-              <p className="text-xs font-bold text-foreground">{roiPercent.toFixed(1)}%</p>
-              {roiChange >= 0 ? <TrendingUp className="h-3 w-3 text-green-500" /> : <TrendingDown className="h-3 w-3 text-destructive" />}
-            </div>
-            <p className={cn("text-[10px] mt-1 flex items-center justify-center gap-0.5", roiChange >= 0 ? "text-green-500" : "text-destructive")}>
-              {roiChange >= 0 ? "+" : ""}{roiChange.toFixed(1)}% за {periodText}
             </p>
           </div>
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from "recharts";
-import { MoreHorizontal, TrendingUp, TrendingDown, X, Activity, PackageCheck, RotateCcw } from "lucide-react";
+import { MoreHorizontal, TrendingUp, TrendingDown, Activity, PackageCheck, RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -8,8 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-const floors = ["Floor 1", "Floor 2", "Floor 3"];
 
 const deadStockData = [
   { name: "Масляный\nфильтр", value: 2500, days: 120 },
@@ -20,7 +18,6 @@ const deadStockData = [
   { name: "Наушники\nBT", value: 1000, days: 32 },
 ];
 
-// Modal data for each metric
 const turnoverModalData = [
   { name: "Роутер Wi-Fi 6", turnover: 3, sales: 60, category: "Электроника" },
   { name: "Тормозные колодки", turnover: 5, sales: 570, category: "Автозапчасти" },
@@ -83,7 +80,7 @@ function TurnoverModal({ open, onClose }: { open: boolean; onClose: () => void }
             Средний оборот — детализация
           </DialogTitle>
         </DialogHeader>
-        <p className="text-xs text-muted-foreground mb-3">Среднее время (в днях) от поступления до продажи товара. Чем ниже — тем лучше.</p>
+        <p className="text-xs text-muted-foreground mb-3">Среднее время (в днях) от поступления до продажи товара.</p>
         <table className="w-full text-sm">
           <thead>
             <tr className="text-muted-foreground text-xs border-b border-border">
@@ -191,10 +188,7 @@ function AvailabilityModal({ open, onClose }: { open: boolean; onClose: () => vo
                 <td className="py-2 text-right text-foreground">{row.totalProducts}</td>
                 <td className="py-2 text-right text-foreground">{row.inStock}</td>
                 <td className="py-2 text-right">
-                  <span className={cn(
-                    "text-xs font-semibold",
-                    row.pct === 100 ? "text-green-500" : row.pct >= 50 ? "text-orange-500" : "text-destructive"
-                  )}>
+                  <span className={cn("text-xs font-semibold", row.pct === 100 ? "text-green-500" : row.pct >= 50 ? "text-orange-500" : "text-destructive")}>
                     {row.pct}%
                   </span>
                 </td>
@@ -207,89 +201,36 @@ function AvailabilityModal({ open, onClose }: { open: boolean; onClose: () => vo
   );
 }
 
-export function WarehouseMapBlock() {
+export function WarehouseMetricCards() {
   const [activeModal, setActiveModal] = useState<ModalType>(null);
 
   return (
     <>
-      <div className="flex gap-4 w-full">
-        {/* Left metrics column */}
-        <div className="flex flex-col gap-3 min-w-[140px]">
-          {metrics.map((m, idx) => (
-            <div
-              key={idx}
-              className="bg-card border border-border rounded-xl p-3 cursor-pointer hover:border-primary/40 hover:shadow-sm transition-all"
-              onClick={() => setActiveModal(m.key)}
-            >
-              <div className="flex items-center gap-1.5">
-                <span className="text-muted-foreground">{m.icon}</span>
-                <p className="text-[10px] text-muted-foreground">{m.label}</p>
-              </div>
-              <div className="flex items-baseline gap-1.5 mt-1">
-                <span className="text-lg font-bold text-foreground">{m.value}</span>
-                {m.unit && (
-                  <span className="text-[10px] text-muted-foreground">{m.unit}</span>
-                )}
-              </div>
-              <div className="flex items-center gap-1 mt-1">
-                {m.positive ? (
-                  <TrendingUp className="h-3 w-3 text-green-500" />
-                ) : (
-                  <TrendingDown className="h-3 w-3 text-destructive" />
-                )}
-                <span className={cn("text-[10px] font-medium", m.positive ? "text-green-500" : "text-destructive")}>{m.change}</span>
-              </div>
+      <div className="grid grid-cols-3 gap-3">
+        {metrics.map((m, idx) => (
+          <div
+            key={idx}
+            className="bg-card border border-border rounded-xl p-3 cursor-pointer hover:border-primary/40 hover:shadow-sm transition-all"
+            onClick={() => setActiveModal(m.key)}
+          >
+            <div className="flex items-center gap-1.5">
+              <span className="text-muted-foreground">{m.icon}</span>
+              <p className="text-[10px] text-muted-foreground">{m.label}</p>
             </div>
-          ))}
-        </div>
-
-        {/* Dead stock chart */}
-        <div className="flex-1 bg-card border border-border rounded-2xl p-5">
-          <div className="flex items-center justify-between mb-1">
-            <h3 className="font-semibold text-foreground text-sm">Мертвые товары</h3>
-            <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-baseline gap-1.5 mt-1">
+              <span className="text-lg font-bold text-foreground">{m.value}</span>
+              {m.unit && <span className="text-[10px] text-muted-foreground">{m.unit}</span>}
+            </div>
+            <div className="flex items-center gap-1 mt-1">
+              {m.positive ? (
+                <TrendingUp className="h-3 w-3 text-green-500" />
+              ) : (
+                <TrendingDown className="h-3 w-3 text-destructive" />
+              )}
+              <span className={cn("text-[10px] font-medium", m.positive ? "text-green-500" : "text-destructive")}>{m.change}</span>
+            </div>
           </div>
-          <p className="text-2xl font-bold text-foreground">
-            {deadStockData.length} <span className="text-xs font-normal text-muted-foreground">товаров</span>
-          </p>
-
-          <div className="h-[160px] mt-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={deadStockData} barSize={32}>
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }}
-                  interval={0}
-                />
-                <YAxis hide />
-                <Bar dataKey="days" radius={[6, 6, 0, 0]}>
-                  {deadStockData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={
-                        entry.days >= 90
-                          ? "hsl(0, 72%, 51%)"
-                          : entry.days >= 60
-                          ? "hsl(35, 92%, 50%)"
-                          : "hsl(var(--muted))"
-                      }
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="flex gap-3 mt-2 text-[10px] text-muted-foreground">
-            {deadStockData.map((item, idx) => (
-              <span key={idx} className="flex-1 text-center">
-                {item.days} дн. · {item.value.toLocaleString()} шт
-              </span>
-            ))}
-          </div>
-        </div>
+        ))}
       </div>
 
       <TurnoverModal open={activeModal === "turnover"} onClose={() => setActiveModal(null)} />
@@ -299,28 +240,61 @@ export function WarehouseMapBlock() {
   );
 }
 
-export function WarehouseMapHeader() {
-  const [activeFloor, setActiveFloor] = useState(0);
+export function WarehouseMapBlock() {
+  return (
+    <div className="bg-card border border-border rounded-2xl p-5">
+      <div className="flex items-center justify-between mb-1">
+        <h3 className="font-semibold text-foreground text-sm">Мертвые товары</h3>
+        <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+      </div>
+      <p className="text-2xl font-bold text-foreground">
+        {deadStockData.length} <span className="text-xs font-normal text-muted-foreground">товаров</span>
+      </p>
 
+      <div className="h-[160px] mt-4">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={deadStockData} barSize={32}>
+            <XAxis
+              dataKey="name"
+              axisLine={false}
+              tickLine={false}
+              tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }}
+              interval={0}
+            />
+            <YAxis hide />
+            <Bar dataKey="days" radius={[6, 6, 0, 0]}>
+              {deadStockData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={
+                    entry.days >= 90
+                      ? "hsl(0, 72%, 51%)"
+                      : entry.days >= 60
+                      ? "hsl(35, 92%, 50%)"
+                      : "hsl(var(--muted))"
+                  }
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="flex gap-3 mt-2 text-[10px] text-muted-foreground">
+        {deadStockData.map((item, idx) => (
+          <span key={idx} className="flex-1 text-center">
+            {item.days} дн. · {item.value.toLocaleString()} шт
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function WarehouseMapHeader() {
   return (
     <div className="flex items-center justify-between">
       <h3 className="font-semibold text-foreground">Полезные данные</h3>
-      <div className="flex gap-1 bg-muted rounded-lg p-0.5">
-        {floors.map((floor, idx) => (
-          <button
-            key={idx}
-            className={cn(
-              "px-3 py-1 text-xs rounded-md transition-colors",
-              activeFloor === idx
-                ? "bg-foreground text-background font-medium"
-                : "text-muted-foreground hover:text-foreground"
-            )}
-            onClick={() => setActiveFloor(idx)}
-          >
-            {floor}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }

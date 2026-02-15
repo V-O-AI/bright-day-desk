@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Filter, ChevronDown, ArrowUpDown } from "lucide-react";
+import { useState, useMemo } from "react";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface StorageRow {
@@ -30,11 +30,53 @@ const mockData: StorageRow[] = [
   { id: 15, category: "Красота и Здоровье", productName: "Маска для волос", purchased: 200, remaining: 25, lastChange: "26.01.2026", turnoverDays: 6 },
 ];
 
-const sortOptions = ["Категория", "Товар", "Остаток"];
+type SortKey = "id" | "category" | "productName" | "remaining_pct" | "remaining" | "lastChange" | "turnoverDays";
+type SortDir = "asc" | "desc";
+
+const parseDate = (d: string) => {
+  const [day, month, year] = d.split(".");
+  return new Date(+year, +month - 1, +day).getTime();
+};
+
+const columns: { key: SortKey; label: string }[] = [
+  { key: "id", label: "№" },
+  { key: "category", label: "Категория" },
+  { key: "productName", label: "Товар" },
+  { key: "remaining_pct", label: "Остаток" },
+  { key: "remaining", label: "Кол-во" },
+  { key: "lastChange", label: "Посл. продажа" },
+  { key: "turnoverDays", label: "Оборот" },
+];
 
 export function WarehouseStorageTable() {
-  const [sortBy, setSortBy] = useState("Категория");
-  const [sortOpen, setSortOpen] = useState(false);
+  const [sortKey, setSortKey] = useState<SortKey | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir("asc");
+    }
+  };
+
+  const sortedData = useMemo(() => {
+    if (!sortKey) return mockData;
+    return [...mockData].sort((a, b) => {
+      let cmp = 0;
+      switch (sortKey) {
+        case "id": cmp = a.id - b.id; break;
+        case "category": cmp = a.category.localeCompare(b.category); break;
+        case "productName": cmp = a.productName.localeCompare(b.productName); break;
+        case "remaining_pct": cmp = (a.remaining / a.purchased) - (b.remaining / b.purchased); break;
+        case "remaining": cmp = a.remaining - b.remaining; break;
+        case "lastChange": cmp = parseDate(a.lastChange) - parseDate(b.lastChange); break;
+        case "turnoverDays": cmp = a.turnoverDays - b.turnoverDays; break;
+      }
+      return sortDir === "asc" ? cmp : -cmp;
+    });
+  }, [sortKey, sortDir]);
 
   const getRemainingColor = (ratio: number) => {
     if (ratio <= 0.15) return "hsl(0, 72%, 51%)";
@@ -42,75 +84,36 @@ export function WarehouseStorageTable() {
     return "hsl(142, 71%, 45%)";
   };
 
+  const SortIcon = ({ colKey }: { colKey: SortKey }) => {
+    if (sortKey !== colKey) return <ArrowUpDown className="h-3 w-3 opacity-40" />;
+    return sortDir === "asc" ? <ArrowUp className="h-3 w-3 text-primary" /> : <ArrowDown className="h-3 w-3 text-primary" />;
+  };
+
   return (
     <div className="bg-card rounded-2xl p-5 border border-border flex flex-col" style={{ maxHeight: 420 }}>
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-foreground">Таблица данных</h3>
-        <div className="flex items-center gap-2">
-          <button className="flex items-center gap-1.5 text-xs text-muted-foreground border border-border rounded-lg px-3 py-1.5 hover:bg-muted/50 transition-colors">
-            <Filter className="h-3 w-3" />
-            Фильтр
-          </button>
-          <div className="relative">
-            <button
-              onClick={() => setSortOpen(!sortOpen)}
-              className="flex items-center gap-1.5 text-xs text-muted-foreground border border-border rounded-lg px-3 py-1.5 hover:bg-muted/50 transition-colors"
-            >
-              Сорт: <span className="text-foreground font-medium">{sortBy}</span>
-              <ChevronDown className="h-3 w-3" />
-            </button>
-            {sortOpen && (
-              <div className="absolute right-0 top-full mt-1 bg-card border border-border rounded-lg shadow-lg z-10 min-w-[120px]">
-                {sortOptions.map((opt) => (
-                  <button
-                    key={opt}
-                    className={cn(
-                      "block w-full text-left px-3 py-1.5 text-xs hover:bg-muted/50 transition-colors",
-                      sortBy === opt && "text-primary font-medium"
-                    )}
-                    onClick={() => {
-                      setSortBy(opt);
-                      setSortOpen(false);
-                    }}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
       </div>
 
       <div className="overflow-x-auto overflow-y-auto flex-1">
         <table className="w-full text-sm">
           <thead className="sticky top-0 bg-card z-[1]">
             <tr className="text-muted-foreground text-xs">
-              <th className="text-left pb-3 font-medium">
-                <span className="inline-flex items-center gap-1">№ <ArrowUpDown className="h-3 w-3" /></span>
-              </th>
-              <th className="text-left pb-3 font-medium">
-                <span className="inline-flex items-center gap-1">Категория <ArrowUpDown className="h-3 w-3" /></span>
-              </th>
-              <th className="text-left pb-3 font-medium">
-                <span className="inline-flex items-center gap-1">Товар <ArrowUpDown className="h-3 w-3" /></span>
-              </th>
-              <th className="text-left pb-3 font-medium">
-                <span className="inline-flex items-center gap-1">Остаток <ArrowUpDown className="h-3 w-3" /></span>
-              </th>
-              <th className="text-left pb-3 font-medium">
-                <span className="inline-flex items-center gap-1">Кол-во <ArrowUpDown className="h-3 w-3" /></span>
-              </th>
-              <th className="text-left pb-3 font-medium">
-                <span className="inline-flex items-center gap-1">Посл. изменения <ArrowUpDown className="h-3 w-3" /></span>
-              </th>
-              <th className="text-left pb-3 font-medium">
-                <span className="inline-flex items-center gap-1">Оборот <ArrowUpDown className="h-3 w-3" /></span>
-              </th>
+              {columns.map((col) => (
+                <th
+                  key={col.key}
+                  className="text-left pb-3 font-medium cursor-pointer select-none hover:text-foreground transition-colors"
+                  onClick={() => handleSort(col.key)}
+                >
+                  <span className="inline-flex items-center gap-1">
+                    {col.label} <SortIcon colKey={col.key} />
+                  </span>
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {mockData.map((row) => {
+            {sortedData.map((row) => {
               const remainingPct = Math.round((row.remaining / row.purchased) * 100);
               const remainingColor = getRemainingColor(remainingPct / 100);
 

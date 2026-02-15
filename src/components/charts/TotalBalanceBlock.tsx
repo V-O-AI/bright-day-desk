@@ -250,7 +250,7 @@ export function TotalBalanceBlock({
             onClick={() => setIncomeModalOpen(true)}
             className="bg-muted/50 rounded-xl p-2.5 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors text-center"
           >
-            <p className="text-[11px] text-muted-foreground mb-1">Доход</p>
+            <p className="text-[11px] text-muted-foreground mb-1">Выручка</p>
             <p className="text-xs font-bold text-foreground">{formatCurrency(incomeValue)}</p>
             <p className={cn("text-[10px] mt-1 flex items-center justify-center gap-0.5", incomeChange >= 0 ? "text-green-500" : "text-destructive")}>
               {incomeChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}

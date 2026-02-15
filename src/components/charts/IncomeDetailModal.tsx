@@ -5,10 +5,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, TrendingUp, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 
 interface CategoryRow {
   name: string;
@@ -93,6 +94,7 @@ export function IncomeDetailModal({ open, onOpenChange, totalIncome = 0, periodL
   };
 
   const computeAmount = (percent: number) => (percent / 100) * totalIncome;
+  const totalSales = mockCategories.reduce((s, c) => s + c.salesCount, 0);
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -100,74 +102,117 @@ export function IncomeDetailModal({ open, onOpenChange, totalIncome = 0, periodL
         <DialogHeader className="px-6 pt-6 pb-4">
           <DialogTitle className="flex items-center gap-2">
             {selectedCategory && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7"
-                onClick={() => setSelectedCategory(null)}
-              >
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setSelectedCategory(null)}>
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             )}
-            {selectedCategory ? `Доходы — ${selectedCategory.name}` : "История доходов"}
+            <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center">
+              <ShoppingBag className="h-4 w-4 text-green-500" />
+            </div>
+            {selectedCategory ? `Выручка — ${selectedCategory.name}` : "Выручка"}
           </DialogTitle>
-          {periodLabel && (
-            <p className="text-sm text-muted-foreground">
-              Период: {periodLabel} · Общий доход: {formatCurrency(totalIncome)}
-            </p>
-          )}
         </DialogHeader>
 
-        <ScrollArea className="flex-1 min-h-0 px-6 pb-6">
-          <div>
-            {/* Table header */}
-            <div className="grid grid-cols-5 gap-2 px-3 py-2 text-xs font-medium text-muted-foreground border-b border-border">
-              <span>{selectedCategory ? "Вид товара" : "Категория"}</span>
-              <span className="text-right">Кол-во продаж</span>
-              <span className="text-right">Средний чек</span>
-              <span className="text-right">% от дохода</span>
-              <span className="text-right">Сумма</span>
+        <div className="px-6">
+          {/* Summary KPIs */}
+          {!selectedCategory && (
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              <div className="bg-muted/40 rounded-xl p-3 border border-border/40 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Общая выручка</p>
+                <p className="text-lg font-bold text-green-500">{formatCurrency(totalIncome)}</p>
+              </div>
+              <div className="bg-muted/40 rounded-xl p-3 border border-border/40 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Продаж</p>
+                <p className="text-lg font-bold text-foreground">{totalSales}</p>
+              </div>
+              <div className="bg-muted/40 rounded-xl p-3 border border-border/40 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Период</p>
+                <p className="text-lg font-bold text-foreground">{periodLabel || "—"}</p>
+              </div>
             </div>
+          )}
 
-            {/* Rows */}
+          {selectedCategory && (
+            <div className="grid grid-cols-3 gap-2 mb-4">
+              <div className="bg-muted/40 rounded-xl p-3 border border-border/40 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Выручка</p>
+                <p className="text-base font-bold text-green-500">{formatCurrency(computeAmount(selectedCategory.percentOfTotal))}</p>
+              </div>
+              <div className="bg-muted/40 rounded-xl p-3 border border-border/40 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Продаж</p>
+                <p className="text-base font-bold text-foreground">{selectedCategory.salesCount}</p>
+              </div>
+              <div className="bg-muted/40 rounded-xl p-3 border border-border/40 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Доля</p>
+                <p className="text-base font-bold text-foreground">{selectedCategory.percentOfTotal}%</p>
+              </div>
+            </div>
+          )}
+
+          <Separator className="mb-3" />
+        </div>
+
+        <ScrollArea className="flex-1 min-h-0 px-6 pb-6">
+          <div className="space-y-2">
             {selectedCategory
               ? selectedCategory.products.map((product) => (
                   <div
                     key={product.name}
-                    className="grid grid-cols-5 gap-2 px-3 py-3 text-sm border-b border-border/50 hover:bg-muted/30 transition-colors"
+                    className="bg-muted/30 rounded-xl p-3 border border-border/30 hover:bg-muted/50 transition-colors"
                   >
-                    <span className="font-medium text-foreground">{product.name}</span>
-                    <span className="text-right text-muted-foreground">{product.salesCount}</span>
-                    <span className="text-right text-muted-foreground">{formatCurrency(product.avgCheck)}</span>
-                    <span className="text-right">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                        {product.percentOfTotal}%
-                      </span>
-                    </span>
-                    <span className="text-right font-medium text-foreground">
-                      {formatCurrency(computeAmount(product.percentOfTotal))}
-                    </span>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-sm font-medium text-foreground">{product.name}</span>
+                      <span className="text-sm font-bold text-foreground">{formatCurrency(computeAmount(product.percentOfTotal))}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-xs">
+                      <div>
+                        <span className="text-muted-foreground">Продаж</span>
+                        <p className="font-medium text-foreground">{product.salesCount}</p>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Ср. чек</span>
+                        <p className="font-medium text-foreground">{formatCurrency(product.avgCheck)}</p>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Доля</span>
+                        <p className="font-medium text-primary">{product.percentOfTotal}%</p>
+                      </div>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-1.5 mt-2">
+                      <div className="h-1.5 rounded-full bg-green-500/60" style={{ width: `${product.percentOfTotal * 2.5}%` }} />
+                    </div>
                   </div>
                 ))
               : mockCategories.map((cat) => (
                   <div
                     key={cat.name}
                     onClick={() => setSelectedCategory(cat)}
-                    className="grid grid-cols-5 gap-2 px-3 py-3 text-sm border-b border-border/50 hover:bg-muted/30 cursor-pointer transition-colors"
+                    className="bg-muted/30 rounded-xl p-3 border border-border/30 hover:bg-muted/50 cursor-pointer transition-colors group"
                   >
-                    <span className="font-medium text-foreground underline decoration-dotted underline-offset-2">
-                      {cat.name}
-                    </span>
-                    <span className="text-right text-muted-foreground">{cat.salesCount}</span>
-                    <span className="text-right text-muted-foreground">{formatCurrency(cat.avgCheck)}</span>
-                    <span className="text-right">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                        {cat.percentOfTotal}%
-                      </span>
-                    </span>
-                    <span className="text-right font-medium text-foreground">
-                      {formatCurrency(computeAmount(cat.percentOfTotal))}
-                    </span>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm font-medium text-foreground">{cat.name}</span>
+                        <ArrowLeft className="h-3 w-3 text-muted-foreground rotate-180 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                      <span className="text-sm font-bold text-foreground">{formatCurrency(computeAmount(cat.percentOfTotal))}</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-xs">
+                      <div>
+                        <span className="text-muted-foreground">Продаж</span>
+                        <p className="font-medium text-foreground">{cat.salesCount}</p>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Ср. чек</span>
+                        <p className="font-medium text-foreground">{formatCurrency(cat.avgCheck)}</p>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">Доля</span>
+                        <p className="font-medium text-primary">{cat.percentOfTotal}%</p>
+                      </div>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-1.5 mt-2">
+                      <div className="h-1.5 rounded-full bg-green-500/60" style={{ width: `${cat.percentOfTotal * 2.5}%` }} />
+                    </div>
                   </div>
                 ))}
           </div>

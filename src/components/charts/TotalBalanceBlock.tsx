@@ -36,7 +36,7 @@ const periodLabels: Record<MetricPeriod, string> = {
 };
 
 function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ₽`;
+  return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function formatPercent(value: number): string {

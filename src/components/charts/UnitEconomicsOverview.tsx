@@ -46,7 +46,7 @@ const unitProfit = aov - avgCogs - avgCac - avgLogistics - avgDiscount - avgProc
 const contributionMargin = (unitProfit / aov) * 100;
 
 function fmt(v: number) {
-  return `${v.toFixed(0)} ₽`;
+  return `$${v.toFixed(0)}`;
 }
 
 interface KpiCard {
@@ -77,7 +77,7 @@ const metricProductData: Record<string, { columns: string[]; rows: { name: strin
       { name: "Конверт на выписку", orders: 150, values: [145] },
       { name: "Кроссовки спорт", orders: 95, values: [130] },
     ],
-    insight: "Футболка оверсайз имеет самый высокий средний чек — 198 ₽. Кроссовки спорт — самый низкий (130 ₽).",
+    insight: "Футболка оверсайз имеет самый высокий средний чек — $198. Кроссовки спорт — самый низкий ($130).",
   },
   cogs: {
     columns: ["Товар", "Заказы", "Ср. себестоимость"],
@@ -89,7 +89,7 @@ const metricProductData: Record<string, { columns: string[]; rows: { name: strin
       { name: "Конверт на выписку", orders: 150, values: [78] },
       { name: "Кроссовки спорт", orders: 95, values: [75] },
     ],
-    insight: "Футболка оверсайз имеет самую высокую себестоимость — 110 ₽/ед, что сжимает маржу при скидках.",
+    insight: "Футболка оверсайз имеет самую высокую себестоимость — $110/ед, что сжимает маржу при скидках.",
   },
   cac: {
     columns: ["Товар", "Заказы", "Ср. CAC"],
@@ -101,7 +101,7 @@ const metricProductData: Record<string, { columns: string[]; rows: { name: strin
       { name: "Боди хлопок", orders: 210, values: [35] },
       { name: "Комбинезон зимний", orders: 320, values: [28] },
     ],
-    insight: "Кроссовки спорт: CAC 60 ₽ при чеке 130 ₽ — 46% выручки уходит на привлечение. Рекомендуется пересмотреть рекламные каналы.",
+    insight: "Кроссовки спорт: CAC $60 при чеке $130 — 46% выручки уходит на привлечение. Рекомендуется пересмотреть рекламные каналы.",
   },
   logistics: {
     columns: ["Товар", "Заказы", "Ср. логистика"],
@@ -125,7 +125,7 @@ const metricProductData: Record<string, { columns: string[]; rows: { name: strin
       { name: "Конверт на выписку", orders: 150, values: [-8] },
       { name: "Кроссовки спорт", orders: 95, values: [-20] },
     ],
-    insight: "2 товара убыточны на уровне единицы. Конверт на выписку и Кроссовки спорт теряют 8–20 ₽ на каждом заказе.",
+    insight: "2 товара убыточны на уровне единицы. Конверт на выписку и Кроссовки спорт теряют $8–$20 на каждом заказе.",
   },
   margin: {
     columns: ["Товар", "Заказы", "Маржа вклада"],
@@ -152,10 +152,10 @@ const skuBreakdown = [
 ];
 
 const segmentData = [
-  { segment: "Со скидкой", unitProfit: "3 ₽" },
-  { segment: "Без скидки", unitProfit: "11 ₽" },
-  { segment: "Платный трафик", unitProfit: "5 ₽" },
-  { segment: "Органика", unitProfit: "16 ₽" },
+  { segment: "Со скидкой", unitProfit: "$3" },
+  { segment: "Без скидки", unitProfit: "$11" },
+  { segment: "Платный трафик", unitProfit: "$5" },
+  { segment: "Органика", unitProfit: "$16" },
 ];
 
 const costPieData = [
@@ -167,44 +167,44 @@ const costPieData = [
 ];
 
 const profitDistribution = [
-  { range: "<0 ₽", pct: 9 },
-  { range: "0–5 ₽", pct: 18 },
-  { range: "5–10 ₽", pct: 32 },
-  { range: "10–20 ₽", pct: 25 },
-  { range: ">20 ₽", pct: 16 },
+  { range: "<$0", pct: 9 },
+  { range: "$0–5", pct: 18 },
+  { range: "$5–10", pct: 32 },
+  { range: "$10–20", pct: 25 },
+  { range: ">$20", pct: 16 },
 ];
 
 // Metric-specific segment data
 const metricSegments: Record<string, { segment: string; value: string }[]> = {
   aov: [
-    { segment: "Со скидкой", value: "142 ₽" },
-    { segment: "Без скидки", value: "189 ₽" },
-    { segment: "Платный трафик", value: "155 ₽" },
-    { segment: "Органика", value: "178 ₽" },
+    { segment: "Со скидкой", value: "$142" },
+    { segment: "Без скидки", value: "$189" },
+    { segment: "Платный трафик", value: "$155" },
+    { segment: "Органика", value: "$178" },
   ],
   cogs: [
-    { segment: "Одежда", value: "92 ₽" },
-    { segment: "Обувь", value: "75 ₽" },
-    { segment: "Аксессуары", value: "45 ₽" },
-    { segment: "Комплекты", value: "108 ₽" },
+    { segment: "Одежда", value: "$92" },
+    { segment: "Обувь", value: "$75" },
+    { segment: "Аксессуары", value: "$45" },
+    { segment: "Комплекты", value: "$108" },
   ],
   cac: [
-    { segment: "Яндекс.Директ", value: "52 ₽" },
-    { segment: "VK Реклама", value: "38 ₽" },
-    { segment: "Таргет Instagram", value: "44 ₽" },
-    { segment: "Органика", value: "0 ₽" },
+    { segment: "Яндекс.Директ", value: "$52" },
+    { segment: "VK Реклама", value: "$38" },
+    { segment: "Таргет Instagram", value: "$44" },
+    { segment: "Органика", value: "$0" },
   ],
   logistics: [
-    { segment: "СДЭК", value: "18 ₽" },
-    { segment: "Почта России", value: "12 ₽" },
-    { segment: "Boxberry", value: "15 ₽" },
-    { segment: "Самовывоз", value: "3 ₽" },
+    { segment: "СДЭК", value: "$18" },
+    { segment: "Почта России", value: "$12" },
+    { segment: "Boxberry", value: "$15" },
+    { segment: "Самовывоз", value: "$3" },
   ],
   unit_profit: [
-    { segment: "Со скидкой", value: "3 ₽" },
-    { segment: "Без скидки", value: "11 ₽" },
-    { segment: "Платный трафик", value: "5 ₽" },
-    { segment: "Органика", value: "16 ₽" },
+    { segment: "Со скидкой", value: "$3" },
+    { segment: "Без скидки", value: "$11" },
+    { segment: "Платный трафик", value: "$5" },
+    { segment: "Органика", value: "$16" },
   ],
   margin: [
     { segment: "Одежда", value: "18.2%" },
@@ -248,7 +248,7 @@ function MetricDrawerContent({ metricKey }: { metricKey: string }) {
                       "py-2 text-right font-semibold",
                       isNeg ? "text-destructive" : (isLow || isLowPct) ? "text-amber-500" : "text-foreground"
                     )}>
-                      {isPercent ? `${val.toFixed(1)}%` : `${val} ₽`}
+                      {isPercent ? `${val.toFixed(1)}%` : `$${val}`}
                     </td>
                   </tr>
                 );
@@ -306,14 +306,14 @@ function GeneralDrawerContent() {
                 <tr key={row.sku} className="border-b border-border/30">
                   <td className="py-2 font-medium text-foreground">{row.sku}</td>
                   <td className="py-2 text-right text-muted-foreground">{row.orders}</td>
-                  <td className="py-2 text-right text-muted-foreground">{row.avgRevenue} ₽</td>
-                  <td className="py-2 text-right text-muted-foreground">{row.avgCost} ₽</td>
-                  <td className="py-2 text-right text-muted-foreground">{row.cac} ₽</td>
+                  <td className="py-2 text-right text-muted-foreground">${row.avgRevenue}</td>
+                  <td className="py-2 text-right text-muted-foreground">${row.avgCost}</td>
+                  <td className="py-2 text-right text-muted-foreground">${row.cac}</td>
                   <td className={cn(
                     "py-2 text-right font-semibold",
                     row.unitProfit < 0 ? "text-destructive" : row.unitProfit < 5 ? "text-amber-500" : "text-foreground"
                   )}>
-                    {row.unitProfit} ₽
+                    ${row.unitProfit}
                   </td>
                 </tr>
               ))}
@@ -345,7 +345,7 @@ function GeneralDrawerContent() {
                 ))}
               </Pie>
               <ReTooltip
-                formatter={(val: number) => [`${val.toFixed(0)} ₽`, ""]}
+                formatter={(val: number) => [`$${val.toFixed(0)}`, ""]}
                 contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 11 }}
               />
             </PieChart>
@@ -378,7 +378,7 @@ function GeneralDrawerContent() {
       <div className="bg-primary/5 rounded-xl p-3 border border-primary/10">
         <p className="text-xs text-muted-foreground">
           <span className="text-primary font-medium">AI: </span>
-          Заказы с CAC выше 20 ₽ генерируют отрицательную маржу в 41% случаев.
+          Заказы с CAC выше $20 генерируют отрицательную маржу в 41% случаев.
         </p>
       </div>
     </div>
@@ -450,7 +450,7 @@ export function UnitEconomicsOverview() {
         <div className="mt-3 bg-primary/5 rounded-xl p-3 border border-primary/10">
           <p className="text-xs text-muted-foreground">
             <span className="text-primary font-medium">AI: </span>
-            27% заказов приносят менее 5 ₽ прибыли после вычета CAC и доставки.
+            27% заказов приносят менее $5 прибыли после вычета CAC и доставки.
           </p>
         </div>
       </div>

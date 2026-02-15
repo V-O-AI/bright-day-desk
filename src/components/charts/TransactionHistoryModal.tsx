@@ -71,7 +71,7 @@ const categories = ["Все", "Продажи", "Аренда", "SaaS", "Зак�
 
 function formatAmount(value: number): string {
   const prefix = value >= 0 ? "+" : "-";
-  return `${prefix}${Math.abs(value).toLocaleString("ru-RU")} ₽`;
+  return `${prefix}$${Math.abs(value).toLocaleString("en-US")}`;
 }
 
 function formatDate(date: Date): string {

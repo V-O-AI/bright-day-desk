@@ -40,7 +40,7 @@ function getMarginType(margin: number): { label: string; variant: "default" | "s
 }
 
 function formatCurrency(v: number) {
-  return `${v.toLocaleString("ru-RU", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} ₽`;
+  return `$${v.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
 }
 
 const MOCK_CATEGORIES: MarginCategory[] = [

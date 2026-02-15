@@ -61,17 +61,17 @@ const categoryDetails: Record<string, {
 }> = {
   discounts: {
     skuTable: [
-      { sku: "Кроссовки спорт", orders: 95, metric: "28%", unitLoss: "24 ₽", totalLoss: "2 280 ₽" },
-      { sku: "Конверт на выписку", orders: 150, metric: "22%", unitLoss: "18 ₽", totalLoss: "2 700 ₽" },
-      { sku: "Боди хлопок", orders: 210, metric: "15%", unitLoss: "12 ₽", totalLoss: "2 520 ₽" },
-      { sku: "Шапка вязаная", orders: 180, metric: "18%", unitLoss: "8 ₽", totalLoss: "1 440 ₽" },
-      { sku: "Футболка оверсайз", orders: 130, metric: "12%", unitLoss: "6 ₽", totalLoss: "780 ₽" },
+      { sku: "Кроссовки спорт", orders: 95, metric: "28%", unitLoss: "$24", totalLoss: "$2,280" },
+      { sku: "Конверт на выписку", orders: 150, metric: "22%", unitLoss: "$18", totalLoss: "$2,700" },
+      { sku: "Боди хлопок", orders: 210, metric: "15%", unitLoss: "$12", totalLoss: "$2,520" },
+      { sku: "Шапка вязаная", orders: 180, metric: "18%", unitLoss: "$8", totalLoss: "$1,440" },
+      { sku: "Футболка оверсайз", orders: 130, metric: "12%", unitLoss: "$6", totalLoss: "$780" },
     ],
     segments: [
-      { segment: "Промо-кампания", loss: "8 400 ₽" },
-      { segment: "Сезонная распродажа", loss: "5 200 ₽" },
-      { segment: "Купоны новых клиентов", loss: "3 100 ₽" },
-      { segment: "Программа лояльности", loss: "1 500 ₽" },
+      { segment: "Промо-кампания", loss: "$8,400" },
+      { segment: "Сезонная распродажа", loss: "$5,200" },
+      { segment: "Купоны новых клиентов", loss: "$3,100" },
+      { segment: "Программа лояльности", loss: "$1,500" },
     ],
     distribution: [
       { range: "0–5%", pct: 18 },
@@ -90,17 +90,17 @@ const categoryDetails: Record<string, {
   },
   returns: {
     skuTable: [
-      { sku: "Кроссовки спорт", orders: 95, metric: "18%", unitLoss: "32 ₽", totalLoss: "3 040 ₽" },
-      { sku: "Комбинезон зимний", orders: 320, metric: "8%", unitLoss: "15 ₽", totalLoss: "4 800 ₽" },
-      { sku: "Конверт на выписку", orders: 150, metric: "12%", unitLoss: "22 ₽", totalLoss: "3 300 ₽" },
-      { sku: "Боди хлопок", orders: 210, metric: "6%", unitLoss: "10 ₽", totalLoss: "2 100 ₽" },
-      { sku: "Шапка вязаная", orders: 180, metric: "4%", unitLoss: "5 ₽", totalLoss: "900 ₽" },
+      { sku: "Кроссовки спорт", orders: 95, metric: "18%", unitLoss: "$32", totalLoss: "$3,040" },
+      { sku: "Комбинезон зимний", orders: 320, metric: "8%", unitLoss: "$15", totalLoss: "$4,800" },
+      { sku: "Конверт на выписку", orders: 150, metric: "12%", unitLoss: "$22", totalLoss: "$3,300" },
+      { sku: "Боди хлопок", orders: 210, metric: "6%", unitLoss: "$10", totalLoss: "$2,100" },
+      { sku: "Шапка вязаная", orders: 180, metric: "4%", unitLoss: "$5", totalLoss: "$900" },
     ],
     segments: [
-      { segment: "Не подошёл размер", loss: "5 800 ₽" },
-      { segment: "Брак", loss: "4 200 ₽" },
-      { segment: "Не соответствует описанию", loss: "2 900 ₽" },
-      { segment: "Повреждение при доставке", loss: "1 700 ₽" },
+      { segment: "Не подошёл размер", loss: "$5,800" },
+      { segment: "Брак", loss: "$4,200" },
+      { segment: "Не соответствует описанию", loss: "$2,900" },
+      { segment: "Повреждение при доставке", loss: "$1,700" },
     ],
     distribution: [
       { range: "0–5%", pct: 32 },
@@ -119,23 +119,23 @@ const categoryDetails: Record<string, {
   },
   logistics: {
     skuTable: [
-      { sku: "Футболка оверсайз", orders: 130, metric: "22 ₽", unitLoss: "8 ₽", totalLoss: "1 040 ₽" },
-      { sku: "Конверт на выписку", orders: 150, metric: "20 ₽", unitLoss: "6 ₽", totalLoss: "900 ₽" },
-      { sku: "Комбинезон зимний", orders: 320, metric: "14 ₽", unitLoss: "4 ₽", totalLoss: "1 280 ₽" },
-      { sku: "Шапка вязаная", orders: 180, metric: "18 ₽", unitLoss: "5 ₽", totalLoss: "900 ₽" },
-      { sku: "Боди хлопок", orders: 210, metric: "16 ₽", unitLoss: "3 ₽", totalLoss: "630 ₽" },
+      { sku: "Футболка оверсайз", orders: 130, metric: "$22", unitLoss: "$8", totalLoss: "$1,040" },
+      { sku: "Конверт на выписку", orders: 150, metric: "$20", unitLoss: "$6", totalLoss: "$900" },
+      { sku: "Комбинезон зимний", orders: 320, metric: "$14", unitLoss: "$4", totalLoss: "$1,280" },
+      { sku: "Шапка вязаная", orders: 180, metric: "$18", unitLoss: "$5", totalLoss: "$900" },
+      { sku: "Боди хлопок", orders: 210, metric: "$16", unitLoss: "$3", totalLoss: "$630" },
     ],
     segments: [
-      { segment: "СДЭК", loss: "4 800 ₽" },
-      { segment: "Почта России", loss: "3 200 ₽" },
-      { segment: "Boxberry", loss: "2 600 ₽" },
-      { segment: "Курьерская доставка", loss: "1 800 ₽" },
+      { segment: "СДЭК", loss: "$4,800" },
+      { segment: "Почта России", loss: "$3,200" },
+      { segment: "Boxberry", loss: "$2,600" },
+      { segment: "Курьерская доставка", loss: "$1,800" },
     ],
     distribution: [
-      { range: "0–5 ₽", pct: 25 },
-      { range: "5–10 ₽", pct: 35 },
-      { range: "10–15 ₽", pct: 28 },
-      { range: ">15 ₽", pct: 12 },
+      { range: "$0–5", pct: 25 },
+      { range: "$5–10", pct: 35 },
+      { range: "$10–15", pct: 28 },
+      { range: ">$15", pct: 12 },
     ],
     drivers: [
       { name: "Дальние регионы", value: 38, color: "hsl(217, 91%, 60%)" },
@@ -148,23 +148,23 @@ const categoryDetails: Record<string, {
   },
   ads: {
     skuTable: [
-      { sku: "Кроссовки спорт", orders: 95, metric: "60 ₽", unitLoss: "32 ₽", totalLoss: "3 040 ₽" },
-      { sku: "Конверт на выписку", orders: 150, metric: "55 ₽", unitLoss: "28 ₽", totalLoss: "4 200 ₽" },
-      { sku: "Шапка вязаная", orders: 180, metric: "42 ₽", unitLoss: "12 ₽", totalLoss: "2 160 ₽" },
-      { sku: "Боди хлопок", orders: 210, metric: "35 ₽", unitLoss: "5 ₽", totalLoss: "1 050 ₽" },
-      { sku: "Футболка оверсайз", orders: 130, metric: "48 ₽", unitLoss: "8 ₽", totalLoss: "1 040 ₽" },
+      { sku: "Кроссовки спорт", orders: 95, metric: "$60", unitLoss: "$32", totalLoss: "$3,040" },
+      { sku: "Конверт на выписку", orders: 150, metric: "$55", unitLoss: "$28", totalLoss: "$4,200" },
+      { sku: "Шапка вязаная", orders: 180, metric: "$42", unitLoss: "$12", totalLoss: "$2,160" },
+      { sku: "Боди хлопок", orders: 210, metric: "$35", unitLoss: "$5", totalLoss: "$1,050" },
+      { sku: "Футболка оверсайз", orders: 130, metric: "$48", unitLoss: "$8", totalLoss: "$1,040" },
     ],
     segments: [
-      { segment: "Яндекс.Директ", loss: "4 500 ₽" },
-      { segment: "VK Реклама", loss: "3 200 ₽" },
-      { segment: "Таргет", loss: "2 100 ₽" },
-      { segment: "Ретаргетинг", loss: "1 000 ₽" },
+      { segment: "Яндекс.Директ", loss: "$4,500" },
+      { segment: "VK Реклама", loss: "$3,200" },
+      { segment: "Таргет", loss: "$2,100" },
+      { segment: "Ретаргетинг", loss: "$1,000" },
     ],
     distribution: [
-      { range: "0–20 ₽", pct: 22 },
-      { range: "20–40 ₽", pct: 35 },
-      { range: "40–60 ₽", pct: 28 },
-      { range: ">60 ₽", pct: 15 },
+      { range: "$0–20", pct: 22 },
+      { range: "$20–40", pct: 35 },
+      { range: "$40–60", pct: 28 },
+      { range: ">$60", pct: 15 },
     ],
     drivers: [
       { name: "Высокий CPC", value: 40, color: "hsl(258, 90%, 66%)" },
@@ -172,22 +172,22 @@ const categoryDetails: Record<string, {
       { name: "Широкий таргетинг", value: 20, color: "hsl(217, 91%, 60%)" },
       { name: "Нецелевой трафик", value: 10, color: "hsl(0, 84%, 60%)" },
     ],
-    insight: "Заказы с CAC выше 50 ₽ убыточны в 62% случаев. Оптимизация таргетинга снизит потери на 25%.",
+    insight: "Заказы с CAC выше $50 убыточны в 62% случаев. Оптимизация таргетинга снизит потери на 25%.",
     metricLabel: "CAC",
   },
   fees: {
     skuTable: [
-      { sku: "Комбинезон зимний", orders: 320, metric: "3.2%", unitLoss: "6 ₽", totalLoss: "1 920 ₽" },
-      { sku: "Футболка оверсайз", orders: 130, metric: "3.5%", unitLoss: "7 ₽", totalLoss: "910 ₽" },
-      { sku: "Боди хлопок", orders: 210, metric: "3.0%", unitLoss: "5 ₽", totalLoss: "1 050 ₽" },
-      { sku: "Шапка вязаная", orders: 180, metric: "2.8%", unitLoss: "4 ₽", totalLoss: "720 ₽" },
-      { sku: "Конверт на выписку", orders: 150, metric: "3.1%", unitLoss: "4 ₽", totalLoss: "600 ₽" },
+      { sku: "Комбинезон зимний", orders: 320, metric: "3.2%", unitLoss: "$6", totalLoss: "$1,920" },
+      { sku: "Футболка оверсайз", orders: 130, metric: "3.5%", unitLoss: "$7", totalLoss: "$910" },
+      { sku: "Боди хлопок", orders: 210, metric: "3.0%", unitLoss: "$5", totalLoss: "$1,050" },
+      { sku: "Шапка вязаная", orders: 180, metric: "2.8%", unitLoss: "$4", totalLoss: "$720" },
+      { sku: "Конверт на выписку", orders: 150, metric: "3.1%", unitLoss: "$4", totalLoss: "$600" },
     ],
     segments: [
-      { segment: "Банковские карты", loss: "2 100 ₽" },
-      { segment: "Эквайринг", loss: "1 200 ₽" },
-      { segment: "Маркетплейс комиссия", loss: "600 ₽" },
-      { segment: "Платёжные системы", loss: "300 ₽" },
+      { segment: "Банковские карты", loss: "$2,100" },
+      { segment: "Эквайринг", loss: "$1,200" },
+      { segment: "Маркетплейс комиссия", loss: "$600" },
+      { segment: "Платёжные системы", loss: "$300" },
     ],
     distribution: [
       { range: "0–2%", pct: 15 },
@@ -206,14 +206,14 @@ const categoryDetails: Record<string, {
   },
   low_margin: {
     skuTable: [
-      { sku: "Кроссовки спорт", orders: 95, metric: "-15.4%", unitLoss: "20 ₽", totalLoss: "1 900 ₽" },
-      { sku: "Конверт на выписку", orders: 150, metric: "-5.5%", unitLoss: "8 ₽", totalLoss: "1 200 ₽" },
-      { sku: "Шапка вязаная", orders: 180, metric: "7.5%", unitLoss: "3 ₽", totalLoss: "540 ₽" },
+      { sku: "Кроссовки спорт", orders: 95, metric: "-15.4%", unitLoss: "$20", totalLoss: "$1,900" },
+      { sku: "Конверт на выписку", orders: 150, metric: "-5.5%", unitLoss: "$8", totalLoss: "$1,200" },
+      { sku: "Шапка вязаная", orders: 180, metric: "7.5%", unitLoss: "$3", totalLoss: "$540" },
     ],
     segments: [
-      { segment: "Обувь", loss: "1 900 ₽" },
-      { segment: "Аксессуары для новорождённых", loss: "1 200 ₽" },
-      { segment: "Головные уборы", loss: "540 ₽" },
+      { segment: "Обувь", loss: "$1,900" },
+      { segment: "Аксессуары для новорождённых", loss: "$1,200" },
+      { segment: "Головные уборы", loss: "$540" },
     ],
     distribution: [
       { range: "<-10%", pct: 12 },
@@ -234,18 +234,18 @@ const categoryDetails: Record<string, {
 
 // General drawer data
 const generalSkuLossTable = [
-  { sku: "Конверт на выписку", orders: 150, discountUsed: "22%", unitMarginLoss: "18 ₽", totalLoss: "2 700 ₽" },
-  { sku: "Кроссовки спорт", orders: 95, discountUsed: "28%", unitMarginLoss: "24 ₽", totalLoss: "2 280 ₽" },
-  { sku: "Боди хлопок", orders: 210, discountUsed: "15%", unitMarginLoss: "12 ₽", totalLoss: "2 520 ₽" },
-  { sku: "Шапка вязаная", orders: 180, discountUsed: "18%", unitMarginLoss: "8 ₽", totalLoss: "1 440 ₽" },
-  { sku: "Футболка оверсайз", orders: 130, discountUsed: "12%", unitMarginLoss: "6 ₽", totalLoss: "780 ₽" },
+  { sku: "Конверт на выписку", orders: 150, discountUsed: "22%", unitMarginLoss: "$18", totalLoss: "$2,700" },
+  { sku: "Кроссовки спорт", orders: 95, discountUsed: "28%", unitMarginLoss: "$24", totalLoss: "$2,280" },
+  { sku: "Боди хлопок", orders: 210, discountUsed: "15%", unitMarginLoss: "$12", totalLoss: "$2,520" },
+  { sku: "Шапка вязаная", orders: 180, discountUsed: "18%", unitMarginLoss: "$8", totalLoss: "$1,440" },
+  { sku: "Футболка оверсайз", orders: 130, discountUsed: "12%", unitMarginLoss: "$6", totalLoss: "$780" },
 ];
 
 const generalSegmentedLoss = [
-  { segment: "Платная реклама", loss: "8 200 ₽" },
-  { segment: "Органика", loss: "2 100 ₽" },
-  { segment: "Промо-кампания", loss: "5 400 ₽" },
-  { segment: "Склад А", loss: "1 800 ₽" },
+  { segment: "Платная реклама", loss: "$8,200" },
+  { segment: "Органика", loss: "$2,100" },
+  { segment: "Промо-кампания", loss: "$5,400" },
+  { segment: "Склад А", loss: "$1,800" },
 ];
 
 const generalLossDistribution = [
@@ -487,8 +487,8 @@ export function WhereProfitIsLost() {
     : "Где теряется прибыль — Обзор";
 
   const drawerSubtitle = selectedCategory
-    ? `Потери: −${selectedCategory.amount.toLocaleString()} ₽ · ${months[selectedMonth]} ${selectedYear}`
-    : `Общие потери: −${totalLostProfit.toLocaleString()} ₽ · ${months[selectedMonth]} ${selectedYear}`;
+    ? `Потери: −$${selectedCategory.amount.toLocaleString()} · ${months[selectedMonth]} ${selectedYear}`
+    : `Общие потери: −$${totalLostProfit.toLocaleString()} · ${months[selectedMonth]} ${selectedYear}`;
 
   return (
     <>
@@ -550,7 +550,7 @@ export function WhereProfitIsLost() {
             </div>
             <div className="text-right">
               <p className="text-xs text-muted-foreground">Потеряно прибыли</p>
-              <p className="text-sm font-bold text-destructive">−{totalLostProfit.toLocaleString()} ₽</p>
+              <p className="text-sm font-bold text-destructive">−${totalLostProfit.toLocaleString()}</p>
             </div>
           </div>
         </div>
@@ -568,7 +568,7 @@ export function WhereProfitIsLost() {
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs text-foreground font-medium">{cat.name}</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-destructive">−{cat.amount.toLocaleString()} ₽</span>
+                    <span className="text-xs font-semibold text-destructive">−${cat.amount.toLocaleString()}</span>
                     <span className="text-[10px] text-muted-foreground">{pct}%</span>
                   </div>
                 </div>

@@ -4,9 +4,8 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { WarehousePieChart } from "@/components/charts/WarehousePieChart";
 import { WarehouseProductCards } from "@/components/warehouse/WarehouseProductCards";
-import { CapacityUsageChart } from "@/components/warehouse/CapacityUsageChart";
 import { WarehouseStorageTable } from "@/components/warehouse/WarehouseStorageTable";
-import { WarehouseMapBlock, WarehouseMapHeader } from "@/components/warehouse/WarehouseMapBlock";
+import { WarehouseMapBlock, WarehouseMapHeader, WarehouseMetricCards } from "@/components/warehouse/WarehouseMapBlock";
 import { WarehouseActivityLog } from "@/components/warehouse/WarehouseActivityLog";
 
 const MyDataWarehouse = () => {
@@ -27,13 +26,13 @@ const MyDataWarehouse = () => {
           <h1 className="text-2xl font-bold text-foreground">Мой склад</h1>
         </div>
 
-        {/* Row 1: Product Cards + Capacity Usage */}
+        {/* Row 1: Product Cards + Metric Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
           <div className="lg:col-span-3">
             <WarehouseProductCards />
           </div>
-          <div className="lg:col-span-1">
-            <CapacityUsageChart />
+          <div className="lg:col-span-1 flex flex-col justify-center">
+            <WarehouseMetricCards />
           </div>
         </div>
 
@@ -55,7 +54,7 @@ const MyDataWarehouse = () => {
           </div>
         </div>
 
-        {/* Row 3: Warehouse Map + Activity Log */}
+        {/* Row 3: Dead Stock + Activity Log */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 space-y-4">
             <WarehouseMapHeader />

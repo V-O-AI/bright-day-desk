@@ -212,7 +212,7 @@ export function WarehouseMapBlock() {
 
   return (
     <>
-      <div className="flex gap-4 w-full">
+      <div className="flex gap-3 w-full">
         {/* Left metrics column */}
         <div className="flex flex-col gap-3 min-w-[140px]">
           {metrics.map((m, idx) => (
@@ -244,18 +244,18 @@ export function WarehouseMapBlock() {
         </div>
 
         {/* Dead stock chart */}
-        <div className="flex-[0.9] bg-card border border-border rounded-2xl p-5">
+        <div className="flex-1 bg-card border border-border rounded-2xl p-4">
           <div className="flex items-center justify-between mb-1">
             <h3 className="font-semibold text-foreground text-sm">Мертвые товары</h3>
             <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
           </div>
-          <p className="text-2xl font-bold text-foreground">
+          <p className="text-xl font-bold text-foreground">
             {deadStockData.length} <span className="text-xs font-normal text-muted-foreground">товаров</span>
           </p>
 
-          <div className="h-[160px] mt-4">
+          <div className="h-[110px] mt-2">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={deadStockData} barSize={32}>
+              <BarChart data={deadStockData} barSize={24}>
                 <XAxis
                   dataKey="name"
                   axisLine={false}

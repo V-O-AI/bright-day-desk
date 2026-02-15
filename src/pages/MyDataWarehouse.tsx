@@ -53,7 +53,7 @@ const MyDataWarehouse = () => {
         {/* Row 3: Warehouse Map + Activity Log */}
         <div className="space-y-4">
           <WarehouseMapHeader />
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-3">
             <WarehouseMapBlock />
             <div className="w-full lg:w-[260px]">
               <WarehouseActivityLog />

@@ -153,21 +153,21 @@ export function AppHeader() {
       <header
         className={cn(
           "border-b border-border bg-card flex items-center justify-between px-4 md:px-8 relative",
-          isHome ? "h-auto min-h-[60px] md:h-[15vh] md:min-h-[100px] py-3 md:py-0" : "h-[7.5vh] min-h-[50px]"
+          isHome ? "h-auto min-h-[60px] md:min-h-[70px] lg:h-[12vh] lg:min-h-[90px] xl:h-[15vh] xl:min-h-[100px] py-3 md:py-2 lg:py-0" : "h-[7.5vh] min-h-[50px]"
         )}
       >
         {isHome && (
           <div className="opacity-0 animate-fade-in flex items-center gap-3 md:gap-4 min-w-0 flex-1" style={{ animationFillMode: "forwards" }}>
-            <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10 rounded-xl md:rounded-2xl px-3 md:px-6 py-2 md:py-3 min-w-0">
-              <h1 className="text-lg md:text-2xl lg:text-3xl tracking-tight">
+            <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10 rounded-xl md:rounded-2xl px-3 md:px-4 lg:px-6 py-2 md:py-2.5 lg:py-3 min-w-0">
+              <h1 className="text-lg md:text-xl lg:text-2xl xl:text-3xl tracking-tight">
                 <span className="font-bold bg-gradient-to-r from-primary via-foreground to-primary bg-clip-text text-transparent animate-fade-in" style={{ animationDelay: "100ms", animationFillMode: "forwards" }}>
                   Добрый день 👋
                 </span>{" "}
-                <span className="text-muted-foreground font-normal opacity-0 animate-fade-in hidden sm:inline" style={{ animationDelay: "250ms", animationFillMode: "forwards" }}>
+                <span className="text-muted-foreground font-normal opacity-0 animate-fade-in hidden md:inline" style={{ animationDelay: "250ms", animationFillMode: "forwards" }}>
                   Чем займёмся сегодня?
                 </span>
               </h1>
-              <p className="text-xs md:text-sm text-muted-foreground capitalize mt-1 opacity-0 animate-fade-in" style={{ animationDelay: "400ms", animationFillMode: "forwards" }}>
+              <p className="text-xs md:text-xs lg:text-sm text-muted-foreground capitalize mt-1 opacity-0 animate-fade-in" style={{ animationDelay: "400ms", animationFillMode: "forwards" }}>
                 <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse" />
                 {weekday} / {dateStr}
               </p>
@@ -189,13 +189,40 @@ export function AppHeader() {
               >
                 <Sparkles className="h-4 w-4 text-primary" />
               </Button>
+              {/* Tablet: icon-only buttons; Desktop: full text buttons */}
               <Button
                 variant="outline"
-                className="rounded-full transition-all duration-200 hover:bg-primary/5 hover:border-primary/30 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97] gap-2 hidden md:inline-flex"
+                size="icon"
+                className="rounded-full md:hidden lg:hidden h-9 w-9 transition-all active:scale-[0.97] hidden"
+                onClick={() => navigate("/staff-chat?new=true")}
+              >
+                <Sparkles className="h-4 w-4 text-primary" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full transition-all active:scale-[0.97] hidden md:inline-flex lg:hidden h-9 w-9 hover:bg-primary/5 hover:border-primary/30"
+                onClick={() => navigate("/staff-chat?new=true")}
+                title="Обратиться к AI"
+              >
+                <Sparkles className="h-4 w-4 text-primary" />
+              </Button>
+              <Button
+                variant="outline"
+                className="rounded-full transition-all duration-200 hover:bg-primary/5 hover:border-primary/30 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97] gap-2 hidden lg:inline-flex"
                 onClick={() => navigate("/staff-chat?new=true")}
               >
                 <Sparkles className="h-4 w-4 text-primary" />
                 Обратиться к AI
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full transition-all active:scale-[0.97] hidden md:inline-flex lg:hidden h-9 w-9 hover:bg-primary/5 hover:border-primary/30"
+                onClick={() => navigate("/staff-chat?new=true&message=" + encodeURIComponent("Подготовить таблицу"))}
+                title="Подготовить отчёт"
+              >
+                <FileText className="h-4 w-4 text-primary" />
               </Button>
               <Button
                 variant="outline"
@@ -207,7 +234,7 @@ export function AppHeader() {
               </Button>
               <Button
                 variant="outline"
-                className="rounded-full transition-all duration-200 hover:bg-primary/5 hover:border-primary/30 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97] gap-2 hidden lg:inline-flex"
+                className="rounded-full transition-all duration-200 hover:bg-primary/5 hover:border-primary/30 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 active:scale-[0.97] gap-2 hidden xl:inline-flex"
                 onClick={() => navigate("/cabinet")}
               >
                 <CalendarCheck className="h-4 w-4 text-primary" />

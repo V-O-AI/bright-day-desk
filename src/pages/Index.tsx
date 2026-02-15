@@ -16,11 +16,11 @@ const Index = () => {
 
   return (
     <AppLayout>
-      {/* Main Grid — stacks vertically on mobile */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 md:gap-6 h-full">
+      {/* Main Grid — single col mobile, 2 col tablet, 5 col desktop */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 lg:gap-6 h-full">
         
         {/* Left column */}
-        <div className="lg:col-span-3 flex flex-col gap-4 md:gap-6">
+        <div className="md:col-span-1 lg:col-span-3 flex flex-col gap-3 md:gap-4 lg:gap-6">
           
           {/* Total Balance Block */}
           <div 
@@ -37,19 +37,19 @@ const Index = () => {
 
           {/* Mini chat */}
           <div 
-            className="bg-card rounded-2xl p-4 md:p-6 border border-border flex-1 flex flex-col opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5" 
-            style={{ minHeight: "220px", animationDelay: "50ms" }}
+            className="bg-card rounded-2xl p-4 lg:p-6 border border-border flex-1 flex flex-col opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5" 
+            style={{ minHeight: "180px", animationDelay: "50ms" }}
           >
             <MiniChat variant="compact" />
           </div>
         </div>
 
         {/* Right column */}
-        <div className="lg:col-span-2 flex flex-col gap-4 md:gap-6">
+        <div className="md:col-span-1 lg:col-span-2 flex flex-col gap-3 md:gap-4 lg:gap-6">
           
           {/* Latest chats */}
           <div 
-            className="bg-card rounded-2xl p-4 md:p-6 border border-border opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5"
+            className="bg-card rounded-2xl p-4 lg:p-6 border border-border opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5"
             style={{ animationDelay: "100ms" }}
           >
             <div className="flex items-center justify-between mb-3 md:mb-4">
@@ -85,7 +85,7 @@ const Index = () => {
                       </div>
                       <span className="font-medium text-sm truncate">{chat.client_name}</span>
                     </div>
-                    <span className="text-muted-foreground text-xs hidden sm:inline flex-shrink-0">{chat.client_type}</span>
+                    <span className="text-muted-foreground text-xs hidden lg:inline flex-shrink-0">{chat.client_type}</span>
                     <div className="bg-foreground text-background px-3 py-1 rounded-lg text-xs hover:opacity-90 flex-shrink-0">
                       Открыть
                     </div>
@@ -97,18 +97,18 @@ const Index = () => {
 
           {/* Warehouse chart */}
           <div 
-            className="bg-card rounded-2xl p-4 md:p-6 border border-border flex-1 opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 cursor-pointer"
+            className="bg-card rounded-2xl p-4 lg:p-6 border border-border flex-1 opacity-0 animate-fade-in-up transition-all duration-200 hover:shadow-lg hover:shadow-primary/5 cursor-pointer"
             style={{ animationDelay: "150ms" }}
             onClick={() => navigate("/my-data/warehouse")}
           >
-            <div className="flex items-center justify-between mb-3 md:mb-4">
+            <div className="flex items-center justify-between mb-2 md:mb-3 lg:mb-4">
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Retention</p>
                 <h3 className="font-semibold text-sm md:text-base">Данные склада</h3>
                 <p className="text-xs text-muted-foreground">Conversion Rate</p>
               </div>
             </div>
-            <div className="h-[220px] md:h-[260px]">
+            <div className="h-[200px] md:h-[220px] lg:h-[260px]">
               <WarehousePieChart enlarged />
             </div>
           </div>

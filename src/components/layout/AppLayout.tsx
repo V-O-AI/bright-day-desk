@@ -20,7 +20,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             <SidebarTrigger className="h-12 w-12 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:bg-primary/90 [&_svg]:h-5 [&_svg]:w-5" />
           </div>
           <AppHeader />
-          <main className="flex-1 p-3 md:p-6 overflow-auto">
+          <main className="flex-1 p-3 md:p-4 lg:p-6 overflow-auto">
             {children}
           </main>
         </div>

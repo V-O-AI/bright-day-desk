@@ -230,29 +230,31 @@ export function TotalBalanceBlock({
         <div className={cn("flex justify-center", compact ? "mt-2" : "mt-6")}>
           <div
             onClick={() => setRoiModalOpen(true)}
-            className="bg-muted/50 rounded-xl p-2.5 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors text-center w-1/3"
+            className="group relative bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl p-3 border border-primary/20 cursor-pointer hover:border-primary/40 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 transition-all duration-200 text-center w-2/5"
           >
-            <p className="text-[11px] text-muted-foreground mb-1">ROI</p>
-            <div className="flex items-center justify-center gap-1.5">
-              <p className="text-xs font-bold text-foreground">{roiPercent.toFixed(1)}%</p>
-              {roiChange >= 0 ? <TrendingUp className="h-3 w-3 text-green-500" /> : <TrendingDown className="h-3 w-3 text-destructive" />}
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+            <p className="text-[11px] text-muted-foreground mb-1 relative z-10">ROI</p>
+            <div className="flex items-center justify-center gap-1.5 relative z-10">
+              <p className="text-sm font-bold text-foreground">{roiPercent.toFixed(1)}%</p>
+              {roiChange >= 0 ? <TrendingUp className="h-3.5 w-3.5 text-green-500" /> : <TrendingDown className="h-3.5 w-3.5 text-destructive" />}
             </div>
-            <p className={cn("text-[10px] mt-1 flex items-center justify-center gap-0.5", roiChange >= 0 ? "text-green-500" : "text-destructive")}>
+            <p className={cn("text-[10px] mt-1 flex items-center justify-center gap-0.5 relative z-10", roiChange >= 0 ? "text-green-500" : "text-destructive")}>
               {roiChange >= 0 ? "+" : ""}{roiChange.toFixed(1)}% за {periodText}
             </p>
           </div>
         </div>
 
         {/* Sub cards row — 3 columns */}
-        <div className={cn("grid grid-cols-3 gap-2", compact ? "mt-1" : "mt-2")}>
-          {/* Доход */}
+        <div className={cn("grid grid-cols-3 gap-3", compact ? "mt-1" : "mt-2")}>
+          {/* Выручка */}
           <div
             onClick={() => setIncomeModalOpen(true)}
-            className="bg-muted/50 rounded-xl p-2.5 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors text-center"
+            className="group relative bg-gradient-to-br from-green-500/5 to-green-500/10 rounded-xl p-3 border border-green-500/20 cursor-pointer hover:border-green-500/40 hover:shadow-md hover:shadow-green-500/10 hover:-translate-y-0.5 transition-all duration-200 text-center"
           >
-            <p className="text-[11px] text-muted-foreground mb-1">Выручка</p>
-            <p className="text-xs font-bold text-foreground">{formatCurrency(incomeValue)}</p>
-            <p className={cn("text-[10px] mt-1 flex items-center justify-center gap-0.5", incomeChange >= 0 ? "text-green-500" : "text-destructive")}>
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+            <p className="text-[11px] text-muted-foreground mb-1.5 relative z-10">Выручка</p>
+            <p className="text-xs font-bold text-foreground relative z-10">{formatCurrency(incomeValue)}</p>
+            <p className={cn("text-[10px] mt-1.5 flex items-center justify-center gap-0.5 relative z-10", incomeChange >= 0 ? "text-green-500" : "text-destructive")}>
               {incomeChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
               {formatPercent(incomeChange)} за {periodText}
             </p>
@@ -261,11 +263,12 @@ export function TotalBalanceBlock({
           {/* Расходы */}
           <div
             onClick={() => setExpenseModalOpen(true)}
-            className="bg-muted/50 rounded-xl p-2.5 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors text-center"
+            className="group relative bg-gradient-to-br from-destructive/5 to-destructive/10 rounded-xl p-3 border border-destructive/20 cursor-pointer hover:border-destructive/40 hover:shadow-md hover:shadow-destructive/10 hover:-translate-y-0.5 transition-all duration-200 text-center"
           >
-            <p className="text-[11px] text-muted-foreground mb-1">Расходы</p>
-            <p className="text-xs font-bold text-foreground">{formatCurrency(expenseValue)}</p>
-            <p className={cn("text-[10px] mt-1 flex items-center justify-center gap-0.5", expenseChange >= 0 ? "text-destructive" : "text-green-500")}>
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-destructive/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+            <p className="text-[11px] text-muted-foreground mb-1.5 relative z-10">Расходы</p>
+            <p className="text-xs font-bold text-foreground relative z-10">{formatCurrency(expenseValue)}</p>
+            <p className={cn("text-[10px] mt-1.5 flex items-center justify-center gap-0.5 relative z-10", expenseChange >= 0 ? "text-destructive" : "text-green-500")}>
               {expenseChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
               {formatPercent(expenseChange)} за {periodText}
             </p>
@@ -274,14 +277,15 @@ export function TotalBalanceBlock({
           {/* Маржа */}
           <div
             onClick={() => setMarginModalOpen(true)}
-            className="bg-muted/50 rounded-xl p-2.5 border border-border/50 cursor-pointer hover:bg-muted/80 transition-colors text-center"
+            className="group relative bg-gradient-to-br from-primary/5 to-accent/10 rounded-xl p-3 border border-accent/30 cursor-pointer hover:border-primary/40 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 transition-all duration-200 text-center"
           >
-            <p className="text-[11px] text-muted-foreground mb-1">Маржа</p>
-            <div className="flex items-center justify-center gap-1.5">
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+            <p className="text-[11px] text-muted-foreground mb-1.5 relative z-10">Маржа</p>
+            <div className="flex items-center justify-center gap-1.5 relative z-10">
               <p className="text-xs font-bold text-foreground">{marginPercent.toFixed(1)}%</p>
-              {marginChange >= 0 ? <TrendingUp className="h-3 w-3 text-green-500" /> : <TrendingDown className="h-3 w-3 text-destructive" />}
+              {marginChange >= 0 ? <TrendingUp className="h-3.5 w-3.5 text-green-500" /> : <TrendingDown className="h-3.5 w-3.5 text-destructive" />}
             </div>
-            <p className={cn("text-[10px] mt-1 flex items-center justify-center gap-0.5", marginChange >= 0 ? "text-green-500" : "text-destructive")}>
+            <p className={cn("text-[10px] mt-1.5 flex items-center justify-center gap-0.5 relative z-10", marginChange >= 0 ? "text-green-500" : "text-destructive")}>
               {marginChange >= 0 ? "+" : ""}{marginChange.toFixed(1)}% за {periodText}
             </p>
           </div>

@@ -80,38 +80,38 @@ const metricProductData: Record<string, { columns: string[]; rows: { name: strin
     insight: "Футболка оверсайз имеет самый высокий средний чек — $198. Кроссовки спорт — самый низкий ($130).",
   },
   cogs: {
-    columns: ["Товар", "Заказы", "Ср. себестоимость"],
+    columns: ["Товар", "Заказы", "Ср. чек", "Ср. себестоимость"],
     rows: [
-      { name: "Футболка оверсайз", orders: 130, values: [110] },
-      { name: "Боди хлопок", orders: 210, values: [95] },
-      { name: "Шапка вязаная", orders: 180, values: [88] },
-      { name: "Комбинезон зимний", orders: 320, values: [82] },
-      { name: "Конверт на выписку", orders: 150, values: [78] },
-      { name: "Кроссовки спорт", orders: 95, values: [75] },
+      { name: "Футболка оверсайз", orders: 130, values: [198, 110] },
+      { name: "Боди хлопок", orders: 210, values: [174, 95] },
+      { name: "Шапка вязаная", orders: 180, values: [160, 88] },
+      { name: "Комбинезон зимний", orders: 320, values: [185, 82] },
+      { name: "Конверт на выписку", orders: 150, values: [145, 78] },
+      { name: "Кроссовки спорт", orders: 95, values: [130, 75] },
     ],
     insight: "Футболка оверсайз имеет самую высокую себестоимость — $110/ед, что сжимает маржу при скидках.",
   },
   cac: {
-    columns: ["Товар", "Заказы", "Ср. CAC"],
+    columns: ["Товар", "Заказы", "Ср. чек", "Ср. CAC"],
     rows: [
-      { name: "Кроссовки спорт", orders: 95, values: [60] },
-      { name: "Конверт на выписку", orders: 150, values: [55] },
-      { name: "Футболка оверсайз", orders: 130, values: [48] },
-      { name: "Шапка вязаная", orders: 180, values: [42] },
-      { name: "Боди хлопок", orders: 210, values: [35] },
-      { name: "Комбинезон зимний", orders: 320, values: [28] },
+      { name: "Кроссовки спорт", orders: 95, values: [130, 60] },
+      { name: "Конверт на выписку", orders: 150, values: [145, 55] },
+      { name: "Футболка оверсайз", orders: 130, values: [198, 48] },
+      { name: "Шапка вязаная", orders: 180, values: [160, 42] },
+      { name: "Боди хлопок", orders: 210, values: [174, 35] },
+      { name: "Комбинезон зимний", orders: 320, values: [185, 28] },
     ],
     insight: "Кроссовки спорт: CAC $60 при чеке $130 — 46% выручки уходит на привлечение. Рекомендуется пересмотреть рекламные каналы.",
   },
   logistics: {
-    columns: ["Товар", "Заказы", "Ср. логистика"],
+    columns: ["Товар", "Заказы", "Ср. чек", "Ср. логистика"],
     rows: [
-      { name: "Футболка оверсайз", orders: 130, values: [22] },
-      { name: "Конверт на выписку", orders: 150, values: [20] },
-      { name: "Шапка вязаная", orders: 180, values: [18] },
-      { name: "Боди хлопок", orders: 210, values: [16] },
-      { name: "Кроссовки спорт", orders: 95, values: [15] },
-      { name: "Комбинезон зимний", orders: 320, values: [14] },
+      { name: "Футболка оверсайз", orders: 130, values: [198, 22] },
+      { name: "Конверт на выписку", orders: 150, values: [145, 20] },
+      { name: "Шапка вязаная", orders: 180, values: [160, 18] },
+      { name: "Боди хлопок", orders: 210, values: [174, 16] },
+      { name: "Кроссовки спорт", orders: 95, values: [130, 15] },
+      { name: "Комбинезон зимний", orders: 320, values: [185, 14] },
     ],
     insight: "Футболка оверсайз и Конверт на выписку — самые дорогие в доставке. Консолидация отправлений снизит затраты на 12%.",
   },
@@ -218,7 +218,7 @@ function MetricDrawerContent({ metricKey }: { metricKey: string }) {
   const data = metricProductData[metricKey];
   const segments = metricSegments[metricKey] || [];
   const isPercent = metricKey === "margin";
-  const valueCol = data.columns[2];
+  const valueCols = data.columns.slice(2); // all columns after "Товар" and "Заказы"
 
   return (
     <div className="mt-4 space-y-5">
@@ -231,25 +231,34 @@ function MetricDrawerContent({ metricKey }: { metricKey: string }) {
               <tr className="border-b border-border text-muted-foreground">
                 <th className="text-left pb-2 font-medium">{data.columns[0]}</th>
                 <th className="text-right pb-2 font-medium">{data.columns[1]}</th>
-                <th className="text-right pb-2 font-medium">{valueCol}</th>
+                {valueCols.map((col) => (
+                  <th key={col} className="text-right pb-2 font-medium">{col}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {data.rows.map((row) => {
-                const val = row.values[0];
-                const isNeg = val < 0;
-                const isLow = !isPercent && val >= 0 && val < 5;
-                const isLowPct = isPercent && val >= 0 && val < 10;
+                const mainVal = row.values[row.values.length - 1];
+                const isNeg = mainVal < 0;
+                const isLow = !isPercent && mainVal >= 0 && mainVal < 5;
+                const isLowPct = isPercent && mainVal >= 0 && mainVal < 10;
                 return (
                   <tr key={row.name} className="border-b border-border/30">
                     <td className="py-2 font-medium text-foreground">{row.name}</td>
                     <td className="py-2 text-right text-muted-foreground">{row.orders}</td>
-                    <td className={cn(
-                      "py-2 text-right font-semibold",
-                      isNeg ? "text-destructive" : (isLow || isLowPct) ? "text-amber-500" : "text-foreground"
-                    )}>
-                      {isPercent ? `${val.toFixed(1)}%` : `$${val}`}
-                    </td>
+                    {row.values.map((val, vi) => {
+                      const isLast = vi === row.values.length - 1;
+                      return (
+                        <td key={vi} className={cn(
+                          "py-2 text-right",
+                          isLast
+                            ? cn("font-semibold", isNeg ? "text-destructive" : (isLow || isLowPct) ? "text-amber-500" : "text-foreground")
+                            : "text-muted-foreground"
+                        )}>
+                          {isPercent && isLast ? `${val.toFixed(1)}%` : `$${val}`}
+                        </td>
+                      );
+                    })}
                   </tr>
                 );
               })}

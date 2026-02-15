@@ -226,26 +226,43 @@ export function TotalBalanceBlock({
           </div>
         </div>
 
-        {/* ROI card — centered */}
-        <div className={cn("flex justify-center", compact ? "mt-2" : "mt-6")}>
-          <div
-            onClick={() => setRoiModalOpen(true)}
-            className="group relative bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl p-3 border border-primary/20 cursor-pointer hover:border-primary/40 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 transition-all duration-200 text-center w-2/5"
-          >
-            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-            <p className="text-[11px] text-muted-foreground mb-1 relative z-10">ROI</p>
-            <div className="flex items-center justify-center gap-1.5 relative z-10">
-              <p className="text-sm font-bold text-foreground">{roiPercent.toFixed(1)}%</p>
-              {roiChange >= 0 ? <TrendingUp className="h-3.5 w-3.5 text-green-500" /> : <TrendingDown className="h-3.5 w-3.5 text-destructive" />}
+        {/* ROI card — centered (only in non-compact mode) */}
+        {!compact && (
+          <div className="flex justify-center mt-6">
+            <div
+              onClick={() => setRoiModalOpen(true)}
+              className="group relative bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl p-3 border border-primary/20 cursor-pointer hover:border-primary/40 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 transition-all duration-200 text-center w-2/5"
+            >
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+              <p className="text-[11px] text-muted-foreground mb-1 relative z-10">ROI</p>
+              <div className="flex items-center justify-center gap-1.5 relative z-10">
+                <p className="text-sm font-bold text-foreground">{roiPercent.toFixed(1)}%</p>
+                {roiChange >= 0 ? <TrendingUp className="h-3.5 w-3.5 text-green-500" /> : <TrendingDown className="h-3.5 w-3.5 text-destructive" />}
+              </div>
+              <p className={cn("text-[10px] mt-1 flex items-center justify-center gap-0.5 relative z-10", roiChange >= 0 ? "text-green-500" : "text-destructive")}>
+                {roiChange >= 0 ? "+" : ""}{roiChange.toFixed(1)}% за {periodText}
+              </p>
             </div>
-            <p className={cn("text-[10px] mt-1 flex items-center justify-center gap-0.5 relative z-10", roiChange >= 0 ? "text-green-500" : "text-destructive")}>
-              {roiChange >= 0 ? "+" : ""}{roiChange.toFixed(1)}% за {periodText}
-            </p>
           </div>
-        </div>
+        )}
 
-        {/* Sub cards row — 3 columns */}
-        <div className={cn("grid grid-cols-3 gap-3", compact ? "mt-1" : "mt-2")}>
+        {/* Sub cards row */}
+        <div className={cn("grid gap-3", compact ? "grid-cols-4 mt-1" : "grid-cols-3 mt-2")}>
+          {/* ROI — inline in compact mode */}
+          {compact && (
+            <div
+              onClick={() => setRoiModalOpen(true)}
+              className="group relative bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl p-3 border border-primary/20 cursor-pointer hover:border-primary/40 hover:shadow-md hover:shadow-primary/10 hover:-translate-y-0.5 transition-all duration-200 text-center"
+            >
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+              <p className="text-[11px] text-muted-foreground mb-1.5 relative z-10">ROI</p>
+              <p className="text-xs font-bold text-foreground relative z-10">{roiPercent.toFixed(1)}%</p>
+              <p className={cn("text-[10px] mt-1.5 flex items-center justify-center gap-0.5 relative z-10", roiChange >= 0 ? "text-green-500" : "text-destructive")}>
+                {roiChange >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                {formatPercent(roiChange)}
+              </p>
+            </div>
+          )}
           {/* Выручка */}
           <div
             onClick={() => setIncomeModalOpen(true)}

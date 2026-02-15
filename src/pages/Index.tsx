@@ -72,7 +72,7 @@ const Index = () => {
                    <button
                     key={chat.id}
                     onClick={() => navigate(`/client-chats?chatId=${chat.id}&chatName=${encodeURIComponent(chat.client_name)}`, { replace: false })}
-                    className="flex items-center justify-between py-2 border-b border-border last:border-0 w-full text-left hover:bg-muted/50 rounded-lg px-2 -mx-2 gap-2"
+                    className="flex items-center py-2 border-b border-border last:border-0 w-full text-left hover:bg-muted/50 rounded-lg px-2 -mx-2 gap-2"
                   >
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <div className="relative flex-shrink-0">
@@ -85,7 +85,7 @@ const Index = () => {
                       </div>
                       <span className="font-medium text-sm truncate">{chat.client_name}</span>
                     </div>
-                    <span className="text-muted-foreground text-xs hidden lg:inline flex-shrink-0">{chat.client_type}</span>
+                    <span className="text-muted-foreground text-xs hidden lg:inline flex-shrink-0 text-center min-w-[70px]">{chat.client_type}</span>
                     <div className="bg-foreground text-background px-3 py-1 rounded-lg text-xs hover:opacity-90 flex-shrink-0">
                       Открыть
                     </div>

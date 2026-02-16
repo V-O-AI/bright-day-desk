@@ -51,13 +51,16 @@ const CABINET_TRANSACTIONS = [
 ];
 
 type MobileSection = "profile" | "accounts" | "finance";
+type TabletSection = "accounts" | "finance";
 
 const Cabinet = () => {
   const [activeTab, setActiveTab] = useState<"cabinet" | "referral">("cabinet");
   const [mobileSection, setMobileSection] = useState<MobileSection>("profile");
+  const [tabletSection, setTabletSection] = useState<TabletSection>("accounts");
   const navigate = useNavigate();
   const { profile, isLoading, saveProfile } = useUserProfile();
-  const isMobile = useIsMobile(1024);
+const isMobile = useIsMobile(1024);
+  const isPhone = useIsMobile(768);
 
   // Form state
   const [firstName, setFirstName] = useState("");
@@ -389,6 +392,11 @@ const Cabinet = () => {
     { key: "finance", label: "Финансы", icon: Wallet },
   ];
 
+  const tabletSections: { key: TabletSection; label: string; icon: any }[] = [
+    { key: "accounts", label: "Аккаунты", icon: LinkIcon },
+    { key: "finance", label: "Финансы", icon: Wallet },
+  ];
+
   return (
     <AppLayout>
       {/* Main Tab Navigation */}
@@ -416,8 +424,8 @@ const Cabinet = () => {
         <ReferralProgram />
       ) : (
         <>
-          {/* Mobile: section switcher */}
-          {isMobile && (
+          {/* Phone: 3-tab switcher */}
+          {isPhone && (
             <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
               {mobileSections.map(({ key, label, icon: Icon }) => (
                 <button
@@ -437,12 +445,43 @@ const Cabinet = () => {
             </div>
           )}
 
-          {/* Mobile: show selected section only */}
-          {isMobile ? (
+          {/* Tablet: 2-tab switcher (Accounts / Finance) */}
+          {isMobile && !isPhone && (
+            <div className="flex gap-2 mb-4 pb-1">
+              {tabletSections.map(({ key, label, icon: Icon }) => (
+                <button
+                  key={key}
+                  onClick={() => setTabletSection(key)}
+                  className={cn(
+                    "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium transition-all whitespace-nowrap border",
+                    tabletSection === key
+                      ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                      : "bg-card text-muted-foreground border-border hover:border-primary/30 hover:text-foreground"
+                  )}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Phone: single section */}
+          {isPhone ? (
             <div className="pb-6">
               {mobileSection === "profile" && <ProfileSection />}
               {mobileSection === "accounts" && <AccountsSection />}
               {mobileSection === "finance" && <FinanceSection />}
+            </div>
+          ) : isMobile ? (
+            /* Tablet: Profile left + toggled section right */
+            <div className="grid grid-cols-5 gap-5 pb-6">
+              <div className="col-span-2">
+                <ProfileSection />
+              </div>
+              <div className="col-span-3">
+                {tabletSection === "accounts" ? <AccountsSection /> : <FinanceSection />}
+              </div>
             </div>
           ) : (
             /* Desktop: 12-col grid */

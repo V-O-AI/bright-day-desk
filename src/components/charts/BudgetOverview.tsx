@@ -51,7 +51,7 @@ export function BudgetOverview() {
 
   return (
     <>
-      <div className="bg-card rounded-2xl p-6 border border-border h-full flex flex-col">
+      <div className="bg-card rounded-2xl p-4 md:p-6 border border-border h-full flex flex-col">
         <div className="flex items-center justify-between mb-1">
           <div>
             <h3 className="font-semibold text-foreground">Деньги в складе</h3>

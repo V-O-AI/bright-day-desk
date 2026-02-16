@@ -417,7 +417,7 @@ export function UnitEconomicsOverview() {
     <>
       <div
         onClick={handleBlockClick}
-        className="bg-card rounded-2xl p-5 border border-border h-full flex flex-col cursor-pointer hover:border-primary/30 transition-colors"
+        className="bg-card rounded-2xl p-4 md:p-5 border border-border h-full flex flex-col cursor-pointer hover:border-primary/30 transition-colors"
       >
         <div className="mb-3">
           <h3 className="font-semibold text-foreground text-sm">Юнит-экономика</h3>

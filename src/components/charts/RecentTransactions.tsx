@@ -29,7 +29,7 @@ export function RecentTransactions() {
   return (
     <>
       <div
-        className="bg-card rounded-2xl p-6 border border-border h-full flex flex-col cursor-pointer hover:border-primary/30 transition-colors"
+        className="bg-card rounded-2xl p-4 md:p-6 border border-border h-full flex flex-col cursor-pointer hover:border-primary/30 transition-colors"
         onClick={() => setModalOpen(true)}
       >
         <div className="flex items-center justify-between mb-1">
@@ -40,8 +40,8 @@ export function RecentTransactions() {
           <button className="text-xs text-primary hover:underline">Все</button>
         </div>
 
-        <div className="mt-4 flex-1">
-          <table className="w-full text-sm">
+        <div className="mt-3 md:mt-4 flex-1 overflow-x-auto">
+          <table className="w-full text-xs md:text-sm min-w-[400px]">
             <thead>
               <tr className="border-b border-border">
                 <th className="text-left text-muted-foreground font-medium pb-2 text-xs">Название</th>

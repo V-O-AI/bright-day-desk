@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { ArrowUpDown, ArrowUp, ArrowDown, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface StorageRow {
@@ -51,6 +51,58 @@ const columns: { key: SortKey; label: string }[] = [
   { key: "expiresIn", label: "Товар закон." },
   { key: "salesSpeed", label: "Скор. Продажи" },
 ];
+
+function CategoryDropdown({ categories, selected, onSelect }: { categories: string[]; selected: string; onSelect: (v: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const label = selected === "all" ? "Все категории" : selected;
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-sm text-foreground hover:border-primary/30 transition-colors"
+      >
+        {label}
+        <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", open && "rotate-180")} />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-1 z-50 min-w-[180px] bg-popover border border-border rounded-lg shadow-lg py-1">
+          <button
+            onClick={() => { onSelect("all"); setOpen(false); }}
+            className={cn(
+              "w-full text-left px-3 py-2 text-sm transition-colors hover:bg-muted",
+              selected === "all" && "text-primary font-medium"
+            )}
+          >
+            Все категории
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => { onSelect(cat); setOpen(false); }}
+              className={cn(
+                "w-full text-left px-3 py-2 text-sm transition-colors hover:bg-muted",
+                selected === cat && "text-primary font-medium"
+              )}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function WarehouseStorageTable() {
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
@@ -106,35 +158,13 @@ export function WarehouseStorageTable() {
 
   return (
     <div className="bg-card rounded-2xl p-5 border border-border flex flex-col" style={{ maxHeight: 420 }}>
-      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+      <div className="flex items-center justify-between mb-4 gap-3">
         <h3 className="font-semibold text-foreground">Таблица данных</h3>
-        <div className="flex items-center gap-1.5 overflow-x-auto">
-          <button
-            onClick={() => setSelectedCategory("all")}
-            className={cn(
-              "px-3 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap border",
-              selectedCategory === "all"
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-card text-muted-foreground border-border hover:border-primary/30 hover:text-foreground"
-            )}
-          >
-            Все
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={cn(
-                "px-3 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap border",
-                selectedCategory === cat
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-card text-muted-foreground border-border hover:border-primary/30 hover:text-foreground"
-              )}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        <CategoryDropdown
+          categories={categories}
+          selected={selectedCategory}
+          onSelect={setSelectedCategory}
+        />
       </div>
 
       <div className="overflow-x-auto overflow-y-auto flex-1">

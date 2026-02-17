@@ -12,10 +12,14 @@ import { UnitEconomicsOverview } from "@/components/charts/UnitEconomicsOverview
 import { WhereProfitIsLost } from "@/components/charts/WhereProfitIsLost";
 import { CashFlowOverview } from "@/components/charts/CashFlowOverview";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
+
+type FinanceTab = "basic" | "advanced";
 
 const MyDataFinances = () => {
   const navigate = useNavigate();
   const [period, setPeriod] = useState<MetricPeriod>("month");
+  const [activeTab, setActiveTab] = useState<FinanceTab>("basic");
   const isMobile = useIsMobile(768);
 
   return (
@@ -37,29 +41,58 @@ const MyDataFinances = () => {
           </div>
         </div>
 
-        {/* Row 1: Total Balance + Budget Overview */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-4">
-          <TotalBalanceBlock
-            period={period}
-            onPeriodChange={setPeriod}
-            showPeriodSelector
-            compact={isMobile}
-          />
-          <BudgetOverview />
+        {/* Tab switcher */}
+        <div className="flex items-center gap-1 border-b border-border overflow-x-auto">
+          <button
+            onClick={() => setActiveTab("basic")}
+            className={cn(
+              "px-4 lg:px-5 py-2.5 lg:py-3 text-sm font-medium transition-colors relative whitespace-nowrap",
+              activeTab === "basic" ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            Базовая аналитика
+            {activeTab === "basic" && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t" />}
+          </button>
+          <button
+            onClick={() => setActiveTab("advanced")}
+            className={cn(
+              "px-4 lg:px-5 py-2.5 lg:py-3 text-sm font-medium transition-colors relative whitespace-nowrap",
+              activeTab === "advanced" ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            Углублённая аналитика
+            {activeTab === "advanced" && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t" />}
+          </button>
         </div>
 
-        {/* Row 2: Unit Economics | Where Profit Lost | Recent Transactions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <UnitEconomicsOverview />
-          <WhereProfitIsLost />
-          <RecentTransactions />
-        </div>
+        {activeTab === "basic" ? (
+          /* Basic: Total Balance + Recent Transactions in one row */
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <TotalBalanceBlock
+              period={period}
+              onPeriodChange={setPeriod}
+              showPeriodSelector
+              compact={isMobile}
+            />
+            <RecentTransactions />
+          </div>
+        ) : (
+          /* Advanced analytics */
+          <div className="space-y-4 md:space-y-6">
+            {/* Row 1: Cash Flow Overview — full width */}
+            <CashFlowOverview />
 
-        {/* SKU Profitability Matrix — full width */}
-        <SkuProfitabilityMatrix />
+            {/* Row 2: SKU Profitability Matrix — full width */}
+            <SkuProfitabilityMatrix />
 
-        {/* Cash Flow Overview — full width */}
-        <CashFlowOverview />
+            {/* Row 3: Unit Economics | Where Profit Lost | Budget Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <UnitEconomicsOverview />
+              <WhereProfitIsLost />
+              <BudgetOverview />
+            </div>
+          </div>
+        )}
       </div>
     </AppLayout>
   );

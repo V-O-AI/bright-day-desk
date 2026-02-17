@@ -55,6 +55,12 @@ const columns: { key: SortKey; label: string }[] = [
 export function WarehouseStorageTable() {
   const [sortKey, setSortKey] = useState<SortKey | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>("asc");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+
+  const categories = useMemo(() => {
+    const unique = Array.from(new Set(mockData.map((r) => r.category)));
+    return unique.sort();
+  }, []);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -65,9 +71,14 @@ export function WarehouseStorageTable() {
     }
   };
 
+  const filteredData = useMemo(() => {
+    if (selectedCategory === "all") return mockData;
+    return mockData.filter((r) => r.category === selectedCategory);
+  }, [selectedCategory]);
+
   const sortedData = useMemo(() => {
-    if (!sortKey) return mockData;
-    return [...mockData].sort((a, b) => {
+    if (!sortKey) return filteredData;
+    return [...filteredData].sort((a, b) => {
       let cmp = 0;
       switch (sortKey) {
         case "category": cmp = a.category.localeCompare(b.category); break;
@@ -80,7 +91,7 @@ export function WarehouseStorageTable() {
       }
       return sortDir === "asc" ? cmp : -cmp;
     });
-  }, [sortKey, sortDir]);
+  }, [sortKey, sortDir, filteredData]);
 
   const getRemainingColor = (ratio: number) => {
     if (ratio <= 0.15) return "hsl(0, 72%, 51%)";
@@ -95,8 +106,35 @@ export function WarehouseStorageTable() {
 
   return (
     <div className="bg-card rounded-2xl p-5 border border-border flex flex-col" style={{ maxHeight: 420 }}>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <h3 className="font-semibold text-foreground">Таблица данных</h3>
+        <div className="flex items-center gap-1.5 overflow-x-auto">
+          <button
+            onClick={() => setSelectedCategory("all")}
+            className={cn(
+              "px-3 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap border",
+              selectedCategory === "all"
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-card text-muted-foreground border-border hover:border-primary/30 hover:text-foreground"
+            )}
+          >
+            Все
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={cn(
+                "px-3 py-1 rounded-full text-xs font-medium transition-all whitespace-nowrap border",
+                selectedCategory === cat
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-muted-foreground border-border hover:border-primary/30 hover:text-foreground"
+              )}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="overflow-x-auto overflow-y-auto flex-1">

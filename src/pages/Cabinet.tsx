@@ -177,7 +177,7 @@ const isMobile = useIsMobile(1024);
 
   // ── Shared sub-components ──
 
-  const ProfileSection = () => (
+  const profileSection = (
     <div className="bg-card rounded-2xl p-4 lg:p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "0ms", animationFillMode: "forwards" }}>
       <h2 className="text-base lg:text-lg font-semibold mb-4 lg:mb-6">Данные аккаунта</h2>
       
@@ -274,7 +274,7 @@ const isMobile = useIsMobile(1024);
     </div>
   );
 
-  const CardsBlock = () => (
+  const cardsBlock = (
     <div className="bg-card rounded-2xl p-4 lg:p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "200ms", animationFillMode: "forwards" }}>
       <div className="flex items-center justify-between mb-3 lg:mb-4">
         <h3 className="font-semibold text-sm lg:text-base">Карты</h3>
@@ -301,7 +301,7 @@ const isMobile = useIsMobile(1024);
     </div>
   );
 
-  const AccountsSection = () => (
+  const accountsSection = (
     <div className="space-y-4 lg:space-y-6">
       {/* Привязать аккаунты */}
       <div className="bg-card rounded-2xl p-4 lg:p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "50ms", animationFillMode: "forwards" }}>
@@ -330,14 +330,14 @@ const isMobile = useIsMobile(1024);
       </div>
 
       {/* Карты — only on desktop */}
-      {!isMobile && <CardsBlock />}
+      {!isMobile && cardsBlock}
 
       {/* Календарь — only on mobile */}
       {isMobile && <CalendarNotes />}
     </div>
   );
 
-  const FinanceSection = () => (
+  const financeSection = (
     <div className="space-y-4 lg:space-y-6">
       {/* Подписка */}
       <div className="bg-card rounded-2xl p-4 lg:p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "250ms", animationFillMode: "forwards" }}>
@@ -357,7 +357,7 @@ const isMobile = useIsMobile(1024);
       </div>
 
       {/* Карты — only on mobile */}
-      {isMobile && <CardsBlock />}
+      {isMobile && cardsBlock}
 
       {/* Транзакции */}
       <div className="bg-card rounded-2xl p-4 lg:p-6 border border-border opacity-0 animate-fade-in-up" style={{ animationDelay: "300ms", animationFillMode: "forwards" }}>
@@ -469,31 +469,31 @@ const isMobile = useIsMobile(1024);
           {/* Phone: single section */}
           {isPhone ? (
             <div className="pb-6">
-              {mobileSection === "profile" && <ProfileSection />}
-              {mobileSection === "accounts" && <AccountsSection />}
-              {mobileSection === "finance" && <FinanceSection />}
+              {mobileSection === "profile" && profileSection}
+              {mobileSection === "accounts" && accountsSection}
+              {mobileSection === "finance" && financeSection}
             </div>
           ) : isMobile ? (
             /* Tablet: Profile left + toggled section right */
             <div className="grid grid-cols-5 gap-5 pb-6">
               <div className="col-span-2">
-                <ProfileSection />
+                {profileSection}
               </div>
               <div className="col-span-3">
-                {tabletSection === "accounts" ? <AccountsSection /> : <FinanceSection />}
+                {tabletSection === "accounts" ? accountsSection : financeSection}
               </div>
             </div>
           ) : (
             /* Desktop: 12-col grid */
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full overflow-auto pb-6">
               <div className="lg:col-span-3 space-y-6">
-                <ProfileSection />
+                {profileSection}
               </div>
               <div className="lg:col-span-5 space-y-6">
-                <AccountsSection />
+                {accountsSection}
               </div>
               <div className="lg:col-span-4 space-y-6">
-                <FinanceSection />
+                {financeSection}
               </div>
             </div>
           )}

@@ -3,19 +3,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Paperclip, Check, LogIn, KeyRound, Send } from "lucide-react";
+import { Paperclip, Check, LogIn, KeyRound, Send, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 
-type Step = "auth" | "connect" | "loading" | "chat";
+type Step = "intro" | "auth" | "connect" | "loading" | "chat";
 
 interface OnboardingModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onComplete?: () => void;
 }
 
-export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
-  const [step, setStep] = useState<Step>("auth");
+export function OnboardingModal({ open, onOpenChange, onComplete }: OnboardingModalProps) {
+  const [step, setStep] = useState<Step>("intro");
   const [authMode, setAuthMode] = useState<"login" | "register">("register");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,27 +26,31 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
   const [apiKey, setApiKey] = useState("");
   const [progress, setProgress] = useState(0);
   const [chatInput, setChatInput] = useState("");
+  const [chatSent, setChatSent] = useState(false);
   const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Check if already authenticated
   useEffect(() => {
     if (open) {
       supabase.auth.getSession().then(({ data }) => {
         if (data.session) {
           setStep("connect");
         } else {
-          setStep("auth");
+          setStep("intro");
         }
       });
     }
   }, [open]);
 
-  // Cleanup interval on unmount
   useEffect(() => {
     return () => {
       if (progressRef.current) clearInterval(progressRef.current);
     };
   }, []);
+
+  const finishOnboarding = () => {
+    onComplete?.();
+    handleClose();
+  };
 
   const handleAuth = async () => {
     setAuthError("");
@@ -86,34 +91,66 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
     }, 60);
   };
 
+  const handleSendChat = () => {
+    if (!chatInput.trim()) return;
+    setChatSent(true);
+    setChatInput("");
+    // Complete onboarding after sending
+    setTimeout(() => finishOnboarding(), 600);
+  };
+
   const handleClose = () => {
+    // If we're at chat step, complete onboarding on close
+    const shouldComplete = step === "chat";
     onOpenChange(false);
-    // Reset after close animation
     setTimeout(() => {
-      setStep("auth");
+      setStep("intro");
       setEmail("");
       setPassword("");
       setApiKey("");
       setProgress(0);
       setChatInput("");
+      setChatSent(false);
       setAuthError("");
     }, 300);
+    if (shouldComplete) {
+      onComplete?.();
+    }
   };
+
+  const stepIndex = step === "intro" ? 0 : step === "auth" ? 1 : 2;
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         {/* Step indicators */}
         <div className="flex items-center justify-center gap-2 mb-2">
-          <div className={cn(
-            "h-2 w-2 rounded-full transition-colors",
-            step === "auth" ? "bg-primary" : "bg-primary/30"
-          )} />
-          <div className={cn(
-            "h-2 w-2 rounded-full transition-colors",
-            step === "connect" || step === "loading" || step === "chat" ? "bg-primary" : "bg-primary/30"
-          )} />
+          {[0, 1, 2].map((i) => (
+            <div key={i} className={cn(
+              "h-2 w-2 rounded-full transition-colors",
+              i <= stepIndex ? "bg-primary" : "bg-primary/30"
+            )} />
+          ))}
         </div>
+
+        {/* INTRO */}
+        {step === "intro" && (
+          <>
+            <DialogHeader>
+              <DialogTitle className="text-center">Добро пожаловать</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-4 mt-2">
+              <p className="text-sm text-muted-foreground text-center leading-relaxed">
+                Для начала работы необходимо пройти регистрацию или войти в аккаунт. 
+                После этого потребуется подключить данные — через API-ключ или привязку таблицы — для полноценной работы с платформой.
+              </p>
+              <Button onClick={() => setStep("auth")} className="w-full gap-2">
+                Продолжить
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </>
+        )}
 
         {/* STEP 1: Auth */}
         {step === "auth" && (
@@ -161,7 +198,6 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
               <DialogTitle className="text-center">Подключите данные</DialogTitle>
             </DialogHeader>
             <div className="flex flex-col gap-4 mt-2">
-              {/* API key input */}
               <div className="space-y-2">
                 <label className="text-sm font-medium flex items-center gap-2">
                   <KeyRound className="h-4 w-4 text-muted-foreground" />
@@ -180,7 +216,6 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
                 <div className="h-px flex-1 bg-border" />
               </div>
 
-              {/* Attach table */}
               <button
                 type="button"
                 onClick={() => {
@@ -221,9 +256,7 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
               <DialogTitle className="text-center text-base">Чат с сотрудниками</DialogTitle>
             </DialogHeader>
 
-            {/* Chat area */}
             <div className="min-h-[180px] flex flex-col gap-3 overflow-y-auto">
-              {/* AI header */}
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
                   <span className="text-muted-foreground text-sm">👤</span>
@@ -234,7 +267,6 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
                 </div>
               </div>
 
-              {/* AI message */}
               <div className="flex gap-3">
                 <div className="relative w-8 h-8 flex-shrink-0">
                   <div className="absolute left-0 top-0 w-5 h-5 rounded-md bg-muted border-2 border-background" style={{ zIndex: 2 }} />
@@ -246,14 +278,22 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
                   </p>
                 </div>
               </div>
+
+              {chatSent && (
+                <div className="flex gap-3 justify-end">
+                  <div className="rounded-xl bg-primary/10 px-4 py-2.5 text-sm max-w-[85%]">
+                    <p className="text-foreground leading-relaxed">Сообщение отправлено</p>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Input */}
             <div className="relative mt-2">
               <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSendChat()}
                 placeholder="Напишите сообщение..."
                 className="w-full bg-muted rounded-xl px-4 py-3 pr-12 text-sm placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 focus:outline-none"
               />
@@ -261,6 +301,7 @@ export function OnboardingModal({ open, onOpenChange }: OnboardingModalProps) {
                 <Button
                   size="icon"
                   variant="ghost"
+                  onClick={handleSendChat}
                   className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-primary"
                 >
                   <Send className="h-4 w-4" />

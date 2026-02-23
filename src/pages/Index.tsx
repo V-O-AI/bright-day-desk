@@ -18,17 +18,29 @@ const Index = () => {
   const [period, setPeriod] = useState<MetricPeriod>("month");
   const [modalOpen, setModalOpen] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [onboardingDone, setOnboardingDone] = useState(false);
 
   // Check if user is authenticated (connected)
   useEffect(() => {
+    const saved = localStorage.getItem("onboarding_done");
+    if (saved === "true") {
+      setOnboardingDone(true);
+      setIsConnected(true);
+    }
     supabase.auth.getSession().then(({ data }) => {
-      setIsConnected(!!data.session);
+      if (data.session && saved === "true") setIsConnected(true);
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsConnected(!!session);
+      if (session && onboardingDone) setIsConnected(true);
     });
     return () => subscription.unsubscribe();
-  }, []);
+  }, [onboardingDone]);
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem("onboarding_done", "true");
+    setOnboardingDone(true);
+    setIsConnected(true);
+  };
 
   const handleBlockClick = () => {
     if (!isConnected) {
@@ -40,7 +52,7 @@ const Index = () => {
   if (!isConnected) {
     return (
       <AppLayout>
-        <OnboardingModal open={modalOpen} onOpenChange={setModalOpen} />
+        <OnboardingModal open={modalOpen} onOpenChange={setModalOpen} onComplete={handleOnboardingComplete} />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 lg:gap-6 h-full">
           {/* Left column */}
           <div className="md:col-span-1 lg:col-span-3 flex flex-col gap-3 md:gap-4 lg:gap-6">

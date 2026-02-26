@@ -218,67 +218,169 @@ export function WarehousePlanningTab() {
       </div>
       <AiInsightBlock text="5 товаров требуют срочной закупки в ближайшие 3 дня. Перераспределение Набора посуды со склада Казань сэкономит 2 дня доставки. Общая рекомендуемая закупка: 847 единиц на сумму ~1.2М ₽." blockTitle="Умное планирование" />
 
-      {/* Warehouse Distribution */}
-      <div className="bg-card border border-border rounded-xl p-5">
-        <h3 className="font-semibold text-foreground mb-1">Распределение остатков по складам</h3>
-        <p className="text-xs text-muted-foreground mb-4">Кликните на склад для детальной аналитики</p>
-        <div className="grid grid-cols-3 gap-3 mb-5">
-          <div className="bg-green-500/5 border border-green-500/20 rounded-lg p-3 flex items-center gap-2">
-            <Package className="h-5 w-5 text-green-600" />
-            <div><p className="text-xs text-muted-foreground">SKU</p><p className="text-lg font-bold text-foreground">{products.length}</p></div>
-          </div>
-          <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-3 flex items-center gap-2">
-            <Package className="h-5 w-5 text-blue-600" />
-            <div><p className="text-xs text-muted-foreground">Всего шт.</p><p className="text-lg font-bold text-foreground">{warehouses.reduce((s, w) => s + w.stock, 0).toLocaleString()}</p></div>
-          </div>
-          <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 flex items-center gap-2">
-            <Package className="h-5 w-5 text-primary" />
-            <div><p className="text-xs text-muted-foreground">Продаж/день</p><p className="text-lg font-bold text-foreground">{warehouses.reduce((s, w) => s + w.salesPerDay, 0)}</p></div>
+      {/* Warehouse Distribution — reference design */}
+      <div className="bg-card border border-border rounded-2xl overflow-hidden">
+        <div className="p-5 pb-0">
+          <h3 className="font-semibold text-foreground text-lg">Распределение остатков по складам</h3>
+          {/* Filters row */}
+          <div className="flex flex-wrap items-center gap-3 mt-3 text-xs">
+            <div className="flex items-center gap-1.5">
+              <span className="text-muted-foreground">Категория:</span>
+              <select className="bg-muted rounded-lg px-2 py-1.5 text-foreground text-xs border-none outline-none">
+                <option>Все категории</option>
+                <option>Электроника</option><option>Одежда</option><option>Дом и Кухня</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-muted-foreground">Группа:</span>
+              <select className="bg-muted rounded-lg px-2 py-1.5 text-foreground text-xs border-none outline-none">
+                <option>A</option><option>B</option><option>C</option><option>Все</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-muted-foreground">Поставщик:</span>
+              <select className="bg-muted rounded-lg px-2 py-1.5 text-foreground text-xs border-none outline-none">
+                <option>Все</option>
+              </select>
+            </div>
+            <span className="ml-auto text-muted-foreground">18.03.2026 – 24.03.2026</span>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {warehouses.map(wh => {
-            const color = warehouseColors[wh.name] || "hsl(var(--primary))";
-            const forecastData = getForecastData(wh);
-            return (
-              <div key={wh.id} onClick={() => setSelectedWarehouse(wh)} className="border border-border rounded-xl p-4 cursor-pointer hover:border-primary/40 hover:shadow-md transition-all">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2"><MapPin className="h-4 w-4" style={{ color }} /><span className="font-semibold text-foreground">{wh.name}</span></div>
-                  <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-full", wh.deliveryDays <= 5 ? "bg-destructive/10 text-destructive" : wh.deliveryDays <= 10 ? "bg-orange-500/10 text-orange-500" : "bg-green-500/10 text-green-500")}>{wh.deliveryDays} дн.</span>
-                </div>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden"><div className="h-full rounded-full" style={{ width: `${wh.fillPercent}%`, backgroundColor: color }} /></div>
-                  <span className="text-xs text-muted-foreground">{wh.fillPercent}%</span>
-                </div>
-                <div className="space-y-1.5 text-xs">
-                  <div className="flex justify-between"><span className="text-muted-foreground">Остаток:</span><span className="text-foreground font-medium">{wh.stock.toLocaleString()} шт.</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Продажи:</span><span className="text-green-500 font-medium">{wh.salesPerDay} / день</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">В пути:</span><span className="text-foreground">{wh.inTransit} шт.</span></div>
-                  <div className="flex justify-between"><span className="text-muted-foreground">Прогноз:</span><span className={cn("font-medium", wh.forecast > 0 ? "text-green-500" : "text-destructive")}>{wh.forecast > 0 ? "+" : ""}{wh.forecast} шт.</span></div>
-                </div>
-                <div className="mt-3 pt-2 border-t border-border/50">
-                  <p className={cn("text-xs font-medium mb-1", wh.deliveryDays <= 5 ? "text-destructive" : "text-muted-foreground")}>
-                    📦 Закончится за {Math.round(wh.stock / wh.salesPerDay)} дней
-                  </p>
-                  <div className="h-[50px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={forecastData} barSize={12}>
-                        <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 8, fill: "hsl(var(--muted-foreground))" }} />
-                        <Bar dataKey="value" radius={[3, 3, 0, 0]}>
-                          {forecastData.map((_, i) => (<Cell key={i} fill={color} opacity={1 - i * 0.12} />))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-                {wh.deliveryDays <= 5 && (
-                  <button className="mt-2 w-full bg-destructive/10 text-destructive text-xs font-medium py-2 rounded-lg hover:bg-destructive/20 transition-colors flex items-center justify-center gap-1">
-                    Переместить со склада Казань <ChevronRight className="h-3 w-3" />
-                  </button>
-                )}
+
+        {/* KPI summary row */}
+        <div className="px-5 pt-4 pb-2">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 flex items-center gap-3">
+              <span className="text-amber-500 text-xl">📦</span>
+              <div>
+                <p className="text-2xl font-bold text-foreground">{products.length} <span className="text-sm font-normal text-muted-foreground">SKU</span></p>
               </div>
-            );
-          })}
+            </div>
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-3 flex items-center gap-3">
+              <span className="text-blue-500 text-xl">📦</span>
+              <div className="flex items-center gap-2">
+                <p className="text-2xl font-bold text-foreground">{warehouses.reduce((s, w) => s + w.stock, 0).toLocaleString()} <span className="text-sm font-normal text-muted-foreground">шт.</span></p>
+                <div className="flex gap-0.5">
+                  {warehouses.map(wh => (
+                    <div key={wh.id} className="h-5 rounded-sm" style={{ width: 8, backgroundColor: warehouseColors[wh.name] }} />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-3 flex items-center gap-3">
+              <span className="text-green-500 text-xl">📦</span>
+              <div className="flex items-center gap-2">
+                <p className="text-2xl font-bold text-foreground">{warehouses.reduce((s, w) => s + w.salesPerDay, 0)} <span className="text-sm font-normal text-muted-foreground">продаж в день</span></p>
+                <div className="flex gap-0.5">
+                  {warehouses.map(wh => (
+                    <div key={wh.id} className="h-5 rounded-sm" style={{ width: 8, backgroundColor: warehouseColors[wh.name] }} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Location selector */}
+        <div className="px-5 pt-3 pb-2 flex items-center gap-4">
+          <div className="flex items-center gap-1.5 text-sm text-foreground">
+            <MapPin className="h-4 w-4 text-muted-foreground" /> <span className="font-medium">Москва</span>
+          </div>
+          <div className="flex gap-3 ml-4">
+            {warehouses.map(wh => (
+              <div key={wh.id} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <div className="h-3 w-3 rounded-sm" style={{ backgroundColor: warehouseColors[wh.name] }} />
+                {wh.name}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Warehouse cards */}
+        <div className="px-5 pb-5 pt-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {warehouses.map(wh => {
+              const color = warehouseColors[wh.name] || "hsl(var(--primary))";
+              const forecastData = getForecastData(wh);
+              const daysToEnd = Math.round(wh.stock / wh.salesPerDay);
+              return (
+                <div key={wh.id} onClick={() => setSelectedWarehouse(wh)} className="border border-border rounded-xl p-4 cursor-pointer hover:border-primary/40 hover:shadow-md transition-all bg-card">
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="h-5 w-5 rounded flex items-center justify-center" style={{ backgroundColor: color + "22" }}>
+                        <Package className="h-3 w-3" style={{ color }} />
+                      </div>
+                      <span className="font-semibold text-foreground">{wh.name}</span>
+                    </div>
+                    <span className={cn(
+                      "text-sm font-bold",
+                      daysToEnd <= 5 ? "text-destructive" : daysToEnd <= 14 ? "text-orange-500" : "text-green-500"
+                    )}>{wh.deliveryDays} Дня</span>
+                  </div>
+
+                  {/* Progress bar */}
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="flex-1 h-2.5 bg-muted rounded-full overflow-hidden">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${wh.fillPercent}%`, backgroundColor: color }} />
+                    </div>
+                    <span className="text-xs font-medium text-muted-foreground">{wh.fillPercent}%</span>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Остаток:</span>
+                      <span className="text-foreground font-bold">{wh.stock.toLocaleString()} шт.</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Продажи:</span>
+                      <span className="font-medium"><span className="inline-block h-2 w-2 rounded-full bg-green-500 mr-1" /><span className="text-foreground">{wh.salesPerDay}</span> <span className="text-muted-foreground">/ день</span></span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">В пути:</span>
+                      <span className="font-medium text-foreground">— {wh.inTransit} шт.</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Прогноз:</span>
+                      <span className={cn("font-bold", wh.forecast > 0 ? "text-green-500" : "text-destructive")}>
+                        — {wh.forecast > 0 ? "+" : ""}{wh.forecast} шт.
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Forecast mini chart */}
+                  <div className="mt-3 pt-3 border-t border-border/50">
+                    <p className={cn("text-xs font-semibold flex items-center gap-1 mb-1", daysToEnd <= 7 ? "text-destructive" : daysToEnd <= 14 ? "text-orange-500" : "text-muted-foreground")}>
+                      📦 Закончится за {daysToEnd} дня
+                    </p>
+                    <div className="h-[55px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={forecastData} barSize={14}>
+                          <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }} />
+                          <Bar dataKey="value" radius={[3, 3, 0, 0]}>
+                            {forecastData.map((_, i) => (<Cell key={i} fill={color} opacity={1 - i * 0.13} />))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  {/* Action button */}
+                  {daysToEnd <= 7 && (
+                    <button className="mt-2 w-full bg-destructive/10 text-destructive text-xs font-semibold py-2.5 rounded-lg hover:bg-destructive/20 transition-colors flex items-center justify-center gap-1">
+                      Переместить со склада Казань <ChevronRight className="h-3 w-3" />
+                    </button>
+                  )}
+                  {daysToEnd > 7 && daysToEnd <= 25 && (
+                    <button className="mt-2 w-full bg-muted text-muted-foreground text-xs font-medium py-2.5 rounded-lg hover:bg-accent/30 transition-colors flex items-center justify-center gap-1">
+                      ⏱ Пром. убыдаться со склада Казань
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
       <AiInsightBlock text="Склад Москва загружен на 39% — рекомендуется перебалансировать товары с Казани. Среднее время доставки от поставщиков до Москвы: 3 дня, до Казани: 21 день." blockTitle="Распределение по складам" />

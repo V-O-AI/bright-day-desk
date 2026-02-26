@@ -93,8 +93,75 @@ function DeadStockTooltip({ active, payload }: any) {
   );
 }
 
+interface AbcData {
+  label: string;
+  pct: number;
+  count: number;
+  totalPct: number;
+  items: typeof products;
+  color: string;
+  dotColor: string;
+}
+
+function AbcModal({ abc, open, onClose }: { abc: AbcData | null; open: boolean; onClose: () => void }) {
+  if (!abc) return null;
+  const totalSales = products.reduce((s, p) => s + p.salesPerDay, 0);
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <div className={cn("h-3 w-3 rounded-full", abc.dotColor)} />
+            Категория {abc.label} — {abc.pct}% оборота
+          </DialogTitle>
+        </DialogHeader>
+        <p className="text-xs text-muted-foreground mb-3">
+          {abc.items.length} товаров ({abc.totalPct}% от общего количества) формируют {abc.pct}% общего оборота
+        </p>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-muted-foreground text-xs border-b border-border">
+              <th className="text-left pb-2 font-medium">Товар</th>
+              <th className="text-right pb-2 font-medium">% оборота</th>
+              <th className="text-right pb-2 font-medium">Продажи</th>
+              <th className="text-right pb-2 font-medium">Прод./день</th>
+            </tr>
+          </thead>
+          <tbody>
+            {abc.items.map(p => {
+              const pctOfTotal = ((p.salesPerDay / totalSales) * 100).toFixed(1);
+              return (
+                <tr key={p.id} className="border-b border-border/50">
+                  <td className="py-2 text-foreground font-medium">{p.name}</td>
+                  <td className="py-2 text-right">
+                    <span className={cn("font-semibold", abc.label === "A" ? "text-green-500" : abc.label === "B" ? "text-orange-500" : "text-destructive")}>{pctOfTotal}%</span>
+                  </td>
+                  <td className="py-2 text-right text-foreground">{Math.round(p.salesPerDay * 30)} шт/мес</td>
+                  <td className="py-2 text-right">
+                    <span className={cn("font-semibold", p.salesPerDay >= 5 ? "text-green-500" : p.salesPerDay >= 2 ? "text-foreground" : "text-destructive")}>{p.salesPerDay}</span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <AiInsightBlock
+          text={abc.label === "A"
+            ? "Товары категории A — ваш основной доход. Следите за их наличием и скоростью пополнения. Риск дефицита даже на 1 день может привести к потере до 15% оборота."
+            : abc.label === "B"
+            ? "Категория B — потенциал роста. 3 товара близки к переходу в A при увеличении оборачиваемости на 10-15%."
+            : "Категория C замораживает капитал. Рассмотрите ликвидацию или скидочные акции для высвобождения средств."
+          }
+          blockTitle={`ABC категория ${abc.label}`}
+        />
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function WarehouseHealthTab() {
   const [selectedKpi, setSelectedKpi] = useState<KpiCard | null>(null);
+  const [selectedAbc, setSelectedAbc] = useState<AbcData | null>(null);
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -152,15 +219,16 @@ export function WarehouseHealthTab() {
       {/* ABC Cards */}
       <div className="bg-card border border-border rounded-xl p-5">
         <h3 className="font-semibold text-foreground mb-1">ABC — оборот</h3>
-        <p className="text-xs text-muted-foreground mb-4">Классификация товаров по вкладу в общий оборот</p>
+        <p className="text-xs text-muted-foreground mb-4">Классификация товаров по вкладу в общий оборот. Нажмите на карточку для подробностей.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
-            { label: "A", pct: 65, count: abcA.length, totalPct: Math.round((abcA.length / products.length) * 100), items: abcA, color: "border-green-500/30 bg-green-500/5" },
-            { label: "B", pct: 25, count: abcB.length, totalPct: Math.round((abcB.length / products.length) * 100), items: abcB, color: "border-orange-500/30 bg-orange-500/5" },
-            { label: "C", pct: 10, count: abcC.length, totalPct: Math.round((abcC.length / products.length) * 100), items: abcC, color: "border-destructive/30 bg-destructive/5" },
+            { label: "A", pct: 65, count: abcA.length, totalPct: Math.round((abcA.length / products.length) * 100), items: abcA, color: "border-green-500/30 bg-green-500/5", dotColor: "bg-green-500" },
+            { label: "B", pct: 25, count: abcB.length, totalPct: Math.round((abcB.length / products.length) * 100), items: abcB, color: "border-orange-500/30 bg-orange-500/5", dotColor: "bg-orange-500" },
+            { label: "C", pct: 10, count: abcC.length, totalPct: Math.round((abcC.length / products.length) * 100), items: abcC, color: "border-destructive/30 bg-destructive/5", dotColor: "bg-destructive" },
           ].map(abc => (
-            <div key={abc.label} className={cn("border rounded-xl p-4", abc.color)}>
+            <div key={abc.label} onClick={() => setSelectedAbc(abc)} className={cn("border rounded-xl p-4 cursor-pointer hover:shadow-md hover:scale-[1.02] transition-all", abc.color)}>
               <div className="flex items-center gap-2 mb-2">
+                <div className={cn("h-3 w-3 rounded-full", abc.dotColor)} />
                 <span className="text-lg font-bold text-foreground">Категория {abc.label}</span>
               </div>
               <p className="text-sm text-foreground">{abc.totalPct}% товаров приносят <span className="font-bold">{abc.pct}%</span> оборота</p>
@@ -187,6 +255,7 @@ export function WarehouseHealthTab() {
       <AiInsightBlock text="5 товаров имеют критический уровень запасов (менее 7 дней). Роутер Wi-Fi 6 и Майка найк требуют срочной закупки. Рекомендуется автозаказ при остатке менее 10 дней продаж." blockTitle="Состояние запасов" />
 
       <KpiModal kpi={selectedKpi} open={!!selectedKpi} onClose={() => setSelectedKpi(null)} />
+      <AbcModal abc={selectedAbc} open={!!selectedAbc} onClose={() => setSelectedAbc(null)} />
     </div>
   );
 }
